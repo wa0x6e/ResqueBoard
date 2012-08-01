@@ -15,5 +15,8 @@
     "require": {
         "php": ">=5.3.0",
         "slim/slim" : ">=1.6.4"
+    },
+    "autoload": {
+        "psr-0": {"Fresque": "src/"}
     }
 }

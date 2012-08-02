@@ -1,3 +1,8 @@
+<script type="text/javascript">
+$(document).ready(function() {
+    listenToWorkersJob();
+});
+</script>
 <div class="container" id="main">
 	<div class="page-header">
 		<h2>Working</h2>
@@ -39,15 +44,7 @@
 				<span class="label" id="_{{>job_id}}">{{>action}}</span>
 			</script>
 
-			<script type="text/javascript">
-			$(document).ready(function() {
-
-				listenToWorkersJob();
-			});
-
 			
-
-			</script>
 			
 		</div>
 	</div>

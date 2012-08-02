@@ -1,4 +1,10 @@
 
+
+/**
+ * Convert a date to ISO 8601 format
+ * @param  Date date A date object
+ * @return string An ISO 8601 formatted date
+ */
 var formatISO = function(date){
 	var format = d3.time.format.iso;
 	return format.parse(date); // returns a Date
@@ -6,12 +12,32 @@ var formatISO = function(date){
 
 var stop = new Date(Date.now());
 
-var limit = 25;
+/**
+ * Duration of the transition animation
+ * @type int
+ */
 var duration = 1500;
+
+/**
+ * Datas about the polling delay
+ * @type Object
+ */
 var step = {second : 10, code : "1e4"};
 
-function jobsActivities()
+
+/**
+ * Display lastest jobs stats
+ * 
+ * @return void
+ */
+function listenToJobsActivities()
 {
+	/**
+	 * Number of division to display
+	 * @type int
+	 */
+	var limit = 25;
+
 	d3.json('http://'+serverIp+':1081/1.0/metric/get'+
 		'?expression=sum(got)'+
 		'&start=2012-07-07T16:00:00Z'+
@@ -21,19 +47,19 @@ function jobsActivities()
 
 
 			var 
-			margin = {top:25, right:35, bottom: 35, left: 20},
-			width = 620 - margin.right - margin.left,
-			height = 180 - margin.top - margin.bottom,
-			barHeight = height,
-			barWidth = width/limit - 2,
-			barGutter = 0,
-			barLabelHeight = 20
+				margin = {top:25, right:35, bottom: 35, left: 20},
+				width = 620 - margin.right - margin.left,
+				height = 180 - margin.top - margin.bottom,
+				barHeight = height,
+				barWidth = width/limit - 2,
+				barGutter = 0,
+				barLabelHeight = 20
 			;
 
-			/*
-			Find the next time after the last entry
-			because the last entry doesn't have a x axis
-			*/
+			/**
+			 * Find the next time after the last entry
+			 * because the last entry doesn't have a x axis
+			 */
 			var getNextTick = function(date) {
 				date = new Date(date);
 				return new Date(date.setSeconds(date.getSeconds() + step.second));
@@ -101,7 +127,6 @@ function jobsActivities()
 			.attr("title", function(d){return d.value;})
 			.attr("data-target", "#job-details-modal")
 			.on("click", function(d){
-				
 				displayJobsModal(d.time);
 			})
 			;
@@ -149,209 +174,218 @@ function jobsActivities()
 				var rect = barArea.selectAll("rect").data(data, function(d){return d.time;});
 				var text = barArea.selectAll("text").data(data, function(d){return d.time;});
 
-			// BAR
-			// *****
-			rect.enter().insert("rect")
-			.attr("x", function(d, i) { return x(getNextTick(d.time)); })
-			.attr("y", function(d) { return y(d.value); })
-			.attr("width", barWidth)
-			.attr("clip-path", "url(#clip)")
-			.attr("height", function(d) { return height - y(d.value); })
-			.on("click", function(d){ alert(d.time); })
-			.transition()
-			.duration(duration)
-			.attr("x", function(d) { return x(d.time) + barWidth + 2; })
-			;
+				// BAR
+				// *****
+				rect.enter().insert("rect")
+				.attr("x", function(d, i) { return x(getNextTick(d.time)); })
+				.attr("y", function(d) { return y(d.value); })
+				.attr("width", barWidth)
+				.attr("clip-path", "url(#clip)")
+				.attr("height", function(d) { return height - y(d.value); })
+				.on("click", function(d){ alert(d.time); })
+				.transition()
+				.duration(duration)
+				.attr("x", function(d) { return x(d.time) + barWidth + 2; })
+				;
 
-			
-			rect.transition()
-			.duration(duration)
-			.attr("clip-path", "url(#clip)")
-			.attr("x", function(d) { return x(d.time) + barGutter; })
-			.attr("y", function(d) { return y(d.value); })
-			.attr("height", function(d) { return height - y(d.value); })
-			;
+				
+				rect.transition()
+				.duration(duration)
+				.attr("clip-path", "url(#clip)")
+				.attr("x", function(d) { return x(d.time) + barGutter; })
+				.attr("y", function(d) { return y(d.value); })
+				.attr("height", function(d) { return height - y(d.value); })
+				;
 
-			rect.exit().transition()
-			.duration(duration)
-			.attr("x", function(d, i) { return x(d.time) + barGutter; })
-			.remove()
-			;
-
-
-			// TEXT
-			// *****
-			text.enter().insert("text")
-			.attr("x", function(d) { return x(getNextTick(getNextTick(d.time))); })
-			.attr("y", function(d) { return ( (height-y(d.value))>barLabelHeight ? y(d.value) : (y(d.value) - barLabelHeight)); })
-			.attr("dx", barWidth/2 - barGutter)
-			.attr("text-anchor", "middle")
-			.attr("fill", "black")
-			.attr("class", function(d){if ((height-y(d.value))<=15){return "bar-label out";}  return "bar-label";})
-			.attr("dx", -barWidth/2 - barGutter)
-			.attr("dy", "1.5em")
-			.text(function(d){return d.value;})
-			.transition()
-			.duration(duration)
-			.attr("x", function(d) { return x(d.time) + barWidth + barGutter; })
-			;
+				rect.exit().transition()
+				.duration(duration)
+				.attr("x", function(d, i) { return x(d.time) + barGutter; })
+				.remove()
+				;
 
 
-			text.transition()
-			.duration(duration)
-			.attr("x", function(d) { return x(d.time) + barWidth + barGutter; })
-			.attr("y", function(d) { return ( (height-y(d.value))>barLabelHeight ? y(d.value) : (y(d.value) - barLabelHeight)); })
-			.attr("class", function(d){if ( (height-y(d.value))<=barLabelHeight){ return "bar-label out";} return "bar-label";})
-			;
+				// TEXT
+				// *****
+				text.enter().insert("text")
+				.attr("x", function(d) { return x(getNextTick(getNextTick(d.time))); })
+				.attr("y", function(d) { return ( (height-y(d.value))>barLabelHeight ? y(d.value) : (y(d.value) - barLabelHeight)); })
+				.attr("dx", barWidth/2 - barGutter)
+				.attr("text-anchor", "middle")
+				.attr("fill", "black")
+				.attr("class", function(d){if ((height-y(d.value))<=15){return "bar-label out";}  return "bar-label";})
+				.attr("dx", -barWidth/2 - barGutter)
+				.attr("dy", "1.5em")
+				.text(function(d){return d.value;})
+				.transition()
+				.duration(duration)
+				.attr("x", function(d) { return x(d.time) + barWidth + barGutter; })
+				;
 
 
-			text.exit().transition()
-			.duration(duration)
-			.attr("x", function(d) { return x(d.time) + barGutter; })
-			.remove()
-			;
+				text.transition()
+				.duration(duration)
+				.attr("x", function(d) { return x(d.time) + barWidth + barGutter; })
+				.attr("y", function(d) { return ( (height-y(d.value))>barLabelHeight ? y(d.value) : (y(d.value) - barLabelHeight)); })
+				.attr("class", function(d){if ( (height-y(d.value))<=barLabelHeight){ return "bar-label out";} return "bar-label";})
+				;
 
 
-			// AXIS
-			// *****
-			xAxisParent.transition()
-			.duration(duration)
-			.call(xAxis);
+				text.exit().transition()
+				.duration(duration)
+				.attr("x", function(d) { return x(d.time) + barGutter; })
+				.remove()
+				;
 
-			yAxisParent.transition()
-			.duration(duration)
-			.call(yAxis);
 
-		}
+				// AXIS
+				// *****
+				xAxisParent.transition()
+				.duration(duration)
+				.call(xAxis);
 
-		var metricSocket = new WebSocket("ws://"+serverIp+":1081/1.0/metric/get");
+				yAxisParent.transition()
+				.duration(duration)
+				.call(yAxis);
 
-		metricSocket.onopen = function() {
-			var nextDate = getNextTick(data[data.length-1].time);
-
-			metricSocket.send(JSON.stringify({
-				"expression": "sum(got)",
-				"start" : nextDate.toISOString(),
-				"stop": getNextTick(nextDate).toISOString(),
-				"limit": 1,
-				"step" : step.code // 10 seconds
-			}));
-		};
-
-		metricSocket.onmessage = function(message) {
-			JsonData = JSON.parse(message.data);
-
-			if(JsonData.hasOwnProperty("value")) {
-				JsonData.time = new Date(JsonData.time);
-				data.shift();
-				data.push(JsonData);
-				redraw();
-
-				setTimeout(function() { 
-					var nextDate = getNextTick(data[data.length-1].time);
-					metricSocket.send(JSON.stringify({
-						"expression": "sum(got)",
-						"start" : nextDate.toISOString(),
-						"stop": getNextTick(nextDate).toISOString(),
-						"limit": 1,
-						"step" : step.code // 10 seconds
-					}))
-				}, step.second * 1000);
 			}
-		};
-	});
+
+			var metricSocket = new WebSocket("ws://"+serverIp+":1081/1.0/metric/get");
+
+			metricSocket.onopen = function() {
+				var nextDate = getNextTick(data[data.length-1].time);
+
+				metricSocket.send(JSON.stringify({
+					"expression": "sum(got)",
+					"start" : nextDate.toISOString(),
+					"stop": getNextTick(nextDate).toISOString(),
+					"limit": 1,
+					"step" : step.code
+				}));
+			};
+
+			metricSocket.onmessage = function(message) {
+				JsonData = JSON.parse(message.data);
+
+				if(JsonData.hasOwnProperty("value")) {
+					JsonData.time = new Date(JsonData.time);
+					data.shift();
+					data.push(JsonData);
+					redraw();
+
+					setTimeout(function() { 
+						var nextDate = getNextTick(data[data.length-1].time);
+						metricSocket.send(JSON.stringify({
+							"expression": "sum(got)",
+							"start" : nextDate.toISOString(),
+							"stop": getNextTick(nextDate).toISOString(),
+							"limit": 1,
+							"step" : step.code 
+						}))
+					}, step.second * 1000);
+				}
+			};
+		}
+	);
 
 }
 
-$(document).ready(function() {
+
+
+/**
+ * Display a modal with jobs details for all
+ * jobs between a `start` and an `end` date.
+ * End time is automatically computed from the
+ * start time, and step.second
+ * 
+ * @param  string startTime start time in ISO 8601 format
+ * @return void
+ */
+function displayJobsModal(startTime)
+{
+	startTimeStamp = (Date.parse(startTime))/1000;
+
+	var modalTimestamp = $("#job-details-modal").data("timestamp");
+	if (modalTimestamp != startTimeStamp)
+	{
+		$.ajax({
+			url : "/api/jobs/" + startTimeStamp + "/" + (startTimeStamp + step.second),
+			success : function(message){
+					$("#job-details-modal .modal-body").html(
+						$("#jobs-tpl").render(message)
+					);
+					$("#job-details-modal").data('timestamp', startTimeStamp);
+					$("#job-details-modal .modal-header .badge").html(message.length);
+				}
+			
+		});
+	}
+	$("#job-details-modal").modal('show');
+}
+
+
+/**
+ * Convert all convertibles datas to pie chart
+ * @return void
+ */
+function initPieChart()
+{
 	$(".chart-pie").each(function(i){
 		var data = [{name : "successfull", count : $(this).data("success"), color: "#aec7e8"}, {name : "failed", count : $(this).data("failed"), color : "#e7969c"}];
 		pieChart(this, data);
 	});
 
-	$('[rel=tooltip]').tooltip();
-});
+	function pieChart(parent, data) 
+	{
+		var donut = d3.layout.pie().value(function(d){
+			return d.count;
+		});
 
+		// Define the margin, radius, and color scale. The color scale will be
+		// assigned by index, but if you define your data using objects, you could pass
+		// in a named field from the data object instead, such as `d.name`. Colors
+		// are assigned lazily, so if you want deterministic behavior, define a domain
+		// for the color scale.
+		var m = 10,
+		r = ($(parent).width()-m*2)/2 ,
+		z = d3.scale.category20c();
 
+		// Insert an svg:svg element (with margin) for each row in our dataset. A
+		// child svg:g element translates the origin to the pie center.
+		var svg = d3.select(parent)
 
-function displayJobsModal(startTime)
-{
-	startTimeStamp = (Date.parse(startTime))/1000;
+		.append("svg:svg")
 
-	$.ajax({
-		url : "/api/jobs/" + startTimeStamp + "/" + (startTimeStamp + step.second),
-		success : function(message){
-			
-			var modalTimestamp = $("#job-details-modal").data("timestamp");
-			if (modalTimestamp != startTimeStamp)
-			{
+		.attr("width", (r + m) * 2)
+		.attr("height", (r + m) * 2)
+		.append("svg:g")
+		.attr("transform", "translate(" + (r + m) + "," + (r + m) + ")");
 
-				$("#job-details-modal .modal-body").html(
-					$("#jobs-tpl").render(message)
-				);
-				$("#job-details-modal .modal-header .badge").html(message.length);
-			}
-
-			
-
-
-			$("#job-details-modal").modal('show');
-		}
-	});
-
-	
-}
-
-
-function pieChart(parent, data) {
-
-
-	var donut = d3.layout.pie().value(function(d){
-		return d.count;
-	});
-
-// Define the margin, radius, and color scale. The color scale will be
-// assigned by index, but if you define your data using objects, you could pass
-// in a named field from the data object instead, such as `d.name`. Colors
-// are assigned lazily, so if you want deterministic behavior, define a domain
-// for the color scale.
-var m = 10,
-r = ($(parent).width()-m*2)/2 ,
-z = d3.scale.category20c();
-
-// Insert an svg:svg element (with margin) for each row in our dataset. A
-// child svg:g element translates the origin to the pie center.
-var svg = d3.select(parent)
-
-.append("svg:svg")
-
-.attr("width", (r + m) * 2)
-.attr("height", (r + m) * 2)
-.append("svg:g")
-.attr("transform", "translate(" + (r + m) + "," + (r + m) + ")");
-
-// The data for each svg:svg element is a row of numbers (an array). We pass
-// that to d3.layout.pie to compute the angles for each arc. These start and end
-// angles are passed to d3.svg.arc to draw arcs! Note that the arc radius is
-// specified on the arc, not the layout.
-svg.selectAll("path")
-.data(donut(data))
-.enter().append("svg:path")
-.attr("d", d3.svg.arc()
-	.innerRadius(r / 2)
-	.outerRadius(r))
-.style("fill", function(d) { return d.data.color; })
-.attr("title", function(d){return d.data.count + " " +  d.data.name + " jobs"})
-
-;
-
+		// The data for each svg:svg element is a row of numbers (an array). We pass
+		// that to d3.layout.pie to compute the angles for each arc. These start and end
+		// angles are passed to d3.svg.arc to draw arcs! Note that the arc radius is
+		// specified on the arc, not the layout.
+		svg.selectAll("path")
+		.data(donut(data))
+		.enter().append("svg:path")
+		.attr("d", d3.svg.arc()
+			.innerRadius(r / 2)
+			.outerRadius(r))
+		.style("fill", function(d) { return d.data.color; })
+		.attr("title", function(d){return d.data.count + " " +  d.data.name + " jobs"})
+		;
+	}
 }
 
 
 
+
+/**
+ * Display new events in realtime
+ * 
+ * @return void
+ */
 function loadLogs()
 {
-
 	var counters = {
 		general : {g: $("[rel=log-counter]")},
 		type : {},
@@ -385,9 +419,6 @@ function loadLogs()
 			decrCounter("general", "g", 1);
 			
 		});
-
-
-
 	};
 
 	var resetCounters = function() {
@@ -438,8 +469,6 @@ function loadLogs()
 		};
 	}
 
-	
-
 	var getColor = function(data) {
 					if (workers[data.data.worker] == undefined)
 					{
@@ -449,11 +478,18 @@ function loadLogs()
 			};
 
 
-	var colors = ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', 
-	'#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d #', '17becf', '#9edae5'];
+	var colors = ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', 
+	'#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', 
+	'#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d #', '17becf', '#9edae5'];
 
 	
-
+	/**
+	 * Insert new events in the DOM
+	 * 
+	 * @param  {[type]} type [description]
+	 * @param  {[type]} data [description]
+	 * @return {[type]}      [description]
+	 */
 	function appendLog(type, data)
 	{
 		if ($("input[rel="+level[data.data.level].name+"]").is(":checked"))
@@ -479,7 +515,7 @@ function loadLogs()
 			$("#log-area").find("date").each(function() {
 				$(this).html(moment($(this).attr("title")).fromNow());
 			});      
-	 }
+	 	}
 	}
 
 	function init(e)
@@ -556,7 +592,12 @@ function loadLogs()
 }
 
 
-
+/**
+ * Listen to workers activities in realtime
+ * and update related counters
+ * 
+ * @return void
+ */
 function listenToWorkersJob() {
 
 	var eventProcessor = function(){

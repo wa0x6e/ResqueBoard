@@ -14,12 +14,13 @@
                            <div class="accordion-inner">
                             <pre class="">{{>args}}</pre></div></div>
 				        </li>
-			            </script>
+			</script>
 			            
 			<script type="text/javascript">
 				$(document).ready(function() {
 					listenToWorkersJob();
-					jobsActivities();
+					listenToJobsActivities();
+					initPieChart();
 				});
 			</script>
 			

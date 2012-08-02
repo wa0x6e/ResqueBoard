@@ -45,12 +45,12 @@ The forked php-resque will log all the events to Cube.
 ####ResqueBoard
 Clone this repository
 	
-	git clone git://github.com/kamisama/ResqueBoard.git 
+	$ git clone git://github.com/kamisama/ResqueBoard.git 
 	
 Install Composer and download all dependencies
 
-	curl -s https://getcomposer.org/installer | php
-	php composer.phar install
+	$ curl -s https://getcomposer.org/installer | php
+	$ php composer.phar install
 	
 Point Apache to	ResqueBoard/src/ResqueBoard/webroot
 
@@ -58,7 +58,7 @@ Point Apache to	ResqueBoard/src/ResqueBoard/webroot
 
 Clone the forked php-resque
 
-	git clone git://
+	$ git clone git://
 	
 and replace your current php-resque library with this one. This fork should not break anything, as only the logging method are changed.
 

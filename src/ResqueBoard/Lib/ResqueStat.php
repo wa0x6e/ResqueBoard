@@ -1,6 +1,6 @@
 <?php
 
-namespace Fresque\Lib;
+namespace ResqueBoard\Lib;
 
 class ResqueStat
 {

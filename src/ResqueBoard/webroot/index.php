@@ -16,7 +16,7 @@
     
     $app->get('/', function () use ($app, $settings) {
         try {
-            $resqueStat = new Fresque\Lib\ResqueStat($settings);
+            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
             
             $app->render('index.php', array(
                 'stats' => $resqueStat->getStats(),
@@ -33,9 +33,9 @@
     
     $app->get('/logs', function () use ($app, $logLevels, $logTypes) {
         
-        $mutedLevels = $app->getCookie('RescueBoard.mutedLevel');
+        $mutedLevels = $app->getCookie('ResqueBoard.mutedLevel');
         if (empty($mutedLevels)) {
-            $app->setCookie('RescueBoard.mutedLevel', '', '1 year');
+            $app->setCookie('ResqueBoard.mutedLevel', '', '1 year');
         }
         
         $mutedLevels = array_filter(explode(',', $mutedLevels));
@@ -50,7 +50,7 @@
     
     $app->get('/working', function () use ($app, $settings) {
         try {
-            $resqueStat = new Fresque\Lib\ResqueStat($settings);
+            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
             
             $app->render('working.php', array(
                 'workers' => $resqueStat->getWorkers(),

@@ -82,7 +82,7 @@
 							<dt>Host</dt>
 							<dd><?php echo $worker['host']?></dd>
 							<dt>Uptime</dt>
-							<dd><?php echo Fresque\Lib\DateHelper::ago($worker['start'])?></dd>
+							<dd><?php echo ResqueBoard\Lib\DateHelper::ago($worker['start'])?></dd>
 							<dt>Started on</dt>
 							<dd><?php echo date_format($worker['start'], "r")?></dd>
 							<dt>Process Jobs</dt>

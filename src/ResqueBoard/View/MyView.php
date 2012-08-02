@@ -1,6 +1,6 @@
 <?php
 
-namespace Fresque\View;
+namespace ResqueBoard\View;
 
 class MyView extends \Slim_View
 {

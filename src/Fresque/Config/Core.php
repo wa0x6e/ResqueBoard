@@ -23,3 +23,14 @@
                 'view' => 'Fresque\View\MyView',
                 'templates.path' => ROOT . DS .'View'
             );
+    
+    $logLevels = array(
+            'debug' => 'label-success',
+            'info' => 'label-info',
+            'warning' => 'label-warning',
+            'error' => 'label-important',
+            'criticial' => 'label-inverse',
+            'alert' => 'label-inverse'
+    );
+    
+    $logTypes = array('start', 'got', 'process', 'fork', 'done', 'sleep', 'prune', 'stop');

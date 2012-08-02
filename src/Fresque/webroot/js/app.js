@@ -469,8 +469,25 @@ function loadLogs()
 	});
 
 	$("#log-filter-form").on("change", "input", function(e){
+
+		var rel = $(this).attr("rel")
+
 		$("#log-area").append("<li class='filter-event'><b>"+ ($(this).is(":checked") ? "Start" : "Stop") +
-			"</b> listening to <em>" + $(this).attr("rel") + "</em> events</li>");
+			"</b> listening to <em>" + rel + "</em> events</li>");
+
+		var mutedLevels = $.cookie('RescueBoard.mutedLevel');
+		mutedLevels = mutedLevels.split(",");
+
+		if ($(this).is(":checked")) {
+			var index = mutedLevels.indexOf(rel);
+			if (index != -1) {
+				mutedLevels.splice(index, 1);
+			}
+		} else {
+			mutedLevels[mutedLevels.length] = rel;
+		}
+		$.cookie('RescueBoard.mutedLevel', mutedLevels.join(","));
+
 	});
 
 

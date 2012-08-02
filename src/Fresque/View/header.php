@@ -7,11 +7,12 @@
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js"></script>
         <script type="text/javascript" src="js/jquery.jsrender.js"></script>
         <script type="text/javascript" src="js/moment.js"></script>
+        <script type="text/javascript" src="js/jquery.cookie.js"></script>
         <script type="text/javascript" src="js/d3.v2.min.js"></script>
         <script type="text/javascript" src="js/bootstrap/bootstrap-tooltip.js"></script>
         <link href="/css/bootstrap.css" rel="stylesheet" type="text/css">
         <link href="/css/main.css" rel="stylesheet" type="text/css">
-        <link href="/favicon.png" rel="shortcut icon">
+        <link href="/img/rescueboard.png" rel="shortcut icon">
         
     </head>
     <body>
@@ -32,10 +33,7 @@
                                     echo '<li'. ($link == $_SERVER['REQUEST_URI'] ? ' class="active"' : '').'>'.
                                     '<a href="'.$link.'">'.$nav.'</a></li>';
                                 }
-    
                             ?>
-                            
-                            
                         </ul>
                 </div>
             </div>

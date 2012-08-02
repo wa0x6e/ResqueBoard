@@ -31,10 +31,21 @@
        
     });
     
-    $app->get('/logs', function () use ($app) {
+    $app->get('/logs', function () use ($app, $logLevels, $logTypes) {
+        
+        $mutedLevels = $app->getCookie('RescueBoard.mutedLevel');
+        if (empty($mutedLevels)) {
+            $app->setCookie('RescueBoard.mutedLevel', '', '1 year');
+        }
+        
+        $mutedLevels = array_filter(explode(',', $mutedLevels));
+        
         $app->render('logs.php', array(
+                'logLevels' => $logLevels,
+                'logTypes' => $logTypes,
+                'mutedLevels' => $mutedLevels,
                 'pageTitle' => 'Logs' . TITLE_SEP . APPLICATION_NAME
-                ));
+            ));
     });
     
     $app->get('/working', function () use ($app, $settings) {

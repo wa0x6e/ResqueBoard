@@ -475,7 +475,7 @@ function loadLogs()
 		$("#log-area").append("<li class='filter-event'><b>"+ ($(this).is(":checked") ? "Start" : "Stop") +
 			"</b> listening to <em>" + rel + "</em> events</li>");
 
-		var mutedLevels = $.cookie('RescueBoard.mutedLevel');
+		var mutedLevels = $.cookie('ResqueBoard.mutedLevel');
 		mutedLevels = mutedLevels.split(",");
 
 		if ($(this).is(":checked")) {
@@ -486,7 +486,7 @@ function loadLogs()
 		} else {
 			mutedLevels[mutedLevels.length] = rel;
 		}
-		$.cookie('RescueBoard.mutedLevel', mutedLevels.join(","));
+		$.cookie('ResqueBoard.mutedLevel', mutedLevels.join(","));
 
 	});
 

@@ -21,7 +21,7 @@
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
-                    <a class="brand" href="/"><?php echo APPLICATION_NAME ?></a>
+                    <a class="brand" href="/"><img src="/img/resqueboard_24.png" alt="<?php echo APPLICATION_NAME ?>" /> <?php echo APPLICATION_NAME ?></a>
                         <ul class="nav">
                             <?php
                                 $navs = array(

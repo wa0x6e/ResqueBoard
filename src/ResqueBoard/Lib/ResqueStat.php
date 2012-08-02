@@ -9,6 +9,8 @@ class ResqueStat
     protected $queues = array();
     
     private $settings;
+    private $redis;
+    private $mongo;
     
     public function __construct($settings = array())
     {
@@ -21,19 +23,7 @@ class ResqueStat
         $this->settings = array_merge($this->settings, $settings);
         $this->settings['resquePrefix'] = $this->settings['resquePrefix'] .':';
         
-        try {
-            $mongo = new \Mongo($this->settings['mongo']['host'] . ':' . $this->settings['mongo']['port']);
-            $cube = $mongo->selectDB($this->settings['mongo']['database']);
-        } catch (\MongoConnectionException $e) {
-            throw new DatabaseConnectionException('Could not connect to Mongo Server');
-        }
-        
-        try {
-            $redis = new \Redis();
-            $redis->connect($this->settings['redis']['host'], $this->settings['redis']['port']);
-        } catch (\RedisException $e) {
-            throw new DatabaseConnectionException('Could not connect to Redis Server');
-        }
+        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
 
         $thisQueues =& $this->queues;
         $this->workers = array_map(function($name) use (&$thisQueues){
@@ -47,9 +37,9 @@ class ResqueStat
                 }
             });
             return array('fullname' => $name, 'host' => $host, 'process' => $process, 'queues' => $q);
-        }, $redis->smembers($this->settings['resquePrefix'] . 'workers'));
+        }, $this->getRedis()->smembers($this->settings['resquePrefix'] . 'workers'));
         
-        $redisPipeline = $redis->multi(\Redis::PIPELINE);
+        $redisPipeline = $this->getRedis()->multi(\Redis::PIPELINE);
         foreach ($this->workers as $worker) {
             $redisPipeline
             ->get($this->settings['resquePrefix'] . 'worker:' . $worker['fullname'] . ':started')
@@ -76,12 +66,42 @@ class ResqueStat
                 array('processed', 'failed'),
                 array_map(
                         function($s){return (int) $s; },
-                        $redis->multi(\Redis::PIPELINE)
+                        $this->getRedis()->multi(\Redis::PIPELINE)
                             ->get($this->settings['resquePrefix'] . 'stat:processed')
                             ->get($this->settings['resquePrefix'] . 'stat:failed')
                             ->exec()
                         )
                 );
+    }
+    
+    
+    private function getMongo()
+    {
+        if ($this->mongo !== null) {
+            return $this->mongo;
+        }
+        
+        try {
+            $this->mongo = new \Mongo($this->settings['mongo']['host'] . ':' . $this->settings['mongo']['port']);
+            return $this->mongo;
+        } catch (\MongoConnectionException $e) {
+            throw new DatabaseConnectionException('Could not connect to Mongo Server');
+        }
+    }
+    
+    private function getRedis()
+    {
+        if ($this->redis !== null) {
+            return $this->redis;
+        }
+        
+        try {
+            $this->redis = new \Redis();
+            $this->redis->connect($this->settings['redis']['host'], $this->settings['redis']['port']);
+            return $this->redis;
+        } catch (\RedisException $e) {
+            throw new DatabaseConnectionException('Could not connect to Redis Server');
+        }
     }
     
     public function getStats()
@@ -97,6 +117,37 @@ class ResqueStat
     public function getQueues()
     {
         return $this->queues;
+    }
+    
+    
+    /**
+     * Return a list of jobs that was processed between
+     * a $start and an $end date
+     */
+    public function getJobs($start, $end)
+    {
+        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $jobsCollection = $cube->selectCollection('got_events');
+        
+        $jobsCursor = $jobsCollection->find(array('t' => array('$gte' => new \MongoDate($start), '$lt' => new \MongoDate($end))));
+        $jobsCursor->sort(array('d.worker' => 1));
+        
+        $jobs = array();
+        foreach ($jobsCursor as $doc) {
+            $jobs[] = array(
+                        'time' => date('c', $doc['t']->sec),
+                        'queue' => $doc['d']['args']['queue'],
+                        'worker' => $doc['d']['worker'],
+                        'level' => $doc['d']['level'],
+                        'class' => $doc['d']['args']['payload']['class'],
+                        'args' => var_export($doc['d']['args']['payload']['args'][0], true),
+                        'job_id' => $doc['d']['args']['payload']['id']
+                 
+                    );
+        }
+        
+        return $jobs;
+       
     }
 }
 

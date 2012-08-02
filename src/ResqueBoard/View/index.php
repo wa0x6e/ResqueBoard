@@ -1,10 +1,31 @@
 <div class="container" id="main">
-			<script type="text/javascript" src="js/app.js"></script>
+			
+			<script id="jobs-tpl" type="text/x-jsrender">
+				         <li class="accordion-group">
+					        <div class="accordion-heading" data-toggle="collapse" data-target="#{{>job_id}}">
+                                <div class="accordion-toggle">
+                                    
+                                    <span class="label label-info pull-right">{{>worker}}</span>
+                                    <h4>#{{>job_id}}</h4>
+                                    <small>Waiting for <code>{{>class}}</code> in <span class="label label-success">{{>queue}}</span></small>
+                                </div>
+                            </div>
+                            <div class="collapse accordion-body" id="{{>job_id}}">
+                           <div class="accordion-inner">
+                            <pre class="">{{>args}}</pre></div></div>
+				        </li>
+			            </script>
+			            
 			<script type="text/javascript">
 				$(document).ready(function() {
 					listenToWorkersJob();
+					jobsActivities();
 				});
 			</script>
+			
+			
+			            
+			            
 			<div class="row">
 				<div class="span12">
 					<div class="page-header">
@@ -17,7 +38,18 @@
 						<div id="lastest-jobs"></div>
 					</div>
 					
-					
+					<div id="job-details-modal" class="modal hide">
+					    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                        <h3>Jobs <span class="badge badge-info"></span></h3>
+                        </div>
+                        
+                         
+                           
+                        <ul class="modal-body unstyled">
+                        </ul>
+					</div>
+	
 					<div class="span4">
 						
 						

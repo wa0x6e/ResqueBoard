@@ -10,25 +10,27 @@ var limit = 25;
 var duration = 1500;
 var step = {second : 10, code : "1e4"};
 
-d3.json('http://'+serverIp+':1081/1.0/metric/get'+
-	'?expression=sum(got)'+
-	'&start=2012-07-07T16:00:00Z'+
-	'&stop=' + formatISO(stop)+
-	'&limit=' + limit + 
-	'&step=' + step.code, function(data){
+function jobsActivities()
+{
+	d3.json('http://'+serverIp+':1081/1.0/metric/get'+
+		'?expression=sum(got)'+
+		'&start=2012-07-07T16:00:00Z'+
+		'&stop=' + formatISO(stop)+
+		'&limit=' + limit + 
+		'&step=' + step.code, function(data){
 
 
-		var 
-		margin = {top:25, right:35, bottom: 35, left: 20},
-		width = 620 - margin.right - margin.left,
-		height = 180 - margin.top - margin.bottom,
-		barHeight = height,
-		barWidth = width/limit - 2,
-		barGutter = 0,
-		barLabelHeight = 20
-		;
+			var 
+			margin = {top:25, right:35, bottom: 35, left: 20},
+			width = 620 - margin.right - margin.left,
+			height = 180 - margin.top - margin.bottom,
+			barHeight = height,
+			barWidth = width/limit - 2,
+			barGutter = 0,
+			barLabelHeight = 20
+			;
 
-		/*
+			/*
 			Find the next time after the last entry
 			because the last entry doesn't have a x axis
 			*/
@@ -97,9 +99,10 @@ d3.json('http://'+serverIp+':1081/1.0/metric/get'+
 			.attr("width", barWidth)
 			.attr("height", function(d) { return height - y(d.value);  })
 			.attr("title", function(d){return d.value;})
-			.attr("rel", "tooltip")
+			.attr("data-target", "#job-details-modal")
 			.on("click", function(d){
-				alert(d.time);
+				
+				displayJobsModal(d.time);
 			})
 			;
 
@@ -111,9 +114,7 @@ d3.json('http://'+serverIp+':1081/1.0/metric/get'+
 			.attr("dx", -barWidth/2 - barGutter)
 			.attr("dy", "1.5em")
 			.text(function(d){return d.value;})
-			.on("click", function(d){
-				alert(height-y(d.value));
-			});
+			;
 
 			var xAxis = d3.svg.axis()
 			.scale(x)
@@ -260,12 +261,46 @@ d3.json('http://'+serverIp+':1081/1.0/metric/get'+
 		};
 	});
 
+}
+
 $(document).ready(function() {
 	$(".chart-pie").each(function(i){
 		var data = [{name : "successfull", count : $(this).data("success"), color: "#aec7e8"}, {name : "failed", count : $(this).data("failed"), color : "#e7969c"}];
 		pieChart(this, data);
 	});
+
+	$('[rel=tooltip]').tooltip();
 });
+
+
+
+function displayJobsModal(startTime)
+{
+	startTimeStamp = (Date.parse(startTime))/1000;
+
+	$.ajax({
+		url : "/api/jobs/" + startTimeStamp + "/" + (startTimeStamp + step.second),
+		success : function(message){
+			
+			var modalTimestamp = $("#job-details-modal").data("timestamp");
+			if (modalTimestamp != startTimeStamp)
+			{
+
+				$("#job-details-modal .modal-body").html(
+					$("#jobs-tpl").render(message)
+				);
+				$("#job-details-modal .modal-header .badge").html(message.length);
+			}
+
+			
+
+
+			$("#job-details-modal").modal('show');
+		}
+	});
+
+	
+}
 
 
 function pieChart(parent, data) {

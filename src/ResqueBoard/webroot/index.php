@@ -62,6 +62,19 @@
         }
     });
     
+    $app->get('/api/jobs/:start/:end', function ($start, $end) use ($app, $settings) {
+        try {
+            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $jobs = $resqueStat->getJobs($start, $end);
+            $app->response()->header("Content-Type", "application/json");
+            echo json_encode($jobs);
+        } catch (\Exception $e) {
+            $app->error($e);
+        }
+        
+        
+    });
+    
     
     $app->error(function (\Exception $e) use ($app) {
         $app->render('error.php', array(

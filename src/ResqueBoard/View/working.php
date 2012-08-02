@@ -1,5 +1,3 @@
-<script type="text/javascript" src="js/app.js"></script>
-
 <div class="container" id="main">
 	<div class="page-header">
 		<h2>Working</h2>

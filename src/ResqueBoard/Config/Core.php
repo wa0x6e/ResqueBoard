@@ -2,7 +2,7 @@
 
     include(dirname(dirname(ROOT)) . DS . 'vendor' . DS . 'autoload.php');
     
-    define('APPLICATION_NAME', 'RescueBoard');
+    define('APPLICATION_NAME', 'ResqueBoard');
     define('TITLE_SEP', ' | ');
     
     $settings = array(
@@ -20,7 +20,7 @@
     
     $config = array(
                 'debug' => false,
-                'view' => 'Fresque\View\MyView',
+                'view' => 'ResqueBoard\View\MyView',
                 'templates.path' => ROOT . DS .'View'
             );
     

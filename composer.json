@@ -17,6 +17,6 @@
         "slim/slim" : ">=1.6.4"
     },
     "autoload": {
-        "psr-0": {"Fresque": "src/"}
+        "psr-0": {"ResqueBoard": "src/"}
     }
 }

@@ -45,7 +45,6 @@ function listenToJobsActivities()
 		'&limit=' + limit + 
 		'&step=' + step.code, function(data){
 
-
 			var 
 				margin = {top:25, right:35, bottom: 35, left: 20},
 				width = 620 - margin.right - margin.left,
@@ -678,5 +677,7 @@ function listenToWorkersJob() {
 }
 
 
-
+$(document).ready(function() {
+	$('[rel=tooltip]').tooltip();
+});
 

@@ -109,22 +109,36 @@
 					    $workerId = str_replace('.', '', $worker['host']) . $worker['process'];
 				    ?>
 					<div class="span4">
-						<div class="well">
-						<h3># <?php echo $worker['process']; ?></h3>
-						<dl class="dl-horizontal workers-menu">
-							<dt>Host</dt>
-							<dd><?php echo $worker['host']?></dd>
-							<dt>Uptime</dt>
-							<dd><?php echo ResqueBoard\Lib\DateHelper::ago($worker['start'])?></dd>
-							<dt>Started on</dt>
-							<dd><?php echo date_format($worker['start'], "r")?></dd>
-							<dt>Process Jobs</dt>
-							<dd id="s_<?php echo $workerId; ?>"><?php echo $worker['processed']?></dd>
-							<dt>Failed Jobs</dt>
-							<dd id="f_<?php echo $workerId; ?>"><?php echo $worker['failed']?></dd>
-							<dt>Queues</dt>
-							<dd><?php echo implode(', ', $worker['queues'])?></dd>
-						</dl>
+						<div class="worker-list">
+						<h3><?php echo $worker['host']?>:<?php echo $worker['process']; ?></h3>
+						
+						<div class="worker-list-inner">
+						<strong><i class="icon-time"></i> Uptime : </strong>
+						<time datime="<?php echo date_format($worker['start'], "r")?>" rel="tooltip" title="Started on <?php echo date_format($worker['start'], "r")?>">
+						<?php echo ResqueBoard\Lib\DateHelper::ago($worker['start'])?></time>
+						<br />
+						<strong><i class="icon-list-alt"></i> Queues : </strong><?php array_walk($worker['queues'], function($q){echo '<span class="queue-name">'.$q.'</span> ';})?>
+						
+						<div class="worker-stats clearfix">
+    						<div class="chart-pie span1" data-success="<?php
+    						    echo $stats['active']['processed'] - $stats['active']['failed']?>"
+    						data-failed="<?php echo $stats['active']['failed']?>"></div>
+    						
+    						
+    							    <div class="span1 stat-count">
+            							Processed
+            							<b id="s_<?php echo $workerId; ?>" class="success"><?php echo $worker['processed']?></b>
+        							</div>
+        							<div class="span1 stat-count">
+            							Failed
+            							<b id="f_<?php echo $workerId; ?>" class="warning"><?php echo $worker['failed']?></b>
+        							</div>
+    							</li>
+    						
+    					</div>
+						
+						
+						</div>
 						</div>
 					</div>
 					<?php  if ($i%2==0 || $i == count($workers)) {

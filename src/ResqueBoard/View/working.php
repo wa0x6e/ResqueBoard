@@ -19,20 +19,31 @@ $(document).ready(function() {
 				<thead>
 					<tr>
 						<th class="worker-name">Worker</th>
-						<th>Success</th>
+						<th>Processed</th>
 						<th>Failed</th>
 						<th>Activities</th>
 					</tr>
 				</thead>
 				<tbody>
 				<?php
+				
+				    $totalJobs = 0;
+				    array_walk($workers, function($q) use (&$totalJobs) {$totalJobs += $q['processed'];});
+			
 					foreach ($workers as $worker) {
 
+					    $barWidth = $totalJobs != 0 ? (($worker['processed']/$totalJobs) * 100)  : 0;
+					    
 						$workerId = str_replace('.', '', $worker['host']) . $worker['process'];
 						echo '<tr>';
-						echo '<td>' . $worker['host'] . ':' . $worker['process'] . '</td>';
-						echo '<td class="stats-number" id="s_'.$workerId.'">'.$worker['processed'] .'</td>';
-						echo '<td class="stats-number" id="f_'.$workerId.'">'.$worker['failed'] . '</td>';
+						echo '<td><h4>' . $worker['host'] . ':' . $worker['process']. '</h4>';
+						echo '<small class="queues-list"><strong><i class="icon-list-alt"></i> Queues : </strong>';
+						array_walk($worker['queues'], function($q){echo '<span class="queue-name">'.$q.'</span> ';});
+						echo '</small></td>';
+						echo '<td class="stats-number" rel="processed" id="s_'.$workerId.'">' .
+						'<span class="chart-bar" style="width:'.$barWidth.'%;"></span>'.
+						'<b>'.$worker['processed'] . '</b></td>';
+						echo '<td class="stats-number" rel="failed" id="f_'.$workerId.'">'.$worker['failed'] . '</td>';
 						echo '<td id="'.$workerId.'"></td>';
 						echo '</tr>';
 					}

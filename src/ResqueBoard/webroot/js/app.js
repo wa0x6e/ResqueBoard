@@ -181,7 +181,9 @@ function listenToJobsActivities()
 				.attr("width", barWidth)
 				.attr("clip-path", "url(#clip)")
 				.attr("height", function(d) { return height - y(d.value); })
-				.on("click", function(d){ alert(d.time); })
+				.on("click", function(d){
+					displayJobsModal(d.time);
+				})
 				.transition()
 				.duration(duration)
 				.attr("x", function(d) { return x(d.time) + barWidth + 2; })
@@ -599,6 +601,36 @@ function loadLogs()
  */
 function listenToWorkersJob() {
 
+	var totalJobs = 0;
+	var jobsChartInit = 0;
+	var jobsStats = {};
+
+	var initJobsChart = function() {
+		if ($("#working-area").length != 0)
+		{
+			$("#working-area .stats-number[rel=processed]").each(function(data){
+				var jobsNumber = parseInt($(this).find("b").html());
+				jobsStats[$(this).attr("id")] = {number: jobsNumber, chart: $(this).find("span")};
+				totalJobs += jobsNumber;
+			});
+			jobsChartInit = 1;
+		}
+		else jobsChartInit = 2;
+	}
+
+	var updateJobsChart = function(workerId) {
+		if (jobsChartInit === 2) return;
+
+		jobsStats[workerId]['number']++;
+		totalJobs++;
+
+		for (workerId in jobsStats) {
+			jobsStats[workerId]['chart'].animate({
+				width: Math.floor((jobsStats[workerId]['number'] / totalJobs) * 100) + '%'
+			}, duration);
+		};
+	}
+
 	var eventProcessor = function(){
 
 		var getWorkerId = function(message) {
@@ -619,13 +651,14 @@ function listenToWorkersJob() {
 					$("#f_activeWorkersJobCount").html(parseInt($("#f_activeWorkersJobCount").html())+1).effect("highlight");
 				}
 				else {
-					counter = $("#s_" + cleanWorkerId);
+					counter = $("#s_" + cleanWorkerId + " b");
 				}
 				
 				$("#totalJobCount").html(parseInt($("#totalJobCount").html())+1).effect("highlight");
 				$("#activeWorkersJobCount").html(parseInt($("#activeWorkersJobCount").html())+1).effect("highlight");
 
 				counter.html(parseInt(counter.html()) + 1).effect("highlight");
+				updateJobsChart("s_" + cleanWorkerId);
 			}
 		};
 
@@ -641,9 +674,13 @@ function listenToWorkersJob() {
 		done  : {expression: "done", format: function(data){return "job #" + data.job_id;}}
 	};
 
+
+
 	for(e in events) {
 		init(e);
 	}
+
+	initJobsChart();
 
 	function init(e) {
 		var socket = new WebSocket("ws://"+serverIp+":1081/1.0/event/get");

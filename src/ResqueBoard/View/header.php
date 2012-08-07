@@ -13,7 +13,7 @@
         <script type="text/javascript" src="js/app.js"></script>
         <link href="/css/bootstrap.css" rel="stylesheet" type="text/css">
         <link href="/css/main.css" rel="stylesheet" type="text/css">
-        <link href="/img/rescueboard.png" rel="shortcut icon">
+        <link href="/img/resqueboard.png" rel="shortcut icon">
         
     </head>
     <body>

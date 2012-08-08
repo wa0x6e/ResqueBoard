@@ -316,11 +316,14 @@ function displayJobsModal(startTime)
 					);
 					$("#job-details-modal").data('timestamp', startTimeStamp);
 					$("#job-details-modal .modal-header .badge").html(message.length);
+
+					$("#job-details-modal").modal('show');
 				}
 			
 		});
 	}
-	$("#job-details-modal").modal('show');
+	else
+		$("#job-details-modal").modal('show'); // Repeat because ajax is asynchronous
 }
 
 

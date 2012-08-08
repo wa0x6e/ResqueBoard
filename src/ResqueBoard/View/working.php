@@ -1,11 +1,11 @@
 <script type="text/javascript">
 $(document).ready(function() {
-    listenToWorkersJob();
+    listenToWorkersJob("horizontal-bar");
 });
 </script>
 <div class="container" id="main">
 	<div class="page-header">
-		<h2>Working</h2>
+		<h2>Workers</h2>
 	</div>
 	<div class="row">
 		<div class="span12">
@@ -35,16 +35,16 @@ $(document).ready(function() {
 					    $barWidth = $totalJobs != 0 ? (($worker['processed']/$totalJobs) * 100)  : 0;
 					    
 						$workerId = str_replace('.', '', $worker['host']) . $worker['process'];
-						echo '<tr>';
+						echo '<tr class="worker-stats" id="'.$workerId.'">';
 						echo '<td><h4>' . $worker['host'] . ':' . $worker['process']. '</h4>';
 						echo '<small class="queues-list"><strong><i class="icon-list-alt"></i> Queues : </strong>';
 						array_walk($worker['queues'], function($q){echo '<span class="queue-name">'.$q.'</span> ';});
 						echo '</small></td>';
-						echo '<td class="stats-number" rel="processed" id="s_'.$workerId.'">' .
-						'<span class="chart-bar" style="width:'.$barWidth.'%;"></span>'.
-						'<b>'.$worker['processed'] . '</b></td>';
-						echo '<td class="stats-number" rel="failed" id="f_'.$workerId.'">'.$worker['failed'] . '</td>';
-						echo '<td id="'.$workerId.'"></td>';
+						echo '<td class="stats-number">' .
+						'<span class="chart-bar" rel="chart" data-chart-type="horizontal-bar" style="width:'.$barWidth.'%;"></span>'.
+						'<b rel="processed">'.$worker['processed'] . '</b></td>';
+						echo '<td class="stats-number"><b rel="failed">'.$worker['failed'] . '</b></td>';
+						echo '<td></td>';
 						echo '</tr>';
 					}
 				?>

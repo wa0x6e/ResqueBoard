@@ -18,9 +18,8 @@
 			            
 			<script type="text/javascript">
 				$(document).ready(function() {
-					listenToWorkersJob();
+					listenToWorkersJob("pie");
 					listenToJobsActivities();
-					initPieChart();
 				});
 			</script>
 			
@@ -30,66 +29,68 @@
 			<div class="row">
 				<div class="span12">
 					<div class="page-header">
-					<h2>Jobs</h2>
+						<h2>Jobs</h2>
 					</div>
 					
 					<div class="row">
-					<div class="span8">
-						<h3>Lastest 4 minutes activities</h3>
-						<div id="lastest-jobs"></div>
-					</div>
+						<div class="span8">
+							<h3>Lastest 4 minutes activities</h3>
+							<div id="lastest-jobs"></div>
+						</div>
 					
-					<div id="job-details-modal" class="modal hide">
-					    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">×</button>
-                        <h3>Jobs <span class="badge badge-info"></span></h3>
-                        </div>
-                        
-                         
-                           
-                        <ul class="modal-body unstyled">
-                        </ul>
-					</div>
+						<div id="job-details-modal" class="modal hide">
+						    <div class="modal-header">
+	                        <button type="button" class="close" data-dismiss="modal">×</button>
+	                        <h3>Jobs <span class="badge badge-info"></span></h3>
+	                        </div>
+	                        
+	                         
+	                           
+	                        <ul class="modal-body unstyled">
+	                        </ul>
+						</div>
 	
-					<div class="span4">
-						
-						
-						<h4 class="sep">Total Stats</h4>
-						
-						<div class="row">
-						<div class="chart-pie span1" data-success="<?php echo $stats['total']['processed'] - $stats['total']['failed']?>"
-						data-failed="<?php echo $stats['total']['failed']?>"></div>
-						<div class="span3">
-						<dl class="dl-horizontal">
-							<dt>Processed jobs</dt>
-							<dd id="totalJobCount"><?php echo $stats['total']['processed']?></dd>
-							<dt>Failed jobs</dt>
-							<dd id="f_totalJobCount"><?php echo $stats['total']['failed']?></dd>
-						</dl>
+						<div class="span4">
+							
+							<div class="worker-list">
+								
+								<div class="worker-list-inner">
+								<h3 class="sub">Total Stats</h3>
+									<div class="worker-stats clearfix" id="global-worker-stats">
+	    							<div class="chart-pie span1" rel="chart" data-chart-type="pie" data-processed="<?php
+	    						    echo $stats['total']['processed'] - $stats['total']['failed'] ?>"
+			    						data-failed="<?php echo $stats['total']['failed']?>"></div>
+	    							    <div class="span1 stat-count">
+	            							<b rel="processed"><?php echo $stats['total']['processed']?></b>
+	            							Processed
+	        							</div>
+	        							<div class="span1 stat-count">
+	            							<b class="warning" rel="failed"><?php echo $stats['total']['failed']?></b>
+	            							Failed
+	        							</div>
+								</div>
+							
+								<h3 class="sub">Active workers stats</h3>
+								
+									<div class="worker-stats clearfix" id="active-worker-stats">
+	    							<div class="chart-pie span1" rel="chart" data-chart-type="pie" data-processed="<?php
+	    						    echo $stats['active']['processed'] - $stats['active']['failed'] ?>"
+			    						data-failed="<?php echo $stats['active']['failed']?>"></div>
+	    							    <div class="span1 stat-count">
+	            							<b rel="processed"><?php echo $stats['active']['processed']?></b>
+	            							Processed
+	        							</div>
+	        							<div class="span1 stat-count">
+	            							<b class="warning" rel="failed"><?php echo $stats['active']['failed']?></b>
+	            							Failed
+	        							</div>
+			    							
+			    					</div>
+								</div>
+							</div>
 						</div>
-					</div>
-						
-						<h4 class="sep">Active workers stats</h4>
-						<div class="row">
-						<div class="chart-pie span1" data-success="<?php
-						    echo $stats['active']['processed'] - $stats['active']['failed']?>"
-						data-failed="<?php echo $stats['active']['failed']?>"></div>
-						<div class="span3">
-							<dl class="dl-horizontal">
-								<dt>Processed jobs</dt>
-								<dd id="activeWorkersJobCount"><?php echo $stats['active']['processed']?></dd>
-								<dt>Failed jobs</dt>
-								<dd id="f_activeWorkersJobCount"><?php echo $stats['active']['failed']?></dd>
-							</dl>
-						</div>
-						</div>
-					</div>
-					
 					</div>
 				</div>
-				
-				
-				
 			</div>
 			<div class="row">
 				<div class="span8">
@@ -119,19 +120,19 @@
 						<br />
 						<strong><i class="icon-list-alt"></i> Queues : </strong><?php array_walk($worker['queues'], function($q){echo '<span class="queue-name">'.$q.'</span> ';})?>
 						
-						<div class="worker-stats clearfix">
-    						<div class="chart-pie span1" data-success="<?php
+						<div class="worker-stats clearfix" id="<?php echo $workerId?>">
+    						<div class="chart-pie span1" rel="chart" data-chart-type="pie" data-processed="<?php
     						    echo $stats['active']['processed'] - $stats['active']['failed']?>"
     						data-failed="<?php echo $stats['active']['failed']?>"></div>
     						
     						
     							    <div class="span1 stat-count">
+            							<b rel="processed"><?php echo $worker['processed']?></b>
             							Processed
-            							<b id="s_<?php echo $workerId; ?>" class="success"><?php echo $worker['processed']?></b>
         							</div>
         							<div class="span1 stat-count">
+            							<b class="warning" rel="failed"><?php echo $worker['failed']?></b>
             							Failed
-            							<b id="f_<?php echo $workerId; ?>" class="warning"><?php echo $worker['failed']?></b>
         							</div>
     							</li>
     						

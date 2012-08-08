@@ -33,4 +33,4 @@
             'alert' => 'label-inverse'
     );
     
-    $logTypes = array('start', 'got', 'process', 'fork', 'done', 'sleep', 'prune', 'stop');
+    $logTypes = array('start', 'got', 'process', 'fork', 'done', 'fail', 'sleep', 'prune', 'stop');

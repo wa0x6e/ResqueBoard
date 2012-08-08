@@ -324,61 +324,6 @@ function displayJobsModal(startTime)
 }
 
 
-/**
- * Convert all convertibles datas to pie chart
- * @return void
- */
-function initPieChart()
-{
-	$(".chart-pie").each(function(i){
-		var data = [{name : "successfull", count : $(this).data("success"), color: "#aec7e8"}, {name : "failed", count : $(this).data("failed"), color : "#e7969c"}];
-		pieChart(this, data);
-	});
-
-	function pieChart(parent, data) 
-	{
-		var donut = d3.layout.pie().value(function(d){
-			return d.count;
-		});
-
-		// Define the margin, radius, and color scale. The color scale will be
-		// assigned by index, but if you define your data using objects, you could pass
-		// in a named field from the data object instead, such as `d.name`. Colors
-		// are assigned lazily, so if you want deterministic behavior, define a domain
-		// for the color scale.
-		var m = 10,
-		r = ($(parent).width()-m*2)/2 ,
-		z = d3.scale.category20c();
-
-		// Insert an svg:svg element (with margin) for each row in our dataset. A
-		// child svg:g element translates the origin to the pie center.
-		var svg = d3.select(parent)
-
-		.append("svg:svg")
-
-		.attr("width", (r + m) * 2)
-		.attr("height", (r + m) * 2)
-		.append("svg:g")
-		.attr("transform", "translate(" + (r + m) + "," + (r + m) + ")");
-
-		// The data for each svg:svg element is a row of numbers (an array). We pass
-		// that to d3.layout.pie to compute the angles for each arc. These start and end
-		// angles are passed to d3.svg.arc to draw arcs! Note that the arc radius is
-		// specified on the arc, not the layout.
-		svg.selectAll("path")
-		.data(donut(data))
-		.enter().append("svg:path")
-		.attr("d", d3.svg.arc()
-			.innerRadius(r / 2)
-			.outerRadius(r))
-		.style("fill", function(d) { return d.data.color; })
-		.attr("title", function(d){return d.data.count + " " +  d.data.name + " jobs"})
-		;
-	}
-}
-
-
-
 
 /**
  * Display new events in realtime
@@ -437,7 +382,8 @@ function loadLogs()
 		got     : {expression: "got", format: function(data){return "job #" + data.args.payload.id;}},
 		process : {expression: "process", format: function(data){return "job #" + data.job_id;}},
 		fork    : {expression: "fork", format: function(data){return "job #" + data.job_id;}},
-		done    : {expression: "done", format: function(data){return "job #" + data.job_id;}}
+		done    : {expression: "done", format: function(data){return "job #" + data.job_id;}},
+		fail    : {expression: "fail", format: function(data){return "job #" + data.job_id;}}
 	}
 
 	for(e in events)
@@ -592,6 +538,128 @@ function loadLogs()
 
 }
 
+var Job = function()
+{
+	var totalJobs = 0;
+	var jobsChartInit = 0;
+	var jobsStats = {};
+
+	return {
+		initJobsChart : function(chartType) {
+			if ($(".worker-stats").length != 0)
+			{
+				var getStaticStats = function(id)
+					{
+						if ($("#" + id).length == 0)
+							return false;
+
+						var $this = $("#" + id);
+						var processedJobsCountDOM = $this.find('[rel=processed]');
+						var failedJobsCountDOM = $this.find('[rel=failed]');
+						return {
+							processedJobsCountDOM : processedJobsCountDOM,
+							failedJobsCountDOM : failedJobsCountDOM,
+							processedJobsCount : parseInt(processedJobsCountDOM.html()),
+							failedJobsCount : parseInt(failedJobsCountDOM.html()),
+							chart: $this.find("[rel=chart]")
+						}
+					};
+
+				$(".worker-stats").each(function(data){
+					var $this = $(this);
+					var processedJobsCountDOM = $this.find('[rel=processed]');
+					var failedJobsCountDOM = $this.find('[rel=failed]');
+					var processedJobsCount = parseInt(processedJobsCountDOM.html());
+					var chartDOM = $this.find("[rel=chart]");
+
+					jobsStats[$this.attr("id")] = {
+						processedJobsCountDOM: processedJobsCountDOM, 
+						processedJobsCount: processedJobsCount, 
+						failedJobsCountDOM: failedJobsCountDOM, 
+						failedJobsCount : parseInt(failedJobsCountDOM.html()),
+						chart : chartDOM,
+						chartType : chartDOM.data("chart-type") 
+					};
+
+					totalJobs += processedJobsCount;
+				});
+
+				jobsStats['global-worker-stats'] = getStaticStats('global-worker-stats');
+				jobsStats['active-worker-stats'] = getStaticStats('active-worker-stats');
+
+				jobsChartInit = 1;
+
+				if (chartType == "pie")
+					jobPieChart.init(jobsStats);
+			}
+			else jobsChartInit = 2;
+		},
+
+		updateJobsChart : function(workerId, level) { 
+			if (jobsChartInit === 2) return;
+
+			jobsStats[workerId]['processedJobsCount']++;
+			totalJobs++;
+
+			if (level == 400)
+				jobsStats[workerId]['failedJobsCount']++;
+
+			
+
+			
+			// Refresh Counter
+			if (level == 400)
+			{
+				jobsStats[workerId]['failedJobsCountDOM'].html(jobsStats[workerId]['failedJobsCount']).effect("highlight");
+			} 
+
+			jobsStats[workerId]['processedJobsCountDOM'].html(jobsStats[workerId]['processedJobsCount']).effect("highlight");
+			if (jobsStats['active-worker-stats'] != false)
+			{
+				jobsStats['active-worker-stats']['processedJobsCount']++;
+				jobsStats['active-worker-stats']['processedJobsCountDOM'].html(jobsStats['active-worker-stats']['processedJobsCount']).effect("highlight");
+			
+				if (level == 400)
+				{
+					jobsStats['active-worker-stats']['failedJobsCount']++;
+					jobsStats['active-worker-stats']['failedJobsCountDOM'].html(jobsStats['active-worker-stats']['failedJobsCount']).effect("highlight");
+				}
+
+			}
+			if (jobsStats['global-worker-stats'] != false)
+			{
+				jobsStats['global-worker-stats']['processedJobsCount']++;
+				jobsStats['global-worker-stats']['processedJobsCountDOM'].html(jobsStats['global-worker-stats']['processedJobsCount']).effect("highlight");
+			
+				if (level == 400)
+				{
+					jobsStats['global-worker-stats']['failedJobsCount']++;
+					jobsStats['global-worker-stats']['failedJobsCountDOM'].html(jobsStats['global-worker-stats']['failedJobsCount']).effect("highlight");				}
+			}
+
+			// Refresh Chart
+			switch (jobsStats[workerId]['chartType'])
+			{
+				case "pie" : 
+					jobPieChart.redraw(jobsStats[workerId], true);
+					jobPieChart.redraw(jobsStats['active-worker-stats'], false);
+					jobPieChart.redraw(jobsStats['global-worker-stats'], false);
+					break;
+				case "horizontal-bar" : 
+					for (_workerId in jobsStats) {
+						if (jobsStats[_workerId] != false)
+						{
+							jobsStats[_workerId]['chart'].animate({
+								width: Math.floor((jobsStats[_workerId]['processedJobsCount'] / totalJobs) * 100) + '%'
+							}, 500);
+						}
+					};
+			}
+			
+		}
+	}	
+}();
+
 
 /**
  * Listen to workers activities in realtime
@@ -599,88 +667,50 @@ function loadLogs()
  * 
  * @return void
  */
-function listenToWorkersJob() {
-
-	var totalJobs = 0;
-	var jobsChartInit = 0;
-	var jobsStats = {};
-
-	var initJobsChart = function() {
-		if ($("#working-area").length != 0)
-		{
-			$("#working-area .stats-number[rel=processed]").each(function(data){
-				var jobsNumber = parseInt($(this).find("b").html());
-				jobsStats[$(this).attr("id")] = {number: jobsNumber, chart: $(this).find("span")};
-				totalJobs += jobsNumber;
-			});
-			jobsChartInit = 1;
-		}
-		else jobsChartInit = 2;
-	}
-
-	var updateJobsChart = function(workerId) {
-		if (jobsChartInit === 2) return;
-
-		jobsStats[workerId]['number']++;
-		totalJobs++;
-
-		for (workerId in jobsStats) {
-			jobsStats[workerId]['chart'].animate({
-				width: Math.floor((jobsStats[workerId]['number'] / totalJobs) * 100) + '%'
-			}, duration);
-		};
-	}
+function listenToWorkersJob(chartType) {
 
 	var eventProcessor = function(){
-
 		var getWorkerId = function(message) {
 			return message.data.worker;
 		}
 
 		return {
-
 			processDone : function(message){
-				
-				// Update DOM
-				var counter = '';
-				var cleanWorkerId = getWorkerId(message).replace(new RegExp("(\\.|:)","gm"), '');
-		
-				if (message.data.level == 400) {
-					counter = $("#f_" + cleanWorkerId);
-					$("#f_totalJobCount").html(parseInt($("#f_totalJobCount").html())+1).effect("highlight");
-					$("#f_activeWorkersJobCount").html(parseInt($("#f_activeWorkersJobCount").html())+1).effect("highlight");
-				}
-				else {
-					counter = $("#s_" + cleanWorkerId + " b");
-				}
-				
-				$("#totalJobCount").html(parseInt($("#totalJobCount").html())+1).effect("highlight");
-				$("#activeWorkersJobCount").html(parseInt($("#activeWorkersJobCount").html())+1).effect("highlight");
-
-				counter.html(parseInt(counter.html()) + 1).effect("highlight");
-				updateJobsChart("s_" + cleanWorkerId);
+				Job.updateJobsChart(
+					getWorkerId(message).replace(new RegExp("(\\.|:)","gm"), ''), 
+					message.data.level
+				);
+			},
+			processGot : function(message){
+				Job.updateJobsChart(
+					getWorkerId(message).replace(new RegExp("(\\.|:)","gm"), ''), 
+					message.data.level
+				);
+			},
+			processFail : function(message){
+				Job.updateJobsChart(
+					getWorkerId(message).replace(new RegExp("(\\.|:)","gm"), ''), 
+					message.data.level
+				);
 			}
 		};
-
 	}();
 
 
 	// Start Listening to events 
 	// *************************
-
 	var events = {
-		got   : {expression: "got", format: function(data){return "job #" + data.job_id;}},
-		fork  : {expression: "fork", format: function(data){return "job #" + data.job_id;}},
-		done  : {expression: "done", format: function(data){return "job #" + data.job_id;}}
+		//got   : {expression: "got", format: function(data){return "job #" + data.job_id;}},
+		//fork  : {expression: "fork", format: function(data){return "job #" + data.job_id;}},
+		done  : {expression: "done", format: function(data){return "job #" + data.job_id;}},
+		fail  : {expression: "fail", format: function(data){return "job #" + data.job_id;}}
 	};
-
-
 
 	for(e in events) {
 		init(e);
 	}
 
-	initJobsChart();
+	Job.initJobsChart(chartType);
 
 	function init(e) {
 		var socket = new WebSocket("ws://"+serverIp+":1081/1.0/event/get");
@@ -701,17 +731,107 @@ function listenToWorkersJob() {
 
 	function process(type, data) {
 		switch(type) {
-			case 'got' :
-				//eventProcessor.processGot(data);
-				break;
-			case 'fork' :
-				//eventProcessor.processFork(data);
-				break;
 			case 'done' :
 				eventProcessor.processDone(data);
+				break;
+			case 'fail' :
+				eventProcessor.processFail(data);
+				break;
+			//case 'done' :
+			//	eventProcessor.processDone(data);
 		}
 	}
 }
+
+
+var jobPieChart = function()
+{
+	var initData = function(d){
+
+		var successCount = d['processedJobsCount'] - d['failedJobsCount'];
+
+		var datas = [{
+				name : "success", 
+				count : (successCount == 0 && d['failedJobsCount'] == 0) ? 1 : successCount,
+				color: "#aec7e8"
+			}, {
+				name : "failed", 
+				count : d['failedJobsCount'],
+				color : "#e7969c"
+			}];
+		return datas;
+	}
+
+	var m = 10;
+	var z = d3.scale.category20c();
+
+	var donut = d3.layout.pie().value(function(d){
+					return d.count;
+				});
+
+	return {
+		init : function(jobStats)
+		{	
+			for(domain in jobStats)
+			{
+				var data = initData(jobStats[domain]);
+
+				var parent = jobStats[domain]['chart'];		
+
+				// Define the margin, radius, and color scale. The color scale will be
+				// assigned by index, but if you define your data using objects, you could pass
+				// in a named field from the data object instead, such as `d.name`. Colors
+				// are assigned lazily, so if you want deterministic behavior, define a domain
+				// for the color scale.
+				
+				var r = (parent.width()-m*2)/2;
+				
+
+				// Insert an svg:svg element (with margin) for each row in our dataset. A
+				// child svg:g element translates the origin to the pie center.
+				var svg = d3.select(parent[0])
+				.append("svg:svg")
+				.attr("width", (r + m) * 2)
+				.attr("height", (r + m) * 2)
+				.append("svg:g")
+				.attr("transform", "translate(" + (r + m) + "," + (r + m) + ")");
+
+				// The data for each svg:svg element is a row of numbers (an array). We pass
+				// that to d3.layout.pie to compute the angles for each arc. These start and end
+				// angles are passed to d3.svg.arc to draw arcs! Note that the arc radius is
+				// specified on the arc, not the layout.
+				svg.selectAll("path")
+				.data(donut(data))
+				.enter().append("svg:path")
+				.attr("d", d3.svg.arc()
+					.innerRadius(r / 2)
+					.outerRadius(r))
+				.attr("fill", function(d) { return d.data.color; })
+				.attr("title", function(d){return d.data.count + " " +  d.data.name + " jobs"})
+				
+				;
+			}
+		},
+		redraw : function(stat)
+		{
+			var data = initData(stat[domain]);
+
+			var parent = stat['chart'];	
+			var r = (parent.width()-m*2)/2;
+
+			d3.select(parent[0]).select("svg").selectAll("path")
+			.data(donut(data))
+			.transition()
+			.duration(duration)
+			.attr("d", d3.svg.arc()
+					.innerRadius(r / 2)
+					.outerRadius(r))
+			;
+		}
+	};
+}();
+
+
 
 
 $(document).ready(function() {

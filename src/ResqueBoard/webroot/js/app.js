@@ -347,13 +347,20 @@ function loadLogs()
 
 	var incrCounter = function(cat, type, step) {
 			var node = counters[cat][type];
-			node.html(parseInt(node.html()) + step).effect("highlight");
+			node.html(parseInt(node.html()) + step);
+			if (node.queue("fx") == 0)
+				node.effect("highlight");
 	};
 
 	var decrCounter = function(cat, type, step) {
 			var node = counters[cat][type];
 			var count = parseInt(node.html());
-			if (count - step >= 0) node.html(count - step).effect("highlight");
+			if (count - step >= 0) 
+			{
+				node.html(count - step);
+				if (node.queue("fx") == 0)
+					node.effect("highlight");
+			}
 	};
 
 	// Update counters, by passing a list of nodes to be removed
@@ -607,37 +614,53 @@ var Job = function()
 			if (level == 400)
 				jobsStats[workerId]['failedJobsCount']++;
 
-			
+			var updateCounter = function(workerId, success)
+			{
+				var index = "processedJobsCount";
+				if (!success)
+				{
+					index = "failedJobsCount";
+				}
+				
+				jobsStats[workerId][index + "DOM"].html(jobsStats[workerId][index]);
+
+				if (jobsStats[workerId][index + "DOM"].queue("fx") == 0)
+						jobsStats[workerId][index + "DOM"].effect("highlight");
+				
+					
+			}
 
 			
 			// Refresh Counter
 			if (level == 400)
 			{
-				jobsStats[workerId]['failedJobsCountDOM'].html(jobsStats[workerId]['failedJobsCount']).effect("highlight");
+				updateCounter(workerId, false);
 			} 
 
-			jobsStats[workerId]['processedJobsCountDOM'].html(jobsStats[workerId]['processedJobsCount']).effect("highlight");
+			updateCounter(workerId, true);
+
 			if (jobsStats['active-worker-stats'] != false)
 			{
 				jobsStats['active-worker-stats']['processedJobsCount']++;
-				jobsStats['active-worker-stats']['processedJobsCountDOM'].html(jobsStats['active-worker-stats']['processedJobsCount']).effect("highlight");
-			
+				updateCounter('active-worker-stats', true);
+				
 				if (level == 400)
 				{
 					jobsStats['active-worker-stats']['failedJobsCount']++;
-					jobsStats['active-worker-stats']['failedJobsCountDOM'].html(jobsStats['active-worker-stats']['failedJobsCount']).effect("highlight");
+					updateCounter('active-worker-stats', false);
 				}
 
 			}
 			if (jobsStats['global-worker-stats'] != false)
 			{
 				jobsStats['global-worker-stats']['processedJobsCount']++;
-				jobsStats['global-worker-stats']['processedJobsCountDOM'].html(jobsStats['global-worker-stats']['processedJobsCount']).effect("highlight");
+				updateCounter('global-worker-stats', true);
 			
 				if (level == 400)
 				{
 					jobsStats['global-worker-stats']['failedJobsCount']++;
-					jobsStats['global-worker-stats']['failedJobsCountDOM'].html(jobsStats['global-worker-stats']['failedJobsCount']).effect("highlight");				}
+					updateCounter('global-worker-stats', false);	
+				}
 			}
 
 			// Refresh Chart

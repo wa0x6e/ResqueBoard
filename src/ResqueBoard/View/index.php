@@ -121,7 +121,7 @@
 							
 							$minDiff = $diff->i + $diff->h*60 + $diff->d*24*60 + $diff->m*30*24*60 + $diff->y*365*30*24*60 ;
 					
-							echo round($worker['processed'] / $minDiff, 2);
+							echo $minDiff == 0 ? 0 : round($worker['processed'] / $minDiff, 2);
 							
 						?></b> jobs/min</small>
 						

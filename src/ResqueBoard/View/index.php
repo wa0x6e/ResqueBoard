@@ -114,6 +114,17 @@
 						<h3><?php echo $worker['host']?>:<?php echo $worker['process']; ?></h3>
 						
 						<div class="worker-list-inner">
+						
+						<small class="pull-right"><b><?php
+							$start = $worker['start'];
+							$diff = $start->diff(new DateTime());
+							
+							$minDiff = $diff->i + $diff->h*60 + $diff->d*24*60 + $diff->m*30*24*60 + $diff->y*365*30*24*60 ;
+					
+							echo round($worker['processed'] / $minDiff, 2);
+							
+						?></b> jobs/min</small>
+						
 						<strong><i class="icon-time"></i> Uptime : </strong>
 						<time datime="<?php echo date_format($worker['start'], "r")?>" rel="tooltip" title="Started on <?php echo date_format($worker['start'], "r")?>">
 						<?php echo ResqueBoard\Lib\DateHelper::ago($worker['start'])?></time>

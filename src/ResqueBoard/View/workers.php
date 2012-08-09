@@ -5,14 +5,11 @@ $(document).ready(function() {
 </script>
 <div class="container" id="main">
 	<div class="page-header">
-		<h2>Workers</h2>
+		<h2>Workers <small class="subtitle">Active Workers activities</small></h2>
 	</div>
 	<div class="row">
 		<div class="span12">
-			<div class="alert alert-block alert-info">
-				<h4 class="alert-heading">Description</h4>
-				Displays jobs the workers are currently working on
-			</div>
+			
 
 			<div id="working-area">
 				<table class="table table-bordered">

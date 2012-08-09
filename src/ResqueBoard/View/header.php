@@ -5,12 +5,12 @@
         <title><?php echo $pageTitle ?></title>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="js/jquery.jsrender.js"></script>
-        <script type="text/javascript" src="js/moment.js"></script>
-        <script type="text/javascript" src="js/jquery.cookie.js"></script>
-        <script type="text/javascript" src="js/d3.v2.min.js"></script>
-        <script type="text/javascript" src="js/bootstrap-2.0.4.min.js"></script>
-        <script type="text/javascript" src="js/app.js"></script>
+        <script type="text/javascript" src="/js/jquery.jsrender.js"></script>
+        <script type="text/javascript" src="/js/moment.js"></script>
+        <script type="text/javascript" src="/js/jquery.cookie.js"></script>
+        <script type="text/javascript" src="/js/d3.v2.min.js"></script>
+        <script type="text/javascript" src="/js/bootstrap-2.0.4.min.js"></script>
+        <script type="text/javascript" src="/js/app.js"></script>
         <link href="/css/bootstrap.css" rel="stylesheet" type="text/css">
         <link href="/css/main.css" rel="stylesheet" type="text/css">
         <link href="/img/resqueboard.png" rel="shortcut icon">
@@ -27,7 +27,8 @@
                                 $navs = array(
                                         '/' => 'Home',
                                         '/logs' => 'Logs',
-                                        '/working' => 'Working'
+                                        '/workers' => 'Workers',
+                                		'/jobs' => 'Jobs'
                                         );
     
                                 foreach ($navs as $link => $nav) {

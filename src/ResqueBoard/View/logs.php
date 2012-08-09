@@ -17,7 +17,7 @@
 		    <script id="log-template" type="text/x-jsrender">
 				<li data-verbosity="{{>levelName}}" data-type="{{>action}}" data-worker="{{>workerClass}}">
 					<div class="label-c"><span class="label {{>levelClass}}">{{>levelName}}</span></div>
-					<a href="/working#{{>workerClass}}"><em class="worker" style="color:{{>color}}">{{>worker}}</em></a>
+					<a href="/workers#{{>workerClass}}"><em class="worker" style="color:{{>color}}">{{>worker}}</em></a>
 					<b class="type">{{>action}}</b> {{>detail}} <date rel="tooltip" title="{{>time}}">{{>relativeTime}}</date>
 				</li>
 			</script>

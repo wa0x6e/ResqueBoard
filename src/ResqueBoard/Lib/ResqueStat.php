@@ -8,6 +8,11 @@ class ResqueStat
     protected $workers = array();
     protected $queues = array();
     
+    const JOB_STATUS_WAITING = 1;
+    const JOB_STATUS_RUNNING = 2;
+    const JOB_STATUS_FAILED = 3;
+    const JOB_STATUS_COMPLETE = 4;
+    
     private $settings;
     private $redis;
     private $mongo;
@@ -124,7 +129,7 @@ class ResqueStat
      * Return a list of jobs that was processed between
      * a $start and an $end date
      */
-    public function getJobs($start, $end)
+    public function getJobs($start, $end, $withStatus = false)
     {
         $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
         $jobsCollection = $cube->selectCollection('got_events');
@@ -132,23 +137,124 @@ class ResqueStat
         $jobsCursor = $jobsCollection->find(array('t' => array('$gte' => new \MongoDate($start), '$lt' => new \MongoDate($end))));
         $jobsCursor->sort(array('d.worker' => 1));
         
-        $jobs = array();
-        foreach ($jobsCursor as $doc) {
-            $jobs[] = array(
-                        'time' => date('c', $doc['t']->sec),
-                        'queue' => $doc['d']['args']['queue'],
-                        'worker' => $doc['d']['worker'],
-                        'level' => $doc['d']['level'],
-                        'class' => $doc['d']['args']['payload']['class'],
-                        'args' => var_export($doc['d']['args']['payload']['args'][0], true),
-                        'job_id' => $doc['d']['args']['payload']['id']
-                 
-                    );
-        }
+        $result = $this->formatJobs($jobsCursor);
         
-        return $jobs;
-       
+        if ($withStatus)
+        	$result =  $this->setJobStatus($result);
+        
+        return $result;
     }
+    
+    
+    /**
+     * Return a single job
+     */
+    public function getJob($id)
+    {
+    	$cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+    	$jobsCollection = $cube->selectCollection('got_events');
+    	
+    	$jobsCursor = $jobsCollection->find(array('d.args.payload.id' => $id));
+    	
+    	$result = $this->setJobStatus($this->formatJobs($jobsCursor));
+    	
+    	return $result === null ? array() : $result;
+    }
+    
+    
+    public function getJobsByWorker($workerId, $page, $limit)
+    {
+    	$cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+    	$jobsCollection = $cube->selectCollection('got_events');
+    	
+    	$jobsCursor = $jobsCollection->find(array('d.worker' => $workerId));
+    	$jobsCursor->sort(array('t' => -1))->limit($limit);
+    	
+    	$result = $this->setJobStatus($this->formatJobs($jobsCursor));
+
+    	
+    	return $result;
+    }
+    
+    
+    private function formatJobs($cursor)
+    {
+    	$jobs = array();
+    	foreach ($cursor as $doc) {
+    		$jobs[$doc['d']['args']['payload']['id']] = array(
+    						'time' => date('c', $doc['t']->sec),
+    						'queue' => $doc['d']['args']['queue'],
+    						'worker' => $doc['d']['worker'],
+    						'level' => $doc['d']['level'],
+    						'class' => $doc['d']['args']['payload']['class'],
+    						'args' => var_export($doc['d']['args']['payload']['args'][0], true),
+    						'job_id' => $doc['d']['args']['payload']['id']
+    						 
+    		);
+    	}
+    	
+    	return $jobs;
+    }
+    
+    
+    
+    private function setJobStatus($jobs)
+    {
+    	$jobIds = array_keys($jobs);
+    	
+    	$cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+    	
+    	 
+    	$jobsCursor = $cube->selectCollection('done_events')->find(array('d.job_id' => array('$in' => $jobIds)));
+    	foreach ($jobsCursor as $successJob)
+    	{
+    		$jobs[$successJob['d']['job_id']]['status'] = self::JOB_STATUS_COMPLETE;
+    		unset($jobIds[array_search($successJob['d']['job_id'], $jobIds)]);
+    	}
+    	
+		if (!empty($jobIds))
+		{
+			$redisPipeline = $this->getRedis()->multi(\Redis::PIPELINE);
+				
+	    	$jobsCursor = $cube->selectCollection('fail_events')->find(array('d.job_id' => array('$in' => $jobIds)));
+	    	foreach ($jobsCursor as $failedJob)
+	    	{
+	    		$jobs[$failedJob['d']['job_id']]['status'] = self::JOB_STATUS_FAILED;
+	    		$jobs[$failedJob['d']['job_id']]['log'] = $failedJob['d']['log'];
+	    		$redisPipeline->get($this->settings['resquePrefix'] . 'failed:' . $failedJob['d']['job_id']);
+	    		unset($jobIds[array_search($failedJob['d']['job_id'], $jobIds)]);
+	    	}
+	    	
+	    	$failedTrace = array_filter($redisPipeline->exec());
+	    	
+	    	foreach($failedTrace as $trace)
+	    	{
+	    		$trace = function_exists('igbinary_unserialize') ? igbinary_unserialize($trace) : unserialize($trace);
+	    		$jobs[$trace['payload']['id']]['trace'] = var_export($trace, true);
+	    	}
+	    	
+		}
+		
+		if (!empty($jobIds))
+		{
+			$jobsCursor = $cube->selectCollection('process_events')->find(array('d.job_id' => array('$in' => $jobIds)));
+			foreach ($jobsCursor as $processJob)
+			{
+				$jobs[$processJob['d']['job_id']]['status'] = self::JOB_STATUS_RUNNING;
+				unset($jobIds[array_search($processJob['d']['job_id'], $jobIds)]);
+			}
+		}
+		if (!empty($jobIds))
+		{
+			foreach($jobIds as $id)
+			{
+				$jobs[$id]['status'] = self::JOB_STATUS_WAITING;
+			}
+		}
+	
+    	return array_values($jobs);
+    }
+    
 }
 
 class DatabaseConnectionException extends \Exception {}

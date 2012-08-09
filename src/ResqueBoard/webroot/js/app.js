@@ -305,19 +305,19 @@ function displayJobsModal(startTime)
 {
 	startTimeStamp = (Date.parse(startTime))/1000;
 
-	var modalTimestamp = $("#job-details-modal").data("timestamp");
+	var modalTimestamp = $("#job-details").data("timestamp");
 	if (modalTimestamp != startTimeStamp)
 	{
 		$.ajax({
 			url : "/api/jobs/" + startTimeStamp + "/" + (startTimeStamp + step.second),
 			success : function(message){
-					$("#job-details-modal .modal-body").html(
+					$("#job-details .modal-body").html(
 						$("#jobs-tpl").render(message)
 					);
-					$("#job-details-modal").data('timestamp', startTimeStamp);
-					$("#job-details-modal .modal-header .badge").html(message.length);
+					$("#job-details").data('timestamp', startTimeStamp);
+					$("#job-details .modal-header .badge").html(message.length);
 
-					$("#job-details-modal").modal('show');
+					$("#job-details").modal('show');
 				}
 			
 		});
@@ -666,7 +666,7 @@ var Job = function()
 			// Refresh Chart
 			switch (jobsStats[workerId]['chartType'])
 			{
-				case "pie" : 
+				case "pie" :
 					jobPieChart.redraw(jobsStats[workerId], true);
 					jobPieChart.redraw(jobsStats['active-worker-stats'], false);
 					jobPieChart.redraw(jobsStats['global-worker-stats'], false);
@@ -795,6 +795,8 @@ var jobPieChart = function()
 					return d.count;
 				});
 
+
+
 	return {
 		init : function(jobStats)
 		{	
@@ -811,7 +813,7 @@ var jobPieChart = function()
 				// for the color scale.
 				
 				var r = (parent.width()-m*2)/2;
-				
+				var arc = d3.svg.arc().innerRadius(r / 2).outerRadius(r);
 
 				// Insert an svg:svg element (with margin) for each row in our dataset. A
 				// child svg:g element translates the origin to the pie center.
@@ -829,30 +831,35 @@ var jobPieChart = function()
 				svg.selectAll("path")
 				.data(donut(data))
 				.enter().append("svg:path")
-				.attr("d", d3.svg.arc()
-					.innerRadius(r / 2)
-					.outerRadius(r))
+				.attr("d", arc)
 				.attr("fill", function(d) { return d.data.color; })
 				.attr("title", function(d){return d.data.count + " " +  d.data.name + " jobs"})
-				
+				.each(function(d) { this._current = d; })
 				;
 			}
 		},
 		redraw : function(stat)
 		{
-			var data = initData(stat[domain]);
+			var data = initData(stat);
 
 			var parent = stat['chart'];	
 			var r = (parent.width()-m*2)/2;
+			var arc = d3.svg.arc().innerRadius(r / 2).outerRadius(r);
 
 			d3.select(parent[0]).select("svg").selectAll("path")
 			.data(donut(data))
 			.transition()
 			.duration(duration)
-			.attr("d", d3.svg.arc()
-					.innerRadius(r / 2)
-					.outerRadius(r))
+			.attrTween("d", arcTween)
 			;
+
+			function arcTween(a) {
+			  var i = d3.interpolate(this._current, a);
+			  this._current = i(0);
+			  return function(t) {
+			    return arc(i(t));
+			  };
+			}
 		}
 	};
 }();

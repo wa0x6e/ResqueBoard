@@ -38,14 +38,11 @@
 							<div id="lastest-jobs"></div>
 						</div>
 					
-						<div id="job-details-modal" class="modal hide">
+						<div id="job-details" class="modal hide">
 						    <div class="modal-header">
-	                        <button type="button" class="close" data-dismiss="modal">×</button>
-	                        <h3>Jobs <span class="badge badge-info"></span></h3>
+		                        <button type="button" class="close" data-dismiss="modal">×</button>
+		                        <h3>Jobs <span class="badge badge-info"></span></h3>
 	                        </div>
-	                        
-	                         
-	                           
 	                        <ul class="modal-body unstyled">
 	                        </ul>
 						</div>
@@ -55,7 +52,7 @@
 							<div class="worker-list">
 								
 								<div class="worker-list-inner">
-								<h3 class="sub">Total Stats</h3>
+								<h3 class="sub">Total job stats</h3>
 									<div class="worker-stats clearfix" id="global-worker-stats">
 	    							<div class="chart-pie span1" rel="chart" data-chart-type="pie" data-processed="<?php
 	    						    echo $stats['total']['processed'] - $stats['total']['failed'] ?>"
@@ -70,7 +67,7 @@
 	        							</div>
 								</div>
 							
-								<h3 class="sub">Active workers stats</h3>
+								<h3 class="sub">Active workers job stats</h3>
 								
 									<div class="worker-stats clearfix" id="active-worker-stats">
 	    							<div class="chart-pie span1" rel="chart" data-chart-type="pie" data-processed="<?php

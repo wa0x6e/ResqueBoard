@@ -48,11 +48,11 @@
             ));
     });
     
-    $app->get('/working', function () use ($app, $settings) {
+    $app->get('/workers', function () use ($app, $settings) {
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
             
-            $app->render('working.php', array(
+            $app->render('workers.php', array(
                 'workers' => $resqueStat->getWorkers(),
                 'pageTitle' => 'Active workers' . TITLE_SEP . APPLICATION_NAME
             ));
@@ -62,10 +62,59 @@
         }
     });
     
+    $app->map('/jobs', function () use ($app, $settings) {
+    	try {
+    		$resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+    
+    		$jobs = array();
+    		$searchToken = null;
+    		
+    		if ($app->request()->isPost())
+    		{
+    			if ($app->request()->post('job_id') != null)
+    			{
+    				$jobId = $searchToken = ltrim($app->request()->post('job_id'), '#');
+    				$jobs = $resqueStat->getJob($jobId);
+    			}
+    			
+    		}
+    		$jobs = $resqueStat->getJob('211d76cc08e7b5f6d623fb2319803519');
+    		$app->render('jobs.php', array(
+    			'jobs' => $jobs,
+    			'searchToken' => $searchToken,
+    			'workers' => $resqueStat->getWorkers(),
+    			'pageTitle' => 'Jobs' . TITLE_SEP . APPLICATION_NAME
+    		));
+    
+    	} catch (\Exception $e) {
+    		$app->error($e);
+    	}
+    })->via('GET', 'POST');
+    
+    $app->get('/jobs/:workerHost/:workerProcess', function ($workerHost, $workerProcess) use ($app, $settings) {
+    	try {
+    		$resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+    
+    		$page = 1;
+    		$limit = 15;
+    		$workerId = $workerHost . ':' . $workerProcess;
+    		
+    		$app->render('jobs.php', array(
+    						'jobs' => $resqueStat->getJobsByWorker($workerId, $page, $limit),
+    						'searchToken' => $workerId,
+    						'workers' => $resqueStat->getWorkers(),
+    						'pageTitle' => 'Jobs' . TITLE_SEP . APPLICATION_NAME
+    		));
+    
+    	} catch (\Exception $e) {
+    		$app->error($e);
+    	}
+    });
+    
     $app->get('/api/jobs/:start/:end', function ($start, $end) use ($app, $settings) {
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
-            $jobs = $resqueStat->getJobs($start, $end);
+            $jobs = array_values($resqueStat->getJobs($start, $end, false));
             $app->response()->header("Content-Type", "application/json");
             echo json_encode($jobs);
         } catch (\Exception $e) {

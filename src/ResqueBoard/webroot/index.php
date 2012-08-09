@@ -44,7 +44,7 @@
                 'logLevels' => $logLevels,
                 'logTypes' => $logTypes,
                 'mutedLevels' => $mutedLevels,
-                'pageTitle' => 'Logs' . TITLE_SEP . APPLICATION_NAME
+                'pageTitle' => 'Logs'
             ));
     });
     
@@ -54,7 +54,7 @@
             
             $app->render('workers.php', array(
                 'workers' => $resqueStat->getWorkers(),
-                'pageTitle' => 'Active workers' . TITLE_SEP . APPLICATION_NAME
+                'pageTitle' => 'Active workers'
             ));
             
         } catch (\Exception $e) {
@@ -69,6 +69,8 @@
     		$jobs = array();
     		$searchToken = null;
     		
+    		$limit = 15;
+    		
     		if ($app->request()->isPost())
     		{
     			if ($app->request()->post('job_id') != null)
@@ -78,12 +80,12 @@
     			}
     			
     		}
-    		$jobs = $resqueStat->getJob('211d76cc08e7b5f6d623fb2319803519');
+    		$jobs = $resqueStat->getJobsByWorker(null, 1, $limit);
     		$app->render('jobs.php', array(
     			'jobs' => $jobs,
     			'searchToken' => $searchToken,
     			'workers' => $resqueStat->getWorkers(),
-    			'pageTitle' => 'Jobs' . TITLE_SEP . APPLICATION_NAME
+    			'pageTitle' => 'Last '.$limit.' Jobs'
     		));
     
     	} catch (\Exception $e) {
@@ -91,19 +93,26 @@
     	}
     })->via('GET', 'POST');
     
-    $app->get('/jobs/:workerHost/:workerProcess', function ($workerHost, $workerProcess) use ($app, $settings) {
+    $app->get('/jobs/:workerHost/:workerProcess(/:limit(/:page))', function ($workerHost, $workerProcess, $limit = 15, $page = 1) use ($app, $settings) {
     	try {
     		$resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
     
-    		$page = 1;
-    		$limit = 15;
     		$workerId = $workerHost . ':' . $workerProcess;
+    		
+    		$pagination = new stdClass();
+    		$pagination->current = $page;
+    		$pagination->limit = $limit;
+    		$pagination->baseUrl = '/jobs/' . $workerHost . '/' . $workerProcess . '/';
+    		$pagination->totalResult = $resqueStat->getJobsByWorkersCount($workerId);
+    		$pagination->totalPage = ceil($pagination->totalResult / $limit);
+    		
     		
     		$app->render('jobs.php', array(
     						'jobs' => $resqueStat->getJobsByWorker($workerId, $page, $limit),
     						'searchToken' => $workerId,
     						'workers' => $resqueStat->getWorkers(),
-    						'pageTitle' => 'Jobs' . TITLE_SEP . APPLICATION_NAME
+    						'pageTitle' => 'Jobs',
+    						'pagination' => $pagination
     		));
     
     	} catch (\Exception $e) {
@@ -127,7 +136,7 @@
     
     $app->error(function (\Exception $e) use ($app) {
         $app->render('error.php', array(
-                'pageTitle' => 'Error' . TITLE_SEP . APPLICATION_NAME,
+                'pageTitle' => 'Error',
                 'message' => $e->getMessage()
             ));
     });

@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <title><?php echo $pageTitle ?></title>
+        <title><?php echo $pageTitle . TITLE_SEP . APPLICATION_NAME?></title>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js"></script>
         <script type="text/javascript" src="/js/jquery.jsrender.js"></script>

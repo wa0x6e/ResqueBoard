@@ -20,6 +20,11 @@
 		if ($searchToken !== null)
 		{
 			echo '<h2>Results for <mark>' . $searchToken . '</mark></h2>';
+			echo 'Page ' . $pagination->current .' of ' . $pagination->totalPage . ', found ' . $pagination->totalResult . ' jobs';
+		}
+		else
+		{
+			echo '<h2>'.$pageTitle. '</h2>';
 		}
 		
 		if (!empty($jobs))
@@ -61,6 +66,44 @@
 				<?php
 			}
 			echo '</ul>';
+			
+			if (isset($pagination))
+			{
+				?>
+				        <ul class="pager">
+					    <li class="previous<?php if ($pagination->current == 1) echo ' disabled'?>">
+					    	<a href="<?php
+					    		if ($pagination->current > 1)
+					    		{
+					    			echo $pagination->baseUrl . $pagination->limit . '/' . ($pagination->current - 1);
+					    		}
+					    		else
+					    		{
+					    			echo '#';
+					    		}
+					    	?>">&larr; Older</a>
+					    </li>
+					    <li>
+					    	Page <?php echo $pagination->current?> of <?php echo $pagination->totalPage ?>, found <?php echo $pagination->totalResult?> jobs
+					    </li>
+					    <li class="next<?php if ($pagination->current == $pagination->totalPage) echo ' disabled'?>">
+					    	<a href="<?php
+					    		if ($pagination->current < $pagination->totalPage)
+					    		{
+					    			echo $pagination->baseUrl . $pagination->limit . '/' . ($pagination->current + 1);
+					    		}
+					    		else
+					    		{
+					    			echo '#';
+					    		}
+					    	?>">Newer &rarr;</a>
+					    </li>
+					    </ul>
+					
+				<?php
+			}
+			
+			
 		}
 		elseif ($searchToken !== null)
 		{

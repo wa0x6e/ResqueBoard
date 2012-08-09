@@ -167,13 +167,29 @@ class ResqueStat
     	$cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
     	$jobsCollection = $cube->selectCollection('got_events');
     	
-    	$jobsCursor = $jobsCollection->find(array('d.worker' => $workerId));
-    	$jobsCursor->sort(array('t' => -1))->limit($limit);
+    	$conditions = $workerId === null ? array() : array('d.worker' => $workerId);
+    	
+    	$jobsCursor = $jobsCollection->find($conditions);
+    	$jobsCursor->sort(array('t' => -1))->skip(($page-1) * $limit)->limit($limit);
     	
     	$result = $this->setJobStatus($this->formatJobs($jobsCursor));
 
     	
     	return $result;
+    }
+    
+    
+    /**
+     * Return the number of jobs for a specific worker
+     *
+     * @return int number of jobs
+     */
+    public function getJobsByWorkersCount($workerId)
+    {
+    	$conditions = array('d.worker' => $workerId);
+    	
+    	$cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+    	return $cube->selectCollection('got_events')->find($conditions, array())->count();
     }
     
     

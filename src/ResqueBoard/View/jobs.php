@@ -20,7 +20,6 @@
 		if ($searchToken !== null)
 		{
 			echo '<h2>Results for <mark>' . $searchToken . '</mark></h2>';
-			echo 'Page ' . $pagination->current .' of ' . $pagination->totalPage . ', found ' . $pagination->totalResult . ' jobs';
 		}
 		else
 		{
@@ -29,6 +28,12 @@
 		
 		if (!empty($jobs))
 		{
+			
+			?>
+			<p class="clearfix breadcrumb">
+			<?php if (isset($pagination)) echo 'Page ' . $pagination->current .' of ' . $pagination->totalPage . ', found ' . $pagination->totalResult . ' jobs'; ?>
+			<span class="pull-right"><a href="#" rel="expand-all">Expand all</a> | <a href="#" rel="collapse-all">Collapse all</a></span></p>
+			<?php
 			echo '<ul class="unstyled" id="job-details">';
 
 			foreach($jobs as $job)

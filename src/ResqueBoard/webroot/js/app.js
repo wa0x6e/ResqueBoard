@@ -869,5 +869,7 @@ var jobPieChart = function()
 
 $(document).ready(function() {
 	$('[rel=tooltip]').tooltip();
+	$('[rel=collapse-all]').on('click', function(e){ e.preventDefault(); $('.collapse').collapse('hide'); });
+	$('[rel=expand-all]').on('click', function(e){ e.preventDefault(); $('.collapse').collapse('show'); })
 });
 

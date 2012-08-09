@@ -32,7 +32,7 @@
                                         );
     
                                 foreach ($navs as $link => $nav) {
-                                    echo '<li'. ($link == $_SERVER['REQUEST_URI'] ? ' class="active"' : '').'>'.
+                                    echo '<li'. ((strpos($_SERVER['REQUEST_URI'], $link) !== false && $link != '/' || $_SERVER['REQUEST_URI'] == '/' && $link == '/') ? ' class="active"' : '').'>'.
                                     '<a href="'.$link.'">'.$nav.'</a></li>';
                                 }
                             ?>

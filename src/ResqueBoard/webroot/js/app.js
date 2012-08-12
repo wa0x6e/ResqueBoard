@@ -347,14 +347,14 @@ function loadLogs()
 
 	var incrCounter = function(cat, type, step) {
 			var node = counters[cat][type];
-			node.html(parseInt(node.html()) + step);
+			node.html(parseInteger(node.html()) + step);
 			if (node.queue("fx") == 0)
 				node.effect("highlight");
 	};
 
 	var decrCounter = function(cat, type, step) {
 			var node = counters[cat][type];
-			var count = parseInt(node.html());
+			var count = parseInteger(node.html());
 			if (count - step >= 0) 
 			{
 				node.html(count - step);
@@ -569,8 +569,8 @@ var Job = function()
 						return {
 							processedJobsCountDOM : processedJobsCountDOM,
 							failedJobsCountDOM : failedJobsCountDOM,
-							processedJobsCount : parseInt(processedJobsCountDOM.html()),
-							failedJobsCount : parseInt(failedJobsCountDOM.html()),
+							processedJobsCount : parseInteger(processedJobsCountDOM.html()),
+							failedJobsCount : parseInteger(failedJobsCountDOM.html()),
 							chart: $this.find("[rel=chart]")
 						}
 					};
@@ -579,14 +579,14 @@ var Job = function()
 					var $this = $(this);
 					var processedJobsCountDOM = $this.find('[rel=processed]');
 					var failedJobsCountDOM = $this.find('[rel=failed]');
-					var processedJobsCount = parseInt(processedJobsCountDOM.html());
+					var processedJobsCount = parseInteger(processedJobsCountDOM.html());
 					var chartDOM = $this.find("[rel=chart]");
 
 					jobsStats[$this.attr("id")] = {
 						processedJobsCountDOM: processedJobsCountDOM, 
 						processedJobsCount: processedJobsCount, 
 						failedJobsCountDOM: failedJobsCountDOM, 
-						failedJobsCount : parseInt(failedJobsCountDOM.html()),
+						failedJobsCount : parseInteger(failedJobsCountDOM.html()),
 						chart : chartDOM,
 						chartType : chartDOM.data("chart-type") 
 					};
@@ -622,7 +622,7 @@ var Job = function()
 					index = "failedJobsCount";
 				}
 				
-				jobsStats[workerId][index + "DOM"].html(jobsStats[workerId][index]);
+				jobsStats[workerId][index + "DOM"].html(number_format(jobsStats[workerId][index]));
 
 				if (jobsStats[workerId][index + "DOM"].queue("fx") == 0)
 						jobsStats[workerId][index + "DOM"].effect("highlight");
@@ -873,3 +873,13 @@ $(document).ready(function() {
 	$('[rel=expand-all]').on('click', function(e){ e.preventDefault(); $('.collapse').not('.in').collapse('show'); })
 });
 
+function parseInteger(str)
+{
+	return +str.replace(',', '');
+}
+
+function number_format(x)
+{
+	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+}

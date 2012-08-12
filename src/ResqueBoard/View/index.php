@@ -58,11 +58,11 @@
 	    						    echo $stats['total']['processed'] - $stats['total']['failed'] ?>"
 			    						data-failed="<?php echo $stats['total']['failed']?>"></div>
 	    							    <div class="span1 stat-count">
-	            							<b rel="processed"><?php echo $stats['total']['processed']?></b>
+	            							<b rel="processed"><?php echo number_format($stats['total']['processed']) ?></b>
 	            							Processed
 	        							</div>
 	        							<div class="span1 stat-count">
-	            							<b class="warning" rel="failed"><?php echo $stats['total']['failed']?></b>
+	            							<b class="warning" rel="failed"><?php echo number_format($stats['total']['failed'])?></b>
 	            							Failed
 	        							</div>
 								</div>
@@ -74,11 +74,11 @@
 	    						    echo $stats['active']['processed'] - $stats['active']['failed'] ?>"
 			    						data-failed="<?php echo $stats['active']['failed']?>"></div>
 	    							    <div class="span1 stat-count">
-	            							<b rel="processed"><?php echo $stats['active']['processed']?></b>
+	            							<b rel="processed"><?php echo number_format($stats['active']['processed'])?></b>
 	            							Processed
 	        							</div>
 	        							<div class="span1 stat-count">
-	            							<b class="warning" rel="failed"><?php echo $stats['active']['failed']?></b>
+	            							<b class="warning" rel="failed"><?php echo number_format($stats['active']['failed'])?></b>
 	            							Failed
 	        							</div>
 			    							
@@ -135,11 +135,11 @@
     						
     						
     							    <div class="span1 stat-count">
-            							<b rel="processed"><?php echo $worker['processed']?></b>
+            							<b rel="processed"><?php echo number_format($worker['processed'])?></b>
             							Processed
         							</div>
         							<div class="span1 stat-count">
-            							<b class="warning" rel="failed"><?php echo $worker['failed']?></b>
+            							<b class="warning" rel="failed"><?php echo number_format($worker['failed'])?></b>
             							Failed
         							</div>
     							</li>

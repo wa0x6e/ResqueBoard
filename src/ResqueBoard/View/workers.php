@@ -39,8 +39,8 @@ $(document).ready(function() {
 						echo '</small></td>';
 						echo '<td class="stats-number">' .
 						'<span class="chart-bar" rel="chart" data-chart-type="horizontal-bar" style="width:'.$barWidth.'%;"></span>'.
-						'<b rel="processed">'.$worker['processed'] . '</b></td>';
-						echo '<td class="stats-number"><b rel="failed">'.$worker['failed'] . '</b></td>';
+						'<b rel="processed">'.number_format($worker['processed']) . '</b></td>';
+						echo '<td class="stats-number"><b rel="failed">'.number_format($worker['failed']) . '</b></td>';
 						echo '<td></td>';
 						echo '</tr>';
 					}

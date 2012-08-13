@@ -30,9 +30,30 @@
 		{
 			
 			?>
-			<p class="clearfix breadcrumb">
+			<div class="breadcrumb clearfix">
+				<div class="pull-right">
+				<?php if (isset($pagination)): ?>
+					<form class="form-inline" rel="ajax-pagination">
+						<label>Display
+						<select class="span1">
+							<?php foreach($resultLimits as $limit)
+							{
+								echo '<option value="'.$pagination->baseUrl . $limit . '/' . $pagination->current.'"';
+								if ($limit == $pagination->limit) echo ' selected="selected"';
+								echo '>'.$limit.'</option>';
+							}?>
+						</select>
+						</label>
+					</form>
+					<?php endif; ?>
+				    <div class="btn-group">
+					    <button class="btn" rel="expand-all tooltip" title="Expand all"><i class="icon-folder-open"></i></button>
+					    <button class="btn" rel="collapse-all tooltip" title="Collapse all"><i class="icon-folder-close"></i></button>
+				    </div>
+				</div>
 			<?php if (isset($pagination)) echo 'Page ' . $pagination->current .' of ' . $pagination->totalPage . ', found ' . $pagination->totalResult . ' jobs'; ?>
-			<span class="pull-right"><a href="#" rel="expand-all">Expand all</a> | <a href="#" rel="collapse-all">Collapse all</a></span></p>
+			</div>
+			<p>All time are UTC <?php echo date('P', strtotime($jobs[0]['time'])); ?></p>
 			<?php
 			echo '<ul class="unstyled" id="job-details">';
 
@@ -45,8 +66,10 @@
                             <span title="Job <?php echo $jobStatus[$job['status']] ?>" class="job-status-icon" rel="tooltip"><img src="/img/job_<?php echo $jobStatus[$job['status']] ?>.png" /></span>
 							<span class="label label-info pull-right"><?php echo $job['worker']?></span>
 							<h4>#<?php echo $job['job_id']?></h4>
-							<small>Waiting for <code><?php echo $job['class']?></code> in
+							<time><i class="icon-time"></i> <?php echo date('H:i:s', strtotime($job['time'])); ?></time>
+							<small>Performing <code><?php echo $job['class']?></code> in
 							<span class="label label-success"><?php echo $job['queue']?></span></small>
+							
 						</div>
 					</div>
 					<div class="collapse<?php if (count($jobs) == 1) echo ' in'; ?> accordion-body" id="<?php echo $job['job_id']?>">

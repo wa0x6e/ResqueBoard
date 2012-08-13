@@ -69,7 +69,9 @@
     		$jobs = array();
     		$searchToken = null;
     		
-    		$limit = 15;
+    		$limit = PAGINATION_LIMIT;
+    		
+    		$resultLimits = array(15, 50, 100);
     		
     		if ($app->request()->isPost())
     		{
@@ -85,6 +87,7 @@
     			'jobs' => $jobs,
     			'searchToken' => $searchToken,
     			'workers' => $resqueStat->getWorkers(),
+    			'resultLimits' => $resultLimits,
     			'pageTitle' => 'Last '.$limit.' Jobs'
     		));
     
@@ -93,24 +96,27 @@
     	}
     })->via('GET', 'POST');
     
-    $app->get('/jobs/:workerHost/:workerProcess(/:limit(/:page))', function ($workerHost, $workerProcess, $limit = 15, $page = 1) use ($app, $settings) {
+    $app->get('/jobs/:workerHost/:workerProcess(/:limit(/:page))', function ($workerHost, $workerProcess, $limit = PAGINATION_LIMIT, $page = 1) use ($app, $settings) {
     	try {
     		$resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
     
     		$workerId = $workerHost . ':' . $workerProcess;
     		
+    		$resultLimits = array(15, 50, 100);
+    		
     		$pagination = new stdClass();
     		$pagination->current = $page;
-    		$pagination->limit = $limit;
+    		$pagination->limit = (in_array($limit, $resultLimits)) ? $limit : PAGINATION_LIMIT;
     		$pagination->baseUrl = '/jobs/' . $workerHost . '/' . $workerProcess . '/';
     		$pagination->totalResult = $resqueStat->getJobsByWorkersCount($workerId);
-    		$pagination->totalPage = ceil($pagination->totalResult / $limit);
+    		$pagination->totalPage = ceil($pagination->totalResult / $pagination->limit);
     		
     		
     		$app->render('jobs.php', array(
-    						'jobs' => $resqueStat->getJobsByWorker($workerId, $page, $limit),
+    						'jobs' => $resqueStat->getJobsByWorker($workerId, $page, $pagination->limit),
     						'searchToken' => $workerId,
     						'workers' => $resqueStat->getWorkers(),
+    						'resultLimits' => $resultLimits,
     						'pageTitle' => 'Jobs',
     						'pagination' => $pagination
     		));

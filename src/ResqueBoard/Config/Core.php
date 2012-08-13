@@ -34,3 +34,5 @@
     );
     
     $logTypes = array('start', 'got', 'process', 'fork', 'done', 'fail', 'sleep', 'prune', 'stop');
+    
+    define('PAGINATION_LIMIT', 15);

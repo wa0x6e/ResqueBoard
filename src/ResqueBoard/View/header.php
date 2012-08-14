@@ -9,6 +9,7 @@
         <script type="text/javascript" src="/js/moment.js"></script>
         <script type="text/javascript" src="/js/jquery.cookie.js"></script>
         <script type="text/javascript" src="/js/d3.v2.min.js"></script>
+        <script type="text/javascript" src="/js/cubism.v1.min.js"></script>
         <script type="text/javascript" src="/js/bootstrap-2.0.4.min.js"></script>
         <script type="text/javascript" src="/js/app.js"></script>
         <link href="/css/bootstrap.css" rel="stylesheet" type="text/css">

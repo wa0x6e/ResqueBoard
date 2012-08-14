@@ -1,6 +1,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
     listenToWorkersJob("horizontal-bar");
+    listenToWorkersActivities();
 });
 </script>
 <div class="container" id="main">
@@ -18,13 +19,14 @@ $(document).ready(function() {
 						<th class="worker-name">Worker</th>
 						<th>Processed</th>
 						<th>Failed</th>
-						<th>Activities</th>
+						<th style="width:800px">Activities</th>
 					</tr>
 				</thead>
 				<tbody>
 				<?php
 				
 				    $totalJobs = 0;
+				    $i = 0;
 				    array_walk($workers, function($q) use (&$totalJobs) {$totalJobs += $q['processed'];});
 			
 					foreach ($workers as $worker) {
@@ -41,7 +43,9 @@ $(document).ready(function() {
 						'<span class="chart-bar" rel="chart" data-chart-type="horizontal-bar" style="width:'.$barWidth.'%;"></span>'.
 						'<b rel="processed">'.number_format($worker['processed']) . '</b></td>';
 						echo '<td class="stats-number"><b rel="failed">'.number_format($worker['failed']) . '</b></td>';
-						echo '<td></td>';
+						echo '<td>';
+						if ($i++ == 0) echo '<div id="worker-activities"></div>';
+						echo '</td>';
 						echo '</tr>';
 					}
 				?>

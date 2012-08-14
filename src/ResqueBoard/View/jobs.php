@@ -53,7 +53,7 @@
 				</div>
 			<?php if (isset($pagination)) echo 'Page ' . $pagination->current .' of ' . $pagination->totalPage . ', found ' . $pagination->totalResult . ' jobs'; ?>
 			</div>
-			<p>All time are UTC <?php echo date('P', strtotime($jobs[0]['time'])); ?></p>
+			<p>All time are UTC <?php echo date('P', strtotime($jobs[0]['time'])); ?>, current server time is <?php echo date('r'); ?></p>
 			<?php
 			echo '<ul class="unstyled" id="job-details">';
 

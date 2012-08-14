@@ -472,7 +472,7 @@ function loadLogs()
 			$("#log-area").find("date").each(function() {
 				$(this).html(moment($(this).attr("title")).fromNow());
 			});      
-	 	}
+		}
 	}
 
 	function init(e)
@@ -857,14 +857,49 @@ var jobPieChart = function()
 			  var i = d3.interpolate(this._current, a);
 			  this._current = i(0);
 			  return function(t) {
-			    return arc(i(t));
+				return arc(i(t));
 			  };
 			}
 		}
 	};
 }();
 
+function listenToWorkersActivities()
+{
+	var
+		context = cubism.context().size(488),
+		cube = context.cube("http://"+serverIp+":1081"),
+		horizon = context.horizon().metric(cube.metric).height(52),
+		rule = context.rule();
 
+	var workersIds = [];
+	var metrics = [];
+
+	$(".worker-stats h4").each(function(i){ workersIds.push($(this).html());});
+
+	if (workersIds.length == 0) return;
+
+	for(index in workersIds)
+	{
+		metrics.push("sum(done.eq(worker,'"+workersIds[index]+"'))");
+	}	
+
+	d3.select("#worker-activities").append("div")
+    .attr("class", "rule")
+    .call(context.rule());
+
+	d3.select("#worker-activities").selectAll(".horizon")
+    .data(metrics)
+  	.enter().append("div")
+    .attr("class", "horizon")
+    .call(horizon.extent([-180, 180]).title(null));
+
+	d3.select("#worker-activities").append("div")
+    .attr("class", "axis")
+    .call(context.axis().orient("bottom").ticks(d3.time.minutes, 10).tickSize(6,3,0)
+	.tickFormat(d3.time.format("%H:%M")));
+
+}
 
 
 $(document).ready(function() {

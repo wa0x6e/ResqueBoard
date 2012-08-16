@@ -1,7 +1,35 @@
 <?php
+/**
+ * ResqueStat classes
+ *
+ * Contains all classes required to fetch static datas
+ * from php-resque and the cube server
+ *
+ * PHP version 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @author        Wan Qi Chen <kami@kamisama.me>
+ * @copyright     Copyright 2012, Wan Qi Chen <kami@kamisama.me>
+ * @link          http://resqueboard.kamisama.me
+ * @package       resqueboard
+ * @subpackage	  resqueboard.lib
+ * @since         1.0.0
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
 
 namespace ResqueBoard\Lib;
 
+/**
+ * ResqueStat class
+ *
+ * Connect to the backend to retrieve php-resque datas, or metrics
+ *
+ * @subpackage	  resqueboard.lib
+ * @since  		  1.0.0
+ * @author 		  Wan Qi Chen <kami@kamisama.me>
+ */
 class ResqueStat
 {
     protected $stats = array();
@@ -109,11 +137,23 @@ class ResqueStat
         }
     }
     
+    
+    /**
+     * Return general stats about active workers
+     *
+     * @return array:
+     */
     public function getStats()
     {
         return $this->stats;
     }
     
+    
+    /**
+     * Return
+     *
+     * @return multitype:
+     */
     public function getWorkers()
     {
         return $this->workers;
@@ -148,6 +188,8 @@ class ResqueStat
     
     /**
      * Return a single job
+     *
+     * @param string Job ID
      */
     public function getJob($id)
     {
@@ -180,9 +222,9 @@ class ResqueStat
     
     
     /**
-     * Return the number of jobs for a specific worker
+     * Return the total number of jobs for a specific worker
      *
-     * @return int number of jobs
+     * @return int number of jobs processed by the worker
      */
     public function getJobsByWorkersCount($workerId)
     {
@@ -273,4 +315,15 @@ class ResqueStat
     
 }
 
+
+/**
+ * DatabaseConnectionException class
+ *
+ * Type of exception thrown when ResqueStat can not connect
+ * to a database
+ *
+ * @subpackage	  resqueboard.lib
+ * @since  		  1.0.0
+ * @author 		  Wan Qi Chen <kami@kamisama.me>
+ */
 class DatabaseConnectionException extends \Exception {}

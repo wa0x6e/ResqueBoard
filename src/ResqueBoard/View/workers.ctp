@@ -1,3 +1,23 @@
+<?php
+/**
+ * Workers template
+ *
+ * Website workers page
+ *
+ * PHP version 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @author        Wan Qi Chen <kami@kamisama.me>
+ * @copyright     Copyright 2012, Wan Qi Chen <kami@kamisama.me>
+ * @link          http://resqueboard.kamisama.me
+ * @package       resqueboard
+ * @subpackage	  resqueboard.template
+ * @since         1.0.0
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
+?>
 <script type="text/javascript">
 $(document).ready(function() {
     listenToWorkersJob("horizontal-bar");
@@ -16,10 +36,10 @@ $(document).ready(function() {
 				<table class="table table-bordered">
 				<thead>
 					<tr>
-						<th class="worker-name">Worker</th>
+						<th>Worker</th>
 						<th>Processed</th>
 						<th>Failed</th>
-						<th style="width:800px">Activities</th>
+						<th style="width:450px;">Activities</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -39,12 +59,12 @@ $(document).ready(function() {
 						echo '<small class="queues-list"><strong><i class="icon-list-alt"></i> Queues : </strong>';
 						array_walk($worker['queues'], function($q){echo '<span class="queue-name">'.$q.'</span> ';});
 						echo '</small></td>';
-						echo '<td class="stats-number">' .
-						'<span class="chart-bar" rel="chart" data-chart-type="horizontal-bar" style="width:'.$barWidth.'%;"></span>'.
-						'<b rel="processed">'.number_format($worker['processed']) . '</b></td>';
-						echo '<td class="stats-number"><b rel="failed">'.number_format($worker['failed']) . '</b></td>';
-						echo '<td>';
-						if ($i++ == 0) echo '<div id="worker-activities"></div>';
+						echo '<td class="stats-number inner-wrap"><div style="position:relative;">' .
+						'<span class="chart-bar" data-type="chart" data-chart-type="horizontal-bar" style="width:'.$barWidth.'%;"></span>'.
+						'<b data-status="processed">'.number_format($worker['processed']) . '</b></div></td>';
+						echo '<td class="stats-number"><b data-status="failed">'.number_format($worker['failed']) . '</b></td>';
+						echo '<td class="inner-wrap">';
+						if ($i++ == 0) echo '<div style="position:relative;"><div id="worker-activities"></div></div>';
 						echo '</td>';
 						echo '</tr>';
 					}

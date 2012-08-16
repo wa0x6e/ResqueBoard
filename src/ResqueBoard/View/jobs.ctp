@@ -1,4 +1,22 @@
 <?php
+/**
+ * job template
+ *
+ * Website jobs page
+ *
+ * PHP version 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @author        Wan Qi Chen <kami@kamisama.me>
+ * @copyright     Copyright 2012, Wan Qi Chen <kami@kamisama.me>
+ * @link          http://resqueboard.kamisama.me
+ * @package       resqueboard
+ * @subpackage	  resqueboard.template
+ * @since         1.0.0
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
 
 	$jobStatus = array(
 				ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING => 'waiting',
@@ -33,7 +51,7 @@
 			<div class="breadcrumb clearfix">
 				<div class="pull-right">
 				<?php if (isset($pagination)): ?>
-					<form class="form-inline" rel="ajax-pagination">
+					<form class="form-inline" data-event="ajax-pagination">
 						<label>Display
 						<select class="span1">
 							<?php foreach($resultLimits as $limit)
@@ -47,8 +65,8 @@
 					</form>
 					<?php endif; ?>
 				    <div class="btn-group">
-					    <button class="btn" rel="expand-all tooltip" title="Expand all"><i class="icon-folder-open"></i></button>
-					    <button class="btn" rel="collapse-all tooltip" title="Collapse all"><i class="icon-folder-close"></i></button>
+					    <button class="btn" data-event="expand-all tooltip" title="Expand all"><i class="icon-folder-open"></i></button>
+					    <button class="btn" data-event="collapse-all tooltip" title="Collapse all"><i class="icon-folder-close"></i></button>
 				    </div>
 				</div>
 			<?php if (isset($pagination)) echo 'Page ' . $pagination->current .' of ' . $pagination->totalPage . ', found ' . $pagination->totalResult . ' jobs'; ?>
@@ -63,10 +81,11 @@
 				<li class="accordion-group<?php if ($job['status'] == ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED) echo ' error' ?>">
 					<div class="accordion-heading" data-toggle="collapse" data-target="#<?php echo $job['job_id']?>">
 						<div class="accordion-toggle">
-                            <span title="Job <?php echo $jobStatus[$job['status']] ?>" class="job-status-icon" rel="tooltip"><img src="/img/job_<?php echo $jobStatus[$job['status']] ?>.png" /></span>
+                            <span title="Job <?php echo $jobStatus[$job['status']] ?>" class="job-status-icon" data-event="tooltip">
+                            <img src="/img/job_<?php echo $jobStatus[$job['status']] ?>.png" title="Job <?php echo $jobStatus[$job['status']] ?>" height=24 width=24 /></span>
 							<span class="label label-info pull-right"><?php echo $job['worker']?></span>
 							<h4>#<?php echo $job['job_id']?></h4>
-							<time><i class="icon-time"></i> <?php echo date('H:i:s', strtotime($job['time'])); ?></time>
+							<time datetime="<?php echo date('c', strtotime($job['time']))?>"><i class="icon-time"></i> <?php echo date('H:i:s', strtotime($job['time'])); ?></time>
 							<small>Performing <code><?php echo $job['class']?></code> in
 							<span class="label label-success"><?php echo $job['queue']?></span></small>
 							
@@ -83,11 +102,11 @@
 							
 							if (isset($job['trace']))
 							{
-								echo '<pre rel="job-trace">'. $job['trace'] . '</pre>';
+								echo '<pre class="job-trace">'. $job['trace'] . '</pre>';
 							}
 							?>
 							
-							<pre rel="job-args"><?php echo $job['args'] ?></pre>
+							<pre class="job-args"><?php echo $job['args'] ?></pre>
 						</div>
 					</div>
 				</li>

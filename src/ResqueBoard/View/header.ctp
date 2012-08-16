@@ -1,28 +1,39 @@
+<?php
+/**
+ * Header template
+ *
+ * Included before each template
+ *
+ * PHP version 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @author        Wan Qi Chen <kami@kamisama.me>
+ * @copyright     Copyright 2012, Wan Qi Chen <kami@kamisama.me>
+ * @link          http://resqueboard.kamisama.me
+ * @package       resqueboard
+ * @subpackage	  resqueboard.template
+ * @since         1.0.0
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
         <title><?php echo $pageTitle . TITLE_SEP . APPLICATION_NAME?></title>
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="/js/jquery.jsrender.js"></script>
-        <script type="text/javascript" src="/js/moment.js"></script>
-        <script type="text/javascript" src="/js/jquery.cookie.js"></script>
-        <script type="text/javascript" src="/js/d3.v2.min.js"></script>
-        <script type="text/javascript" src="/js/cubism.v1.min.js"></script>
-        <script type="text/javascript" src="/js/bootstrap-2.0.4.min.js"></script>
-        <script type="text/javascript" src="/js/app.js"></script>
         <link href="/css/bootstrap.css" rel="stylesheet" type="text/css">
         <link href="/css/main.css" rel="stylesheet" type="text/css">
         <link href="/img/resqueboard.png" rel="shortcut icon">
-        
+   		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     </head>
     <body>
         <script type="text/javascript">serverIp = '<?php echo $_SERVER['SERVER_ADDR'] ?>'</script>
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
-                    <a class="brand" href="/"><img src="/img/resqueboard_24.png" alt="<?php echo APPLICATION_NAME ?>" /> <?php echo APPLICATION_NAME ?></a>
+                    <a class="brand" href="/"><img src="/img/resqueboard_24.png" width=24 height=24 alt="<?php echo APPLICATION_NAME ?>" title="<?php echo APPLICATION_NAME ?>" /> <?php echo APPLICATION_NAME ?></a>
                         <ul class="nav">
                             <?php
                                 $navs = array(

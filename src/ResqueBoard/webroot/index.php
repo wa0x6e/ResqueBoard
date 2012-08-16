@@ -1,5 +1,22 @@
 <?php
-    
+/**
+ * Index file
+ *
+ * Application entry point, defines routes
+ *
+ * PHP version 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @author        Wan Qi Chen <kami@kamisama.me>
+ * @copyright     Copyright 2012, Wan Qi Chen <kami@kamisama.me>
+ * @link          http://resqueboard.kamisama.me
+ * @package       resqueboard
+ * @subpackage	  resqueboard.webroot
+ * @since         1.0.0
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.ctp)
+ */
     
     if (!defined('ROOT')) {
         define('ROOT', dirname(dirname(__FILE__)));
@@ -18,7 +35,7 @@
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
             
-            $app->render('index.php', array(
+            $app->render('index.ctp', array(
                 'stats' => $resqueStat->getStats(),
                 'workers' => $resqueStat->getWorkers(),
                 'queues' => $resqueStat->getQueues(),
@@ -40,7 +57,7 @@
         
         $mutedLevels = array_filter(explode(',', $mutedLevels));
         
-        $app->render('logs.php', array(
+        $app->render('logs.ctp', array(
                 'logLevels' => $logLevels,
                 'logTypes' => $logTypes,
                 'mutedLevels' => $mutedLevels,
@@ -52,7 +69,7 @@
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
             
-            $app->render('workers.php', array(
+            $app->render('workers.ctp', array(
                 'workers' => $resqueStat->getWorkers(),
                 'pageTitle' => 'Active workers'
             ));
@@ -83,7 +100,7 @@
     			
     		}
     		$jobs = $resqueStat->getJobsByWorker(null, 1, $limit);
-    		$app->render('jobs.php', array(
+    		$app->render('jobs.ctp', array(
     			'jobs' => $jobs,
     			'searchToken' => $searchToken,
     			'workers' => $resqueStat->getWorkers(),
@@ -112,7 +129,7 @@
     		$pagination->totalPage = ceil($pagination->totalResult / $pagination->limit);
     		
     		
-    		$app->render('jobs.php', array(
+    		$app->render('jobs.ctp', array(
     						'jobs' => $resqueStat->getJobsByWorker($workerId, $page, $pagination->limit),
     						'searchToken' => $workerId,
     						'workers' => $resqueStat->getWorkers(),
@@ -141,7 +158,7 @@
     
     
     $app->error(function (\Exception $e) use ($app) {
-        $app->render('error.php', array(
+        $app->render('error.ctp', array(
                 'pageTitle' => 'Error',
                 'message' => $e->getMessage()
             ));

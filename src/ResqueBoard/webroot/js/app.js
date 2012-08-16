@@ -336,7 +336,7 @@ function displayJobsModal(startTime)
 function loadLogs()
 {
 	var counters = {
-		general : {g: $("[rel=log-counter]")},
+		general : {g: $("[data-rel=log-counter]")},
 		type : {},
 		verbosity : {}
 	};
@@ -443,13 +443,10 @@ function loadLogs()
 	/**
 	 * Insert new events in the DOM
 	 * 
-	 * @param  {[type]} type [description]
-	 * @param  {[type]} data [description]
-	 * @return {[type]}      [description]
 	 */
 	function appendLog(type, data)
 	{
-		if ($("input[rel="+level[data.data.level].name+"]").is(":checked"))
+		if ($("input[data-rel="+level[data.data.level].name+"]").is(":checked"))
 		{
 			$( "#log-area" ).append(
 				$("#log-template").render(formatData(type, data))
@@ -457,20 +454,20 @@ function loadLogs()
 
 			if (!counters.verbosity.hasOwnProperty(level[data.data.level].name))
 			{
-				addCounter("verbosity", level[data.data.level].name, $("#log-sweeper-form span[rel="+level[data.data.level].name+"]"));
+				addCounter("verbosity", level[data.data.level].name, $("#log-sweeper-form span[data-rel="+level[data.data.level].name+"]"));
 			}
 
 			if (!counters.type.hasOwnProperty([type]))
 			{
-				addCounter("type", type, $("#log-sweeper-form span[rel="+type+"]"));
+				addCounter("type", type, $("#log-sweeper-form span[data-rel="+type+"]"));
 			}
 
 			incrCounter("verbosity", level[data.data.level].name, 1);
 			incrCounter("type", type, 1);
 			incrCounter("general", "g", 1);
 
-			$("#log-area").find("date").each(function() {
-				$(this).html(moment($(this).attr("title")).fromNow());
+			$("#log-area").find("time").each(function() {
+				$(this).html(moment($(this).attr("title")).fromNow()).tooltip();
 			});      
 		}
 	}
@@ -498,7 +495,7 @@ function loadLogs()
 
 	$("#log-filter-form").on("change", "input", function(e){
 
-		var rel = $(this).attr("rel")
+		var rel = $(this).data("rel")
 
 		$("#log-area").append("<li class='filter-event'><b>"+ ($(this).is(":checked") ? "Start" : "Stop") +
 			"</b> listening to <em>" + rel + "</em> events</li>");
@@ -519,7 +516,7 @@ function loadLogs()
 	});
 
 
-	$("#log-sweeper-form").on("click", "button[rel=verbosity]", function(e){
+	$("#log-sweeper-form").on("click", "button[data-rel=verbosity]", function(e){
 		var toRemove = $("#log-area").children("li[data-verbosity="+$(this).data("level")+"]");
 		updateCounters(toRemove);
 		toRemove.remove();
@@ -527,7 +524,7 @@ function loadLogs()
 		return false;
 	});
 
-	$("#log-sweeper-form").on("click", "button[rel=type]", function(e){
+	$("#log-sweeper-form").on("click", "button[data-rel=type]", function(e){
 		var toRemove = $("#log-area").children("li[data-type="+$(this).data("type")+"]");
 		updateCounters(toRemove);
 		toRemove.remove();
@@ -564,23 +561,23 @@ var Job = function()
 							return false;
 
 						var $this = $("#" + id);
-						var processedJobsCountDOM = $this.find('[rel=processed]');
-						var failedJobsCountDOM = $this.find('[rel=failed]');
+						var processedJobsCountDOM = $this.find('[data-status=processed]');
+						var failedJobsCountDOM = $this.find('[data-status=failed]');
 						return {
 							processedJobsCountDOM : processedJobsCountDOM,
 							failedJobsCountDOM : failedJobsCountDOM,
 							processedJobsCount : parseInteger(processedJobsCountDOM.html()),
 							failedJobsCount : parseInteger(failedJobsCountDOM.html()),
-							chart: $this.find("[rel=chart]")
+							chart: $this.find("[data-type=chart]")
 						}
 					};
 
 				$(".worker-stats").each(function(data){
 					var $this = $(this);
-					var processedJobsCountDOM = $this.find('[rel=processed]');
-					var failedJobsCountDOM = $this.find('[rel=failed]');
+					var processedJobsCountDOM = $this.find('[data-status=processed]');
+					var failedJobsCountDOM = $this.find('[data-status=failed]');
 					var processedJobsCount = parseInteger(processedJobsCountDOM.html());
-					var chartDOM = $this.find("[rel=chart]");
+					var chartDOM = $this.find("[data-type=chart]");
 
 					jobsStats[$this.attr("id")] = {
 						processedJobsCountDOM: processedJobsCountDOM, 
@@ -867,9 +864,9 @@ var jobPieChart = function()
 function listenToWorkersActivities()
 {
 	var
-		context = cubism.context().size(488),
+		context = cubism.context().size(466),
 		cube = context.cube("http://"+serverIp+":1081"),
-		horizon = context.horizon().metric(cube.metric).height(52),
+		horizon = context.horizon().metric(cube.metric).height(53),
 		rule = context.rule();
 
 	var workersIds = [];
@@ -903,10 +900,10 @@ function listenToWorkersActivities()
 
 
 $(document).ready(function() {
-	$('[rel~=tooltip]').tooltip();
-	$('[rel~=collapse-all]').on('click', function(e){ e.preventDefault(); $('.collapse.in').collapse('hide'); });
-	$('[rel~=expand-all]').on('click', function(e){ e.preventDefault(); $('.collapse').not('.in').collapse('show'); });
-	$('[rel~=ajax-pagination]').on('change', 'select', function(e){window.location=$(this).val();});
+	$('[data-event~=tooltip]').tooltip();
+	$('[data-event~=collapse-all]').on('click', function(e){ e.preventDefault(); $('.collapse.in').collapse('hide'); });
+	$('[data-event~=expand-all]').on('click', function(e){ e.preventDefault(); $('.collapse').not('.in').collapse('show'); });
+	$('[data-event~=ajax-pagination]').on('change', 'select', function(e){window.location=$(this).val();});
 });
 
 function parseInteger(str)

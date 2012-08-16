@@ -1,3 +1,23 @@
+<?php
+/**
+ * Index template
+ *
+ * Website home page
+ *
+ * PHP version 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @author        Wan Qi Chen <kami@kamisama.me>
+ * @copyright     Copyright 2012, Wan Qi Chen <kami@kamisama.me>
+ * @link          http://resqueboard.kamisama.me
+ * @package       resqueboard
+ * @subpackage	  resqueboard.template
+ * @since         1.0.0
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
+?>
 <div class="container" id="main">
 			
 			<script id="jobs-tpl" type="text/x-jsrender">
@@ -54,15 +74,15 @@
 								<div class="worker-list-inner">
 								<h3 class="sub">Total job stats</h3>
 									<div class="worker-stats clearfix" id="global-worker-stats">
-	    							<div class="chart-pie" rel="chart" data-chart-type="pie" data-processed="<?php
+	    							<div class="chart-pie" data-type="chart" data-chart-type="pie" data-processed="<?php
 	    						    echo $stats['total']['processed'] - $stats['total']['failed'] ?>"
 			    						data-failed="<?php echo $stats['total']['failed']?>"></div>
 	    							    <div class="stat-count">
-	            							<b rel="processed"><?php echo number_format($stats['total']['processed']) ?></b>
+	            							<b data-status="processed"><?php echo number_format($stats['total']['processed']) ?></b>
 	            							Processed
 	        							</div>
 	        							<div class="stat-count">
-	            							<b class="warning" rel="failed"><?php echo number_format($stats['total']['failed'])?></b>
+	            							<b class="warning" data-status="failed"><?php echo number_format($stats['total']['failed'])?></b>
 	            							Failed
 	        							</div>
 								</div>
@@ -70,15 +90,15 @@
 								<h3 class="sub">Active workers job stats</h3>
 								
 									<div class="worker-stats clearfix" id="active-worker-stats">
-	    							<div class="chart-pie" rel="chart" data-chart-type="pie" data-processed="<?php
+	    							<div class="chart-pie" data-type="chart" data-chart-type="pie" data-processed="<?php
 	    						    echo $stats['active']['processed'] - $stats['active']['failed'] ?>"
 			    						data-failed="<?php echo $stats['active']['failed']?>"></div>
 	    							    <div class="stat-count">
-	            							<b rel="processed"><?php echo number_format($stats['active']['processed'])?></b>
+	            							<b data-status="processed"><?php echo number_format($stats['active']['processed'])?></b>
 	            							Processed
 	        							</div>
 	        							<div class="stat-count">
-	            							<b class="warning" rel="failed"><?php echo number_format($stats['active']['failed'])?></b>
+	            							<b class="warning" data-status="failed"><?php echo number_format($stats['active']['failed'])?></b>
 	            							Failed
 	        							</div>
 			    							
@@ -123,26 +143,26 @@
 						?></b> jobs/min</small>
 						
 						<strong><i class="icon-time"></i> Uptime : </strong>
-						<time datime="<?php echo date_format($worker['start'], "r")?>" rel="tooltip" title="Started on <?php echo date_format($worker['start'], "r")?>">
+						<time datetime="<?php echo date_format($worker['start'], "c")?>" data-event="tooltip" title="Started on <?php echo date_format($worker['start'], "r")?>">
 						<?php echo ResqueBoard\Lib\DateHelper::ago($worker['start'])?></time>
 						<br />
 						<strong><i class="icon-list-alt"></i> Queues : </strong><?php array_walk($worker['queues'], function($q){echo '<span class="queue-name">'.$q.'</span> ';})?>
 						
 						<div class="worker-stats clearfix" id="<?php echo $workerId?>">
-    						<div class="chart-pie" rel="chart" data-chart-type="pie" data-processed="<?php
+    						<div class="chart-pie" data-type="chart" data-chart-type="pie" data-processed="<?php
     						    echo $stats['active']['processed'] - $stats['active']['failed']?>"
     						data-failed="<?php echo $stats['active']['failed']?>"></div>
     						
     						
     							    <div class="stat-count">
-            							<b rel="processed"><?php echo number_format($worker['processed'])?></b>
+            							<b data-status="processed"><?php echo number_format($worker['processed'])?></b>
             							Processed
         							</div>
         							<div class="stat-count">
-            							<b class="warning" rel="failed"><?php echo number_format($worker['failed'])?></b>
+            							<b class="warning" data-status="failed"><?php echo number_format($worker['failed'])?></b>
             							Failed
         							</div>
-    							</li>
+    							
     						
     					</div>
 						

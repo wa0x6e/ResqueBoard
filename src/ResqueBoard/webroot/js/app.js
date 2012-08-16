@@ -788,7 +788,7 @@ var jobPieChart = function()
 		return datas;
 	}
 
-	var m = 10;
+	var m = 0;
 	var z = d3.scale.category20c();
 
 	var donut = d3.layout.pie().value(function(d){

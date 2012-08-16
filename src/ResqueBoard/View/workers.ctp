@@ -62,7 +62,7 @@ $(document).ready(function() {
 						echo '<td class="stats-number inner-wrap"><div style="position:relative;">' .
 						'<span class="chart-bar" data-type="chart" data-chart-type="horizontal-bar" style="width:'.$barWidth.'%;"></span>'.
 						'<b data-status="processed">'.number_format($worker['processed']) . '</b></div></td>';
-						echo '<td class="stats-number"><b data-status="failed">'.number_format($worker['failed']) . '</b></td>';
+						echo '<td class="stats-number inner-wrap"><div style="position:relative;"><b data-status="failed">'.number_format($worker['failed']) . '</b></div></td>';
 						echo '<td class="inner-wrap">';
 						if ($i++ == 0) echo '<div style="position:relative;"><div id="worker-activities"></div></div>';
 						echo '</td>';

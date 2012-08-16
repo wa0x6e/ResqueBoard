@@ -1,4 +1,19 @@
+/**
+ * ResqueBoard Javascript File
+ *
+ * Make all the numbers on the screen blink
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @author        Wan Qi Chen <kami@kamisama.me>
+ * @copyright     Copyright 2012, Wan Qi Chen <kami@kamisama.me>
+ * @link          http://resqueboard.kamisama.me
+ * @since         1.0.0
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.ctp)
+ */
 
+var stop = new Date(Date.now());
 
 /**
  * Convert a date to ISO 8601 format
@@ -9,8 +24,6 @@ var formatISO = function(date){
 	var format = d3.time.format.iso;
 	return format.parse(date); // returns a Date
 }
-
-var stop = new Date(Date.now());
 
 /**
  * Duration of the transition animation
@@ -81,7 +94,6 @@ function listenToJobsActivities()
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom)
 			.append("g")
-
 			.attr("transform", "translate(" + margin.left  + "," + margin.top + ")")
 			;
 
@@ -115,29 +127,58 @@ function listenToJobsActivities()
 			.attr("class", "bar-area")
 			;
 
+			var barProp = function(selection)
+			{
+				selection
+				.attr("title", function(d){return d.value;})
+				.attr("data-target", "#job-details-modal")
+				.on("click", function(d){
+					displayJobsModal(d.time);
+				})
+				.call(barDim)
+				;
+			}
+
+			var barDim = function(selection)
+			{
+				selection
+				.attr("x", function(d) { return x(d.time) + barGutter; })
+				.attr("y", function(d) { return y(d.value); })
+				.attr("width", barWidth)
+				.attr("height", function(d) { return height - y(d.value);  })
+				;
+			}
+
+
 			barArea.selectAll("rect")
 			.data(data)
 			.enter()
 			.append("rect")
-			.attr("x", function(d) { return x(d.time) + barGutter; })
-			.attr("y", function(d) { return y(d.value); })
-			.attr("width", barWidth)
-			.attr("height", function(d) { return height - y(d.value);  })
-			.attr("title", function(d){return d.value;})
-			.attr("data-target", "#job-details-modal")
-			.on("click", function(d){
-				displayJobsModal(d.time);
-			})
+			.call(barProp)
 			;
 
+			var barLabelProp = function(selection)
+			{
+				selection
+				.attr("text-anchor", "middle")
+				.attr("class", function(d){if ((height-y(d.value))<=barLabelHeight){ return "bar-label out";} return "bar-label";})
+				.text(function(d){return d.value;})
+				.call(barLabelDim)
+				;
+			}
+
+			var barLabelDim = function(selection)
+			{
+				selection
+				.attr("y", function(d) { return ((height-y(d.value))>barLabelHeight ? y(d.value) : (y(d.value) - barLabelHeight)); })
+				.attr("dy", "1.5em")
+				.attr("x", function(d) { return x(d.time) + barWidth/2; })
+				;
+			}
+
 			barArea.selectAll("text").data(data).enter().append("text")
-			.attr("x", function(d) { return x(d.time) + barWidth + barGutter; })
-			.attr("y", function(d) { return ((height-y(d.value))>barLabelHeight ? y(d.value) : (y(d.value) - barLabelHeight)); })
-			.attr("text-anchor", "middle")
-			.attr("class", function(d){if ((height-y(d.value))<=barLabelHeight){ return "bar-label out";} return "bar-label";})
-			.attr("dx", -barWidth/2 - barGutter)
-			.attr("dy", "1.5em")
-			.text(function(d){return d.value;})
+			.attr("x", function(d) { return x(d.time) + barWidth/2; })
+			.call(barLabelProp)
 			;
 
 			var xAxis = d3.svg.axis()
@@ -176,14 +217,9 @@ function listenToJobsActivities()
 				// BAR
 				// *****
 				rect.enter().insert("rect")
+				.call(barProp)
 				.attr("x", function(d, i) { return x(getNextTick(d.time)); })
-				.attr("y", function(d) { return y(d.value); })
-				.attr("width", barWidth)
 				.attr("clip-path", "url(#clip)")
-				.attr("height", function(d) { return height - y(d.value); })
-				.on("click", function(d){
-					displayJobsModal(d.time);
-				})
 				.transition()
 				.duration(duration)
 				.attr("x", function(d) { return x(d.time) + barWidth + 2; })
@@ -193,9 +229,7 @@ function listenToJobsActivities()
 				rect.transition()
 				.duration(duration)
 				.attr("clip-path", "url(#clip)")
-				.attr("x", function(d) { return x(d.time) + barGutter; })
-				.attr("y", function(d) { return y(d.value); })
-				.attr("height", function(d) { return height - y(d.value); })
+				.call(barDim)
 				;
 
 				rect.exit().transition()
@@ -208,32 +242,23 @@ function listenToJobsActivities()
 				// TEXT
 				// *****
 				text.enter().insert("text")
-				.attr("x", function(d) { return x(getNextTick(getNextTick(d.time))); })
-				.attr("y", function(d) { return ( (height-y(d.value))>barLabelHeight ? y(d.value) : (y(d.value) - barLabelHeight)); })
-				.attr("dx", barWidth/2 - barGutter)
-				.attr("text-anchor", "middle")
-				.attr("fill", "black")
-				.attr("class", function(d){if ((height-y(d.value))<=15){return "bar-label out";}  return "bar-label";})
-				.attr("dx", -barWidth/2 - barGutter)
-				.attr("dy", "1.5em")
-				.text(function(d){return d.value;})
+				.call(barLabelProp)
+				.attr("x", function(d) { return x(getNextTick(getNextTick(d.time))) - barWidth/2; })
 				.transition()
 				.duration(duration)
-				.attr("x", function(d) { return x(d.time) + barWidth + barGutter; })
+				.attr("x", function(d) { return x(d.time) + barWidth/2; })
 				;
 
 
 				text.transition()
 				.duration(duration)
-				.attr("x", function(d) { return x(d.time) + barWidth + barGutter; })
-				.attr("y", function(d) { return ( (height-y(d.value))>barLabelHeight ? y(d.value) : (y(d.value) - barLabelHeight)); })
-				.attr("class", function(d){if ( (height-y(d.value))<=barLabelHeight){ return "bar-label out";} return "bar-label";})
+				.call(barLabelDim)
 				;
 
 
 				text.exit().transition()
 				.duration(duration)
-				.attr("x", function(d) { return x(d.time) + barGutter; })
+				.attr("x", function(d) { return x(d.time) + barWidth/2; })
 				.remove()
 				;
 
@@ -287,7 +312,6 @@ function listenToJobsActivities()
 			};
 		}
 	);
-
 }
 
 

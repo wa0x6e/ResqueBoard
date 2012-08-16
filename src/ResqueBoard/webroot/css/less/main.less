@@ -1,0 +1,560 @@
+/*
+	ResqueBoard StyleSheet
+*/
+
+@import "mixins.less";
+@import "variables.less";
+
+body
+{
+	padding-top: 60px;
+	padding-bottom: @gridGutterWidth ;
+	background-color: @grayLighter;
+}
+
+#main
+{
+	background-color: @white;
+	padding: 0 @gridGutterWidth;
+	border: 1px solid darken(@grayLighter, 5);
+}
+
+h4.sep
+{
+	background-color: @grayLighter;
+	padding: 5px;
+	.border-radius(3px);
+	clear:both;
+}
+
+#lastest-jobs 
+{
+	
+	height: 190px;
+	margin-top: @gridGutterWidth / 2;
+}
+
+.chart rect 
+{
+	fill: #4A8ABF;
+	stroke: none;
+	.transition(all .1s);
+}
+
+.chart rect:hover 
+{
+	opacity: 0.6;
+	cursor: pointer;
+}
+
+.x-axis line, .x-axis path , .axis path
+{
+	stroke: #666;
+	fill: none;
+}
+
+.y-axis line, .y-axis path 
+{
+	fill: none;
+	stroke: #666;
+}
+
+.y-axis 
+{
+	margin-right: 2px;
+}
+
+.y-axis, .x-axis, .axis text
+{
+	shape-rendering: crispEdges;
+	font-size: 10px;
+	color: #666;
+}
+
+.bar-label
+{
+	font-size: 10px;
+	font-weight: bold;
+	fill: #fff;
+}
+
+
+
+.bar-label.out
+{
+	fill:#4A8ABF;
+}
+
+.axis-legend
+{
+	fill: #888;
+	font-size: 10px;
+}
+
+
+.workers-menu
+{
+	.head, .head + dd
+	{
+		border-top: 1px solid @gray;
+	}
+}
+
+
+#log-area
+{
+	list-style: none;
+	margin: @gridGutterWidth 0;
+	
+	&:hover li
+	{
+		opacity: 0.8;
+	}
+	
+	.type
+	{
+		text-transform: uppercase;
+	}
+	
+	.label-c
+	{
+		width: @gridColumnWidth;
+		float: left;
+		text-align: right;
+		margin-right: @gridGutterWidth;
+	}
+	
+	.worker
+	{
+		color: @grayLight;
+		margin-right: @gridGutterWidth;
+		font: normal 85% "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+	}
+
+
+	
+	li
+	{
+		border-bottom: 1px solid @grayLighter;
+		.transition(all .1s);
+		padding:3px 10px;
+		
+		&:hover
+		{			
+			background-color: @grayLighter;
+		}
+		
+		&.hover-highlight
+		{
+			opacity: 1;
+			color: @textColor!important;
+			background-color: lighten(@yellow, 43);
+		}
+		
+	}
+	
+	li[data-verbosity="debug"]
+	{
+		color: @grayLight;
+	}
+
+	li.filter-event
+	{
+		.gradientBar(@grayLighter, #fff);
+		text-align: center;
+		font-size: 85%;
+		border-bottom: 1px solid @grayLighter;
+		color: @grayLight;
+
+	}
+	
+	time
+	{
+		font-size:95%;
+		color:  @grayLight;
+		float: right;
+	}
+}
+
+#log-sweeper-form
+{
+	li
+	{
+		clear:both;
+		line-height: 1.6;
+		border-bottom: 1px solid @grayLighter;
+		padding: 3px 0;
+	}
+	
+	
+}
+
+.worker-name
+{
+	width: @gridColumnWidth * 4 + @gridGutterWidth * 4;
+}
+
+.stats-number
+{
+	font-size: 125%;
+	width: @gridColumnWidth + @gridGutterWidth;
+	font-weight: bold;
+	text-align: right!important;
+}
+
+footer.container p
+{
+	color: lighten(@textColor, 35);
+	font-size: 11px;
+	padding-top: 5px;	
+}
+
+mark
+{
+	background-color: lighten(yellow, 25);
+}
+
+.job-status-icon
+{
+	display: block;
+	float: left;
+	margin-right: 10px;
+	border: 1px solid darken(#fff, 20);
+	.border-radius(3px);
+	padding: 5px;
+	background-color: #fff;
+	.box-shadow(0 1px 5px 0 rgba(0,0,0,0.2) inset);
+}
+
+#job-details
+{
+
+	
+	h4, code, pre
+	{
+		font-family: Consolas, "Courier New", Courier, mono;
+	}
+	
+	h4
+	{
+		background-color: lighten(@green, 45);
+		display: inline-block;
+	}
+	
+	small
+	{
+		display:block;
+		font-size: 11px;
+		color: lighten(@textColor, 25);
+	}
+	
+	.accordion-group {
+	  	border: 1px solid darken(#fff, 20);
+	  	
+	  	&.error
+		{
+			border: 1px solid lighten(@red, 35);
+	
+			.accordion-body
+			{
+				#gradient .vertical(lighten(@red, 25), lighten(@red, 50));
+				color: #fff;
+			}
+			
+			.accordion-heading
+			{
+				#gradient .vertical(#fff, lighten(@red, 50));
+			}
+		}
+	}
+	
+	code
+	{
+		font-size: 11px;
+	}
+	
+	.accordion-heading
+	{
+		#gradient .vertical(#fff, darken(#fff, 5));
+	}
+	
+	.accordion-heading:hover
+	{
+		#gradient .vertical(#fff, darken(#fff, 10));
+	}
+	
+	.accordion-body
+	{
+		pre
+		{
+			background-color: #fff;
+			font-size: 11px;	
+		}
+	}
+	
+	time
+	{
+		float: right;
+		display: block;
+		clear: right;
+		margin-top: 2px;
+		font-weight: bold;
+		font-size: 11px;
+		opacity: 0.6;
+	}
+}
+
+.worker-list
+{
+	border: 1px solid darken(#fff, 10);
+	.border-radius(4px);
+	margin-bottom: @gridGutterWidth;
+	#gradient .vertical(#fff, darken(#fff, 5));
+	font-size: 11px;
+	
+	h3
+	{
+		padding: 5px 10px;
+		border-bottom: 1px solid darken(#fff, 10);
+		font-size: 14px;
+		background-color: #fff;
+		.border-radius(4px 4px 0 0);
+	}
+	
+	h3.sub
+	{
+		padding: 0 5px;
+		border:0;
+		font-size: 14px;
+		background-color: transparent;
+	}
+	
+	.worker-list-inner
+	{
+		padding: 5px;
+		
+		small
+		{
+			b
+			{
+				font-size: 14px;
+				display: block;
+				margin-top: 6px;
+			}
+			
+			color: lighten(@textColor, 20);
+			font-style: italic;
+			line-height: 12px;
+			text-align: right;
+			margin-right: 5px;
+		}
+	}
+	
+
+	
+	div.worker-stats
+	{
+		background-color: #fff;
+		border: 1px solid darken(#fff, 10);
+		margin-top: 5px;
+		.border-radius(3px);
+		padding: 8px;
+		
+		.chart-pie, .stat-count
+		{
+			float: left;
+		}
+		
+		.chart-pie
+		{
+			width: 40px;
+			height: 40px;
+		}
+	
+		.stat-count
+		{
+			margin-left: 15px;
+			margin-top: 4px;
+			width: 100px;
+			color: lighten(@textColor, 10);
+			
+				
+			b
+			{
+				font-size: 22px;
+				font-weight: bold;
+				display: block;
+				color: #000;
+				
+				&.warning
+				{
+					color: lighten(@red, 25);
+				}
+			}
+		}
+	}
+}
+
+tr.worker-stats:target
+{
+	background-color: lighten(@yellow, 43);
+}
+
+tr.worker-stats:target td:first-child
+{
+	border-left: 3px solid @green;
+}
+
+.queue-name
+{
+	.gradientBar(lighten(@blue, 20), lighten(@blue, 2));
+	color: #fff;
+	font-weight: bold;
+	padding: 0px 4px 2px;
+	text-shadow: darken(@blue, 10) 0 -1px 0;
+	.border-radius(2px);
+}
+
+table .queues-list
+{
+	font-size: 11px;
+	color: lighten(@textColor, 25);
+}
+
+.table td.inner-wrap
+{
+	padding: 0px 0px!important;
+}
+
+#working-area
+{
+	
+	td
+	{
+		vertical-align:middle;
+		height: 37px;	
+		
+		& > div
+		{
+			vertical-align: bottom;
+			padding: 8px;
+			height: 37px;
+		}
+				
+		h4
+		{
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow: hidden;
+		}
+		
+		span.chart-bar
+		{
+			display: block;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+			background-color: #d8ecf7;
+		}
+		
+		span.chart-bar + b
+		{
+			position: relative;
+			z-index: 1;
+		}
+	}
+	padding-bottom: 20px;
+}
+
+// Heading Subtitle
+.subtitle
+{
+	display: block;
+	line-height: 1;
+}
+
+.job-trace, .job-args
+{
+	position: relative;
+
+	&:before
+	{
+		content: "Job error log";
+		position: absolute;
+		right: 5px;
+		background-color: darken(@yellow, 15);
+		color: #fff;
+		padding: 0 8px;
+		top: 5px;
+		.border-radius(3px);
+	}
+}
+.job-args:before
+{
+	content: "Job arguments";
+}
+
+.chart-pie path:hover
+{
+	opacity: 0.8;
+}
+
+
+.breadcrumb
+{
+	form, form + div
+	{
+		float:left;
+		margin-left: 10px;
+		margin-bottom: 0;
+	}
+}
+
+// Horizon chart
+#worker-activities
+{
+	top: 0;
+	left: 0;
+	position: absolute;
+	z-index: 2;
+	
+	.horizon {
+		border-bottom: 1px solid transparent;
+	  	overflow: hidden;
+	  	position: relative;
+	}
+	
+	
+	
+	.horizon canvas {
+	  	display: block;
+	}
+	
+	.horizon .title,
+	.horizon .value {
+	  bottom: 0;
+	  line-height: 30px;
+	  margin: 0 6px;
+	  position: absolute;
+	  text-shadow: 0 1px 0 rgba(255,255,255,.5);
+	  white-space: nowrap;
+	}
+	
+	.horizon .title {
+	  left: 0;
+	}
+	
+	.horizon .value {
+	  right: 0;
+	}
+	
+	.line {
+	  background: #000;
+	  opacity: .2;
+	  z-index: 2;
+	}
+
+	
+}
+

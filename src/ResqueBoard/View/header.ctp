@@ -24,8 +24,7 @@
         <meta charset="UTF-8" />
         <title><?php echo $pageTitle . TITLE_SEP . APPLICATION_NAME?></title>
         <link href="/css/bootstrap.css" rel="stylesheet" type="text/css">
-        <link href="/css/main.css" rel="stylesheet" type="text/css">
-        <link href="/img/resqueboard.png" rel="shortcut icon">
+        <link href="/css/main-<?php echo APPLICATION_VERSION ?>.css" rel="stylesheet" type="text/css">
    		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     </head>
     <body>

@@ -26,6 +26,8 @@
         define('DS', DIRECTORY_SEPARATOR);
     }
     
+    define('APPLICATION_VERSION', '1.0.0');
+    
    
     include(ROOT . DS . 'Config' . DS . 'Core.php');
     
@@ -163,6 +165,5 @@
                 'message' => $e->getMessage()
             ));
     });
-    
-    
+        
     $app->run();

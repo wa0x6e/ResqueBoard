@@ -20,8 +20,8 @@
 ?>
 <script type="text/javascript">
 $(document).ready(function() {
-    listenToWorkersJob("horizontal-bar");
-    listenToWorkersActivities();
+	listenToWorkersJob("horizontal-bar");
+	listenToWorkersActivities();
 });
 </script>
 <div class="container" id="main">
@@ -30,7 +30,7 @@ $(document).ready(function() {
 	</div>
 	<div class="row">
 		<div class="span12">
-			
+
 
 			<div id="working-area">
 				<table class="table table-bordered">
@@ -44,27 +44,39 @@ $(document).ready(function() {
 				</thead>
 				<tbody>
 				<?php
-				
-				    $totalJobs = 0;
-				    $i = 0;
-				    array_walk($workers, function($q) use (&$totalJobs) {$totalJobs += $q['processed'];});
-			
+
+					$totalJobs = 0;
+					$i = 0;
+					array_walk(
+						$workers,
+						function ($q) use (&$totalJobs) {
+							$totalJobs += $q['processed'];
+						}
+					);
+
 					foreach ($workers as $worker) {
 
-					    $barWidth = $totalJobs != 0 ? (($worker['processed']/$totalJobs) * 100)  : 0;
-					    
+						$barWidth = $totalJobs != 0 ? (($worker['processed']/$totalJobs) * 100)  : 0;
+
 						$workerId = str_replace('.', '', $worker['host']) . $worker['process'];
 						echo '<tr class="worker-stats" id="'.$workerId.'">';
 						echo '<td><h4>' . $worker['host'] . ':' . $worker['process']. '</h4>';
 						echo '<small class="queues-list"><strong><i class="icon-list-alt"></i> Queues : </strong>';
-						array_walk($worker['queues'], function($q){echo '<span class="queue-name">'.$q.'</span> ';});
+						array_walk(
+							$worker['queues'],
+							function($q){
+								echo '<span class="queue-name">'.$q.'</span> ';
+							}
+						);
 						echo '</small></td>';
 						echo '<td class="stats-number inner-wrap"><div style="position:relative;">' .
 						'<span class="chart-bar" data-type="chart" data-chart-type="horizontal-bar" style="width:'.$barWidth.'%;"></span>'.
 						'<b data-status="processed">'.number_format($worker['processed']) . '</b></div></td>';
 						echo '<td class="stats-number inner-wrap"><div style="position:relative;"><b data-status="failed">'.number_format($worker['failed']) . '</b></div></td>';
 						echo '<td class="inner-wrap">';
-						if ($i++ == 0) echo '<div style="position:relative;"><div id="worker-activities"></div></div>';
+						if ($i++ == 0) {
+							echo '<div style="position:relative;"><div id="worker-activities"></div></div>';
+						}
 						echo '</td>';
 						echo '</tr>';
 					}
@@ -76,9 +88,9 @@ $(document).ready(function() {
 				<span class="label" id="_{{>job_id}}">{{>action}}</span>
 			</script>
 
-			
-			
+
+
 		</div>
 	</div>
-	
+
 </div>

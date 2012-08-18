@@ -31,25 +31,26 @@ namespace ResqueBoard\View;
  */
 class MyView extends \Slim_View
 {
-    
+
     private $headerTemplate = 'header.ctp';
     private $footerTemplate = 'footer.ctp';
-    
-    
+
+
     /**
      * Automatically include header and footer when rendering a template
      *
      * @see Slim_View::render()
      */
-    public function render( $template )
+    public function render($template)
     {
-       $this->setTemplate($template);
-       extract($this->data);
-       ob_start();
-       require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->headerTemplate;
-       require $this->templatePath;
-       require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->footerTemplate;
-       return ob_get_clean();
-       return $content;
+        $this->setTemplate($template);
+        extract($this->data);
+        ob_start();
+        require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->headerTemplate;
+        require $this->templatePath;
+        require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->footerTemplate;
+        return ob_get_clean();
+        return $content;
     }
 }
+

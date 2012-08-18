@@ -14,7 +14,7 @@
  * @copyright     Copyright 2012, Wan Qi Chen <kami@kamisama.me>
  * @link          http://resqueboard.kamisama.me
  * @package       resqueboard
- * @subpackage	  resqueboard.lib
+ * @subpackage      resqueboard.lib
  * @since         1.0.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
@@ -26,25 +26,25 @@ namespace ResqueBoard\Lib;
  *
  * Connect to the backend to retrieve php-resque datas, or metrics
  *
- * @subpackage	  resqueboard.lib
- * @since  		  1.0.0
- * @author 		  Wan Qi Chen <kami@kamisama.me>
+ * @subpackage      resqueboard.lib
+ * @since            1.0.0
+ * @author           Wan Qi Chen <kami@kamisama.me>
  */
 class ResqueStat
 {
     protected $stats = array();
     protected $workers = array();
     protected $queues = array();
-    
+
     const JOB_STATUS_WAITING = 1;
     const JOB_STATUS_RUNNING = 2;
     const JOB_STATUS_FAILED = 3;
     const JOB_STATUS_COMPLETE = 4;
-    
+
     private $settings;
     private $redis;
     private $mongo;
-    
+
     public function __construct($settings = array())
     {
         $this->settings = array(
@@ -52,26 +52,32 @@ class ResqueStat
                 'redis' => array('host' => '127.0.0.1', 'port' => 6379),
                 'resquePrefix' => 'resque'
         );
-        
+
         $this->settings = array_merge($this->settings, $settings);
         $this->settings['resquePrefix'] = $this->settings['resquePrefix'] .':';
-        
+
         $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
 
         $thisQueues =& $this->queues;
-        $this->workers = array_map(function($name) use (&$thisQueues){
-            list($host, $process, $q) = explode(':', $name);
-            $q = explode(',', $q);
-            array_walk($q, function($qu)use(&$thisQueues){
-                if (isset($thisQueues[$qu])) {
-                    $thisQueues[$qu]++;
-                } else {
-                    $thisQueues[$qu] = 1;
-                }
-            });
-            return array('fullname' => $name, 'host' => $host, 'process' => $process, 'queues' => $q);
-        }, $this->getRedis()->smembers($this->settings['resquePrefix'] . 'workers'));
-        
+        $this->workers = array_map(
+            function ($name) use (&$thisQueues) {
+                list($host, $process, $q) = explode(':', $name);
+                $q = explode(',', $q);
+                array_walk(
+                    $q,
+                    function ($qu) use (&$thisQueues) {
+                        if (isset($thisQueues[$qu])) {
+                            $thisQueues[$qu]++;
+                        } else {
+                            $thisQueues[$qu] = 1;
+                        }
+                    }
+                );
+                return array('fullname' => $name, 'host' => $host, 'process' => $process, 'queues' => $q);
+            },
+            $this->getRedis()->smembers($this->settings['resquePrefix'] . 'workers')
+        );
+
         $redisPipeline = $this->getRedis()->multi(\Redis::PIPELINE);
         foreach ($this->workers as $worker) {
             $redisPipeline
@@ -79,41 +85,43 @@ class ResqueStat
             ->get($this->settings['resquePrefix'] . 'stat:processed:' . $worker['fullname'])
             ->get($this->settings['resquePrefix'] . 'stat:failed:' . $worker['fullname']);
         }
-        
+
         $result = $redisPipeline->exec();
         unset($redisPipeline);
-        
+
         $this->stats['active'] = array('processed' => 0, 'failed' => 0);
-        
+
         for ($i = 0, $total = count($result), $j = 0; $i < $total; $i += 3) {
             $this->workers[$j]['start'] = new \DateTime($result[$i]);
             $this->stats['active']['processed'] += $this->workers[$j]['processed'] = (int) $result[$i+1];
             $this->stats['active']['failed'] += $this->workers[$j++]['failed'] = (int) $result[$i+2];
-        
+
         }
-        
+
         unset($result);
-        
-        
+
+
         $this->stats['total'] = array_combine(
-                array('processed', 'failed'),
-                array_map(
-                        function($s){return (int) $s; },
-                        $this->getRedis()->multi(\Redis::PIPELINE)
-                            ->get($this->settings['resquePrefix'] . 'stat:processed')
-                            ->get($this->settings['resquePrefix'] . 'stat:failed')
-                            ->exec()
-                        )
-                );
+            array('processed', 'failed'),
+            array_map(
+                function ($s) {
+                    return (int) $s;
+                },
+                $this->getRedis()->multi(\Redis::PIPELINE)
+                    ->get($this->settings['resquePrefix'] . 'stat:processed')
+                    ->get($this->settings['resquePrefix'] . 'stat:failed')
+                    ->exec()
+            )
+        );
     }
-    
-    
+
+
     private function getMongo()
     {
         if ($this->mongo !== null) {
             return $this->mongo;
         }
-        
+
         try {
             $this->mongo = new \Mongo($this->settings['mongo']['host'] . ':' . $this->settings['mongo']['port']);
             return $this->mongo;
@@ -121,13 +129,13 @@ class ResqueStat
             throw new DatabaseConnectionException('Could not connect to Mongo Server');
         }
     }
-    
+
     private function getRedis()
     {
         if ($this->redis !== null) {
             return $this->redis;
         }
-        
+
         try {
             $this->redis = new \Redis();
             $this->redis->connect($this->settings['redis']['host'], $this->settings['redis']['port']);
@@ -136,8 +144,8 @@ class ResqueStat
             throw new DatabaseConnectionException('Could not connect to Redis Server');
         }
     }
-    
-    
+
+
     /**
      * Return general stats about active workers
      *
@@ -147,8 +155,8 @@ class ResqueStat
     {
         return $this->stats;
     }
-    
-    
+
+
     /**
      * Return
      *
@@ -158,13 +166,13 @@ class ResqueStat
     {
         return $this->workers;
     }
-    
+
     public function getQueues()
     {
         return $this->queues;
     }
-    
-    
+
+
     /**
      * Return a list of jobs that was processed between
      * a $start and an $end date
@@ -173,19 +181,20 @@ class ResqueStat
     {
         $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
         $jobsCollection = $cube->selectCollection('got_events');
-        
+
         $jobsCursor = $jobsCollection->find(array('t' => array('$gte' => new \MongoDate($start), '$lt' => new \MongoDate($end))));
         $jobsCursor->sort(array('d.worker' => 1));
-        
+
         $result = $this->formatJobs($jobsCursor);
-        
-        if ($withStatus)
-        	$result =  $this->setJobStatus($result);
-        
+
+        if ($withStatus) {
+            $result =  $this->setJobStatus($result);
+        }
+
         return $result;
     }
-    
-    
+
+
     /**
      * Return a single job
      *
@@ -193,34 +202,34 @@ class ResqueStat
      */
     public function getJob($id)
     {
-    	$cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
-    	$jobsCollection = $cube->selectCollection('got_events');
-    	
-    	$jobsCursor = $jobsCollection->find(array('d.args.payload.id' => $id));
-    	
-    	$result = $this->setJobStatus($this->formatJobs($jobsCursor));
-    	
-    	return $result === null ? array() : $result;
+        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $jobsCollection = $cube->selectCollection('got_events');
+
+        $jobsCursor = $jobsCollection->find(array('d.args.payload.id' => $id));
+
+        $result = $this->setJobStatus($this->formatJobs($jobsCursor));
+
+        return $result === null ? array() : $result;
     }
-    
-    
+
+
     public function getJobsByWorker($workerId, $page, $limit)
     {
-    	$cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
-    	$jobsCollection = $cube->selectCollection('got_events');
-    	
-    	$conditions = $workerId === null ? array() : array('d.worker' => $workerId);
-    	
-    	$jobsCursor = $jobsCollection->find($conditions);
-    	$jobsCursor->sort(array('t' => -1))->skip(($page-1) * $limit)->limit($limit);
-    	
-    	$result = $this->setJobStatus($this->formatJobs($jobsCursor));
+        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $jobsCollection = $cube->selectCollection('got_events');
 
-    	
-    	return $result;
+        $conditions = $workerId === null ? array() : array('d.worker' => $workerId);
+
+        $jobsCursor = $jobsCollection->find($conditions);
+        $jobsCursor->sort(array('t' => -1))->skip(($page-1) * $limit)->limit($limit);
+
+        $result = $this->setJobStatus($this->formatJobs($jobsCursor));
+
+
+        return $result;
     }
-    
-    
+
+
     /**
      * Return the total number of jobs for a specific worker
      *
@@ -228,91 +237,82 @@ class ResqueStat
      */
     public function getJobsByWorkersCount($workerId)
     {
-    	$conditions = array('d.worker' => $workerId);
-    	
-    	$cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
-    	return $cube->selectCollection('got_events')->find($conditions, array())->count();
+        $conditions = array('d.worker' => $workerId);
+
+        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        return $cube->selectCollection('got_events')->find($conditions, array())->count();
     }
-    
-    
+
+
     private function formatJobs($cursor)
     {
-    	$jobs = array();
-    	foreach ($cursor as $doc) {
-    		$jobs[$doc['d']['args']['payload']['id']] = array(
-    						'time' => date('c', $doc['t']->sec),
-    						'queue' => $doc['d']['args']['queue'],
-    						'worker' => $doc['d']['worker'],
-    						'level' => $doc['d']['level'],
-    						'class' => $doc['d']['args']['payload']['class'],
-    						'args' => var_export($doc['d']['args']['payload']['args'][0], true),
-    						'job_id' => $doc['d']['args']['payload']['id']
-    						 
-    		);
-    	}
-    	
-    	return $jobs;
+        $jobs = array();
+        foreach ($cursor as $doc) {
+            $jobs[$doc['d']['args']['payload']['id']] = array(
+                            'time' => date('c', $doc['t']->sec),
+                            'queue' => $doc['d']['args']['queue'],
+                            'worker' => $doc['d']['worker'],
+                            'level' => $doc['d']['level'],
+                            'class' => $doc['d']['args']['payload']['class'],
+                            'args' => var_export($doc['d']['args']['payload']['args'][0], true),
+                            'job_id' => $doc['d']['args']['payload']['id']
+
+            );
+        }
+
+        return $jobs;
     }
-    
-    
-    
+
+
+
     private function setJobStatus($jobs)
     {
-    	$jobIds = array_keys($jobs);
-    	
-    	$cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
-    	
-    	 
-    	$jobsCursor = $cube->selectCollection('done_events')->find(array('d.job_id' => array('$in' => $jobIds)));
-    	foreach ($jobsCursor as $successJob)
-    	{
-    		$jobs[$successJob['d']['job_id']]['status'] = self::JOB_STATUS_COMPLETE;
-    		unset($jobIds[array_search($successJob['d']['job_id'], $jobIds)]);
-    	}
-    	
-		if (!empty($jobIds))
-		{
-			$redisPipeline = $this->getRedis()->multi(\Redis::PIPELINE);
-				
-	    	$jobsCursor = $cube->selectCollection('fail_events')->find(array('d.job_id' => array('$in' => $jobIds)));
-	    	foreach ($jobsCursor as $failedJob)
-	    	{
-	    		$jobs[$failedJob['d']['job_id']]['status'] = self::JOB_STATUS_FAILED;
-	    		$jobs[$failedJob['d']['job_id']]['log'] = $failedJob['d']['log'];
-	    		$redisPipeline->get($this->settings['resquePrefix'] . 'failed:' . $failedJob['d']['job_id']);
-	    		unset($jobIds[array_search($failedJob['d']['job_id'], $jobIds)]);
-	    	}
-	    	
-	    	$failedTrace = array_filter($redisPipeline->exec());
-	    	
-	    	foreach($failedTrace as $trace)
-	    	{
-	    		$trace = function_exists('igbinary_unserialize') ? igbinary_unserialize($trace) : unserialize($trace);
-	    		$jobs[$trace['payload']['id']]['trace'] = var_export($trace, true);
-	    	}
-	    	
-		}
-		
-		if (!empty($jobIds))
-		{
-			$jobsCursor = $cube->selectCollection('process_events')->find(array('d.job_id' => array('$in' => $jobIds)));
-			foreach ($jobsCursor as $processJob)
-			{
-				$jobs[$processJob['d']['job_id']]['status'] = self::JOB_STATUS_RUNNING;
-				unset($jobIds[array_search($processJob['d']['job_id'], $jobIds)]);
-			}
-		}
-		if (!empty($jobIds))
-		{
-			foreach($jobIds as $id)
-			{
-				$jobs[$id]['status'] = self::JOB_STATUS_WAITING;
-			}
-		}
-	
-    	return array_values($jobs);
+        $jobIds = array_keys($jobs);
+
+        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+
+
+        $jobsCursor = $cube->selectCollection('done_events')->find(array('d.job_id' => array('$in' => $jobIds)));
+        foreach ($jobsCursor as $successJob) {
+            $jobs[$successJob['d']['job_id']]['status'] = self::JOB_STATUS_COMPLETE;
+            unset($jobIds[array_search($successJob['d']['job_id'], $jobIds)]);
+        }
+
+        if (!empty($jobIds)) {
+            $redisPipeline = $this->getRedis()->multi(\Redis::PIPELINE);
+
+            $jobsCursor = $cube->selectCollection('fail_events')->find(array('d.job_id' => array('$in' => $jobIds)));
+            foreach ($jobsCursor as $failedJob) {
+                $jobs[$failedJob['d']['job_id']]['status'] = self::JOB_STATUS_FAILED;
+                $jobs[$failedJob['d']['job_id']]['log'] = $failedJob['d']['log'];
+                $redisPipeline->get($this->settings['resquePrefix'] . 'failed:' . $failedJob['d']['job_id']);
+                unset($jobIds[array_search($failedJob['d']['job_id'], $jobIds)]);
+            }
+
+            $failedTrace = array_filter($redisPipeline->exec());
+
+            foreach ($failedTrace as $trace) {
+                $trace = function_exists('igbinary_unserialize') ? igbinary_unserialize($trace) : unserialize($trace);
+                $jobs[$trace['payload']['id']]['trace'] = var_export($trace, true);
+            }
+
+        }
+
+        if (!empty($jobIds)) {
+            $jobsCursor = $cube->selectCollection('process_events')->find(array('d.job_id' => array('$in' => $jobIds)));
+            foreach ($jobsCursor as $processJob) {
+                $jobs[$processJob['d']['job_id']]['status'] = self::JOB_STATUS_RUNNING;
+                unset($jobIds[array_search($processJob['d']['job_id'], $jobIds)]);
+            }
+        }
+        if (!empty($jobIds)) {
+            foreach ($jobIds as $id) {
+                $jobs[$id]['status'] = self::JOB_STATUS_WAITING;
+            }
+        }
+
+        return array_values($jobs);
     }
-    
 }
 
 
@@ -322,8 +322,11 @@ class ResqueStat
  * Type of exception thrown when ResqueStat can not connect
  * to a database
  *
- * @subpackage	  resqueboard.lib
- * @since  		  1.0.0
- * @author 		  Wan Qi Chen <kami@kamisama.me>
+ * @subpackage      resqueboard.lib
+ * @since            1.0.0
+ * @author           Wan Qi Chen <kami@kamisama.me>
  */
-class DatabaseConnectionException extends \Exception {}
+class DatabaseConnectionException extends \Exception
+{
+}
+

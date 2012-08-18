@@ -17,7 +17,8 @@
  * @since         1.0.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-    
+
+
     /**
      * Database connection settings
      *
@@ -39,8 +40,8 @@
             ),*/
             /*'resquePrefix' => 'resque'*/
     );
-    
-    
+
+
     /**
      * Datas used for instanciating a Slim object
      *
@@ -52,8 +53,8 @@
                 'view' => 'ResqueBoard\View\MyView',
                 'templates.path' => ROOT . DS .'View'
             );
-    
-    
+
+
     /**
      * Map a log level to an html/css class name
      *
@@ -67,24 +68,24 @@
             'criticial' => 'label-inverse',
             'alert' => 'label-inverse'
     );
-    
-    
+
+
     /**
      * List of events type
      *
      * @var array
      */
     $logTypes = array('start', 'got', 'process', 'fork', 'done', 'fail', 'sleep', 'prune', 'stop');
-    
-    
+
+
     /**
      * Default number of items to display for pagination
      *
      * @var int
      */
     define('PAGINATION_LIMIT', 15);
-    
-    
+
+
     /**
      * Default application name
      *
@@ -92,12 +93,14 @@
      * @var string
      */
     define('APPLICATION_NAME', 'ResqueBoard');
-    
+
+
     /**
      * Separator between the website name and other text, in the page title
      *
      * @var string
      */
     define('TITLE_SEP', ' | ');
-    
-    include(dirname(dirname(ROOT)) . DS . 'vendor' . DS . 'autoload.php');
+
+    require dirname(dirname(ROOT)) . DS . 'vendor' . DS . 'autoload.php';
+

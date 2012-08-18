@@ -20,7 +20,7 @@
 ?>
 <div class="container">
 	<div class="hero-unit alert alert-error">
-	    <h1>Oups ! Something went wrong</h1>
-	    <p><?php echo $message ?></p>
+		<h1>Oups ! Something went wrong</h1>
+		<p><?php echo $message ?></p>
 	</div>
 </div>

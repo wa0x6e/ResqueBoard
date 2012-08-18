@@ -61,7 +61,7 @@ $app->get(
 
         $mutedLevels = $app->getCookie('ResqueBoard.mutedLevel');
         if (empty($mutedLevels)) {
-            $app->setCookie('ResqueBoard.mutedLevel', '', '1 year');
+            $app->setCookie('ResqueBoard.mutedLevel', '', '1 year', '/logs');
         }
 
         $mutedLevels = array_filter(explode(',', $mutedLevels));

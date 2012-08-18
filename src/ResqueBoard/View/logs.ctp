@@ -61,7 +61,7 @@
 							$levelName.'"';
 
 							if (!in_array($levelName, $mutedLevels)) {
-								echo ' checked="unchecked"';
+								echo ' checked=""';
 							}
 
 							echo '> '.ucwords($levelName).'</label>';

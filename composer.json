@@ -1,22 +1,29 @@
 {
-    "name": "ResqueBoard/ResqueBoard",
-    "description" : "A web interface to monitor php resque activities",
-    "keywords": ["php-resque", "resque", "web interface", "admin"],
-    "homepage": "http://kamisama.github.com/ResqueBoard/",
-    "authors": [
-        {
-            "name": "Wan Chen",
-            "email": "kami@kamisama.me",
-            "homepage": "http://www.kamisama.me",
-            "role": "Developer"
-        }
-    ],
-    "license": "MIT",
-    "require": {
-        "php": ">=5.3.0",
-        "slim/slim" : ">=1.6.4"
-    },
-    "autoload": {
-        "psr-0": {"ResqueBoard": "src/"}
-    }
+	"name": "ResqueBoard/ResqueBoard",
+	"description" : "A web interface to monitor php resque activities",
+	"keywords": ["php-resque", "resque", "web interface", "admin"],
+	"homepage": "http://kamisama.github.com/ResqueBoard/",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Wan Chen",
+			"email": "kami@kamisama.me",
+			"homepage": "http://www.kamisama.me",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"php": ">=5.3.0",
+		"slim/slim" : ">=1.6.4"
+	},
+	"autoload": {
+		"psr-0": {"ResqueBoard": "src/"}
+	},
+	"suggest": {
+		"kamisama/php-resque-ex": ">=1.0.*"
+	},
+	"support": {
+		"issues": "https://github.com/kamisama/resqueboard/issues",
+		"source": "https://github.com/kamisama/resqueboard"
+	}
 }

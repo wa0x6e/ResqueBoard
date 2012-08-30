@@ -26,6 +26,7 @@
 		<link href="/css/bootstrap.css" rel="stylesheet" type="text/css">
 		<link href="/css/main-<?php echo APPLICATION_VERSION ?>.css" rel="stylesheet" type="text/css">
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+		<link rel="stylesheet" href="http://yandex.st/highlightjs/7.1/styles/default.min.css">
 	</head>
 	<body>
 		<script type="text/javascript">serverIp = '<?php echo $_SERVER['SERVER_ADDR'] ?>'</script>

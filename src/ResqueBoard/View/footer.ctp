@@ -28,5 +28,7 @@
 		<script type="text/javascript" src="/js/cubism.v1.min.js"></script>
 		<script type="text/javascript" src="/js/bootstrap-2.0.4.min.js"></script>
 		<script type="text/javascript" src="/js/app-<?php echo APPLICATION_VERSION ?>.min.js"></script>
+		<script src="http://yandex.st/highlightjs/7.1/highlight.min.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
 	</body>
 </html>

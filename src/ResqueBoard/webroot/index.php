@@ -123,6 +123,8 @@ $app->map(
                 'jobs.ctp',
                 array(
                     'jobs' => $jobs,
+                	'jobsStatsByQueue' => $resqueStat->getJobsStatsByQueue(),
+                	'jobsRepartitionStats' => $resqueStat->getJobsRepartionStats(),
                     'searchToken' => $searchToken,
                     'workers' => $resqueStat->getWorkers(),
                     'resultLimits' => $resultLimits,

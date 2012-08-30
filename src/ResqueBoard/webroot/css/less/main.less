@@ -239,6 +239,9 @@ mark
 	{
 		background-color: lighten(@green, 45);
 		display: inline-block;
+		margin: 0;
+		padding: 0;
+		font-size: @baseFontSize * 1.1;
 	}
 	
 	small
@@ -314,11 +317,12 @@ mark
 	
 	h3
 	{
-		padding: 5px 10px;
+		padding: 0px 10px;
 		border-bottom: 1px solid darken(#fff, 10);
 		font-size: 14px;
 		background-color: #fff;
 		.border-radius(4px 4px 0 0);
+		margin:0;
 	}
 	
 	h3.sub
@@ -446,6 +450,10 @@ table .queues-list
 			white-space: nowrap;
 			text-overflow: ellipsis;
 			overflow: hidden;
+			margin: 0;
+			font-size: @baseFontSize;
+			padding: 0;
+			line-height: 1;
 		}
 		
 		span.chart-bar
@@ -556,5 +564,11 @@ table .queues-list
 	}
 
 	
+}
+
+
+td.stats-nb, th.stats-nb
+{
+	text-align: right;
 }
 

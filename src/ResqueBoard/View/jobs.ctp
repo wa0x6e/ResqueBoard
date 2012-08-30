@@ -31,6 +31,73 @@
 		<h2>Jobs <small class="subtitle">View jobs details</small></h2>
 	</div>
 	<div class="row">
+
+		<div class="span12">
+		<h3>Jobs repartition</h3>
+
+		<div class="row">
+			<div class="span6">
+				<table class="table table-condensed table-hover">
+					<thead>
+						<tr>
+							<th>Job class</th>
+							<th class="stats-nb">Count</th>
+							<th class="stats-nb">Distribution</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php
+						$total = 0;
+						foreach ($jobsRepartitionStats->stats as $stat) {
+							echo '<tr>';
+							echo '<td>' . $stat['_id'] . '</td>';
+							echo '<td class="stats-nb">' . number_format($stat['value']) . '</td>';
+							echo '<td class="stats-nb">' . $stat['percentage'] . '%</td>';
+							echo '</tr>';
+
+							$total += $stat['value'];
+						}
+
+						if ($total < $jobsRepartitionStats->total) {
+							echo '<tr>';
+							echo '<td>Other</td>';
+							echo '<td class="stats-nb">' . number_format($jobsRepartitionStats->total - $total) . '</td>';
+							echo '<td class="stats-nb">' . round(($jobsRepartitionStats->total - $total) / $jobsRepartitionStats->total * 100, 2) . '%</td>';
+							echo '</tr>';
+						}
+
+						echo '<tr class="info">';
+						echo '<td>Total</td>';
+						echo '<td class="stats-nb">' . number_format($jobsRepartitionStats->total) . '</td>';
+						echo '<td class="stats-nb">100%</td>';
+						echo '</tr>';
+
+						?>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="span6">
+				<?php
+					$pieDatas = array();
+					$total = 100;
+					foreach($jobsRepartitionStats->stats as $stat) {
+						if ($stat['percentage'] >= 15) {
+							$pieDatas[$stat['_id']] = $stat['percentage'];
+							$total -= $stat['percentage'];
+						}
+					}
+					if (count($pieDatas <= count($jobsRepartitionStats->stats))) {
+						$pieDatas['Other'] = $total;
+					}
+
+					echo("<script>var data.jobs.repartition = " . json_encode($pieDatas) . ";</script>");
+				?>
+			</div>
+
+		</div>
+		<div class="row">
+
 		<div class="span8">
 
 		<?php
@@ -50,7 +117,7 @@
 					<form class="form-inline" data-event="ajax-pagination">
 						<label>Display
 						<select class="span1">
-							<?php 
+							<?php
 							foreach ($resultLimits as $limit) {
 								echo '<option value="'.$pagination->baseUrl . $limit . '/' . $pagination->current.'"';
 								if ($limit == $pagination->limit) {
@@ -99,11 +166,11 @@
 							}
 
 							if (isset($job['trace'])) {
-								echo '<pre class="job-trace">'. $job['trace'] . '</pre>';
+								echo '<pre class="job-trace"><code class="language-php">'. $job['trace'] . '</code></pre>';
 							}
 							?>
 
-							<pre class="job-args"><?php echo $job['args'] ?></pre>
+							<pre class="job-args"><code class="language-php"><?php echo $job['args'] ?></code></pre>
 						</div>
 					</div>
 				</li>

@@ -244,6 +244,55 @@ class ResqueStat
     }
 
 
+    /**
+     * Return the proportion of jobs
+     */
+    public function getJobsRepartionStats($limit = 10)
+    {
+    	$cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+
+    	$now = new \MongoDate();
+
+    	$map = new \MongoCode("function() {emit(this.d.args.payload.class, 1); }");
+    	$reduce = new \MongoCode("function(key, val) {".
+    		"var sum = 0;".
+    		"for (var i in val) {".
+    			"sum += val[i];".
+    		"}".
+    		"return sum;".
+    	"}");
+
+    	$cube->command(array(
+    			'mapreduce' => 'got_events',
+    		'map' => $map,
+    		'reduce' => $reduce,
+    		'query' => array('t' => array('$gte' => $now)),
+			'out' => array('merge' => 'jobs_repartition_stats')
+    		));
+
+    	$mapReduceStats = new \MongoCollection($cube, 'map_reduce_stats');
+    	$mapReduceStats->insert(array('jobs_repartition_stats' => $now));
+
+
+    	$cursor = $cube->selectCollection('jobs_repartition_stats')->find()->sort(array('value' => -1))->limit($limit);
+
+    	$stats = new \stdClass();
+    	$stats->total = $cube->selectCollection('got_events')->find()->count();
+    	foreach($cursor as $c) {
+    		$c['percentage'] = round($c['value'] / $stats->total * 100, 2);
+    		$stats->stats[] = $c;
+    	}
+
+    	return $stats;
+    }
+
+
+    public function getJobsStatsByQueue()
+    {
+
+    }
+
+
     private function formatJobs($cursor)
     {
         $jobs = array();

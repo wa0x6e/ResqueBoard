@@ -22,7 +22,6 @@
 		<h1>Jobs Distribution</h1>
 	</div>
 	<div class="row">
-
 		<div class="span12">
 			<div id="jobRepartition">
 				<?php
@@ -70,7 +69,6 @@
 
 					}
 
-
 					if ($jobsRepartitionStats->total > 0) {
 						echo '<tr class="info">';
 						echo '<td></td>';
@@ -88,6 +86,5 @@
 				</tbody>
 			</table>
 		</div>
-
-
+	</div>
 </div>

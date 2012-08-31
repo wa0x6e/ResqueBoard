@@ -455,24 +455,24 @@ table .queues-list
 			padding: 0;
 			line-height: 1;
 		}
-		
-		span.chart-bar
-		{
-			display: block;
-			height: 100%;
-			position: absolute;
-			top: 0;
-			left: 0;
-			background-color: #d8ecf7;
-		}
-		
-		span.chart-bar + b
-		{
-			position: relative;
-			z-index: 1;
-		}
 	}
 	padding-bottom: 20px;
+}
+
+span.chart-bar
+{
+	display: block;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-color: #d8ecf7;
+}
+
+span.chart-bar + b
+{
+	position: relative;
+	z-index: 1;
 }
 
 // Heading Subtitle
@@ -503,7 +503,7 @@ table .queues-list
 	content: "Job arguments";
 }
 
-.chart-pie path:hover
+.chart-pie path:hover, .classyPieChart path:hover
 {
 	opacity: 0.8;
 }
@@ -572,3 +572,25 @@ td.stats-nb, th.stats-nb
 	text-align: right;
 }
 
+
+.classyPieChart {
+  font: 10px sans-serif;
+  text-shadow: none;
+}
+.classyPieChart .pie-total{
+  font-size: 18px;
+  font-weight: bold;
+}
+.classyPieChart .pie-units{
+  fill: gray;
+  font-size: 11px;
+}
+.classyPieChart .pie-label{
+  fill: #CCC;
+  font-size: 12px;
+  font-weight: bold;
+}
+.classyPieChart .pie-value{
+  font-size: 12px;
+  font-weight: bold;
+}

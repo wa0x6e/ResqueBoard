@@ -6,11 +6,11 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @author        Wan Qi Chen <kami@kamisama.me>
+ * @author		Wan Qi Chen <kami@kamisama.me>
  * @copyright     Copyright 2012, Wan Qi Chen <kami@kamisama.me>
- * @link          http://resqueboard.kamisama.me
- * @since         1.0.0
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.ctp)
+ * @link			http://resqueboard.kamisama.me
+ * @since		 1.0.0
+ * @license	 MIT License (http://www.opensource.org/licenses/mit-license.ctp)
  */
 
 var stop = new Date(Date.now());
@@ -492,7 +492,7 @@ function loadLogs()
 
 			$("#log-area").find("time").each(function() {
 				$(this).html(moment($(this).attr("title")).fromNow()).tooltip();
-			});      
+			});	
 		}
 	}
 
@@ -875,11 +875,11 @@ var jobPieChart = function()
 			;
 
 			function arcTween(a) {
-			  var i = d3.interpolate(this._current, a);
-			  this._current = i(0);
-			  return function(t) {
+				var i = d3.interpolate(this._current, a);
+				this._current = i(0);
+				return function(t) {
 				return arc(i(t));
-			  };
+				};
 			}
 		}
 	};
@@ -906,18 +906,18 @@ function listenToWorkersActivities()
 	}	
 
 	d3.select("#worker-activities").append("div")
-    .attr("class", "rule")
-    .call(context.rule());
+	.attr("class", "rule")
+	.call(context.rule());
 
 	d3.select("#worker-activities").selectAll(".horizon")
-    .data(metrics)
-  	.enter().append("div")
-    .attr("class", "horizon")
-    .call(horizon.extent([-180, 180]).title(null));
+	.data(metrics)
+	.enter().append("div")
+	.attr("class", "horizon")
+	.call(horizon.extent([-180, 180]).title(null));
 
 	d3.select("#worker-activities").append("div")
-    .attr("class", "axis")
-    .call(context.axis().orient("bottom").ticks(d3.time.minutes, 10).tickSize(6,3,0)
+	.attr("class", "axis")
+	.call(context.axis().orient("bottom").ticks(d3.time.minutes, 10).tickSize(6,3,0)
 	.tickFormat(d3.time.format("%H:%M")));
 
 }
@@ -938,5 +938,214 @@ function parseInteger(str)
 function number_format(x)
 {
 	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+}
+
+
+function pieChart(id, total, data)
+{
+	var m = 0;
+	var r = 80;
+	var ir = 40;
+	var textOffset = 14;
+	var z = d3.scale.category20();
+
+	var donut = d3.layout.pie().value(function(d){
+					return d.count;
+				});
+
+	var parent = $("#"+id);	
+	var w = parent.width();	
+	var h = w*0.5;
+
+	// Define the margin, radius, and color scale. The color scale will be
+	// assigned by index, but if you define your data using objects, you could pass
+	// in a named field from the data object instead, such as `d.name`. Colors
+	// are assigned lazily, so if you want deterministic behavior, define a domain
+	// for the color scale.
+	
+
+	var arc = d3.svg.arc()
+	.startAngle(function(d){ return d.startAngle; })
+	.endAngle(function(d){ return d.endAngle; })
+	.innerRadius(ir)
+	.outerRadius(r);
+
+	var formatCenterText = function(nb)
+	{
+		if (nb > 10000) return Math.round(nb /1000) + "K";
+		return nb;
+	}
+
+	///////////////////////////////////////////////////////////
+	// GROUP //////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////
+	
+	// Insert an svg:svg element (with margin) for each row in our dataset. A
+	// child svg:g element translates the origin to the pie center.
+	var svg = d3.select(parent[0])
+	.append("svg:svg")
+	.attr("class", "classyPieChart")
+	.attr("width", w)
+	.attr("height", h)
+	;
+
+	var arc_group = svg
+	.append("svg:g")
+	.attr("transform", "translate(" + (w/2) + "," + (h/2) + ")");
+
+	var label_group = svg
+	.append("svg:g")
+	.attr("transform", "translate(" + (w/2) + "," + (h/2) + ")");
+
+	var center_group = svg
+	.append("svg:g")
+	.attr("transform", "translate(" + (w/2) + "," + (h/2) + ")");
+
+	///////////////////////////////////////////////////////////
+	// ARC ////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////
+
+	// The data for each svg:svg element is a row of numbers (an array). We pass
+	// that to d3.layout.pie to compute the angles for each arc. These start and end
+	// angles are passed to d3.svg.arc to draw arcs! Note that the arc radius is
+	// specified on the arc, not the layout.
+	arc_group.selectAll("path")
+		.data(donut(data))
+		.enter().append("svg:path")
+		.attr("d", arc)
+		.attr("stroke", "white")
+		.attr("stroke-width", 0.5)
+		.attr("fill", function(d, i) { return z(i); })
+		.each(function(d, i) { data[i].startAngle = d.startAngle; data[i].endAngle = d.endAngle; })
+	;
+
+	///////////////////////////////////////////////////////////
+	// CENTER TEXT ////////////////////////////////////////////
+	///////////////////////////////////////////////////////////
+
+	// // "TOTAL" LABEL
+	var totalLabel = center_group.append("svg:text")
+		.attr("class", "pie-label")
+		.attr("dy", -15)
+		.attr("text-anchor", "middle") // text-align: right
+		.text("TOTAL")
+	;
+
+	//TOTAL TRAFFIC VALUE
+	var totalValue = center_group.append("svg:text")
+			.attr("class", "pie-total")
+			.attr("dy", 7)
+			.attr("text-anchor", "middle") // text-align: right
+			.text(formatCenterText(total))
+	;
+
+	//UNITS LABEL
+	var totalUnits = center_group.append("svg:text")
+			.attr("class", "pie-units")
+			.attr("dy", 21)
+			.attr("text-anchor", "middle") // text-align: right
+			.text("jobs")
+	;
+
+	///////////////////////////////////////////////////////////
+	// ARC LABEL //////////////////////////////////////////////
+	///////////////////////////////////////////////////////////
+
+	//DRAW TICK MARK LINES FOR LABELS
+	var lines = label_group.selectAll("line").data(data);
+	lines.enter().append("svg:line")
+	.attr("x1", 0)
+	.attr("x2", 0)
+	.attr("y1", -r-3)
+	.attr("y2", -r-8)
+	.attr("stroke", "gray")
+	.attr("transform", function(d) { 
+		return "rotate(" + (d.startAngle+d.endAngle)/2 * (180/Math.PI) + ")";
+	});
+
+	//DRAW LABELS WITH PERCENTAGE VALUES
+	var valueLabels = label_group.selectAll("text.pie-value").data(data)
+		.attr("dy", function(d){
+			if ((d.startAngle+d.endAngle)/2 > Math.PI/2 && (d.startAngle+d.endAngle)/2 < Math.PI*1.5 ) {
+				return 5;
+			} else {
+				return -7;
+			}
+		})
+		.attr("text-anchor", function(d){
+			if ( (d.startAngle+d.endAngle)/2 < Math.PI ){
+				return "beginning";
+			} else {
+				return "end";
+			}
+		})
+		.enter().append("svg:text")
+		.attr("class", "pie-value")
+		.attr("transform", function(d) {
+			return "translate(" + Math.cos(((d.startAngle+d.endAngle - Math.PI)/2)) * (r+textOffset) + "," + Math.sin((d.startAngle+d.endAngle - Math.PI)/2) * (r+textOffset) + ")";
+		})
+		.attr("dy", function(d){
+			if ((d.startAngle+d.endAngle)/2 > Math.PI/2 && (d.startAngle+d.endAngle)/2 < Math.PI*1.5 ) {
+				return 5;
+			} else {
+				return -7;
+			}
+		})
+		.attr("text-anchor", function(d){
+			if ( (d.startAngle+d.endAngle)/2 < Math.PI ){
+				return "beginning";
+			} else {
+				return "end";
+			}
+		}).text(function(d){
+			return d.count + "%";
+		})
+	;
+
+	//DRAW LABELS WITH ENTITY NAMES
+	var nameLabels = label_group
+		.selectAll("text.pie-units")
+		.data(data)
+		.attr("dy", function(d){
+			if ((d.startAngle+d.endAngle)/2 > Math.PI/2 && (d.startAngle+d.endAngle)/2 < Math.PI*1.5 ) {
+				return 17;
+			} else {
+				return 5;
+			}
+		})
+		.attr("text-anchor", function(d){
+			if ((d.startAngle+d.endAngle)/2 < Math.PI ) {
+				return "beginning";
+			} else {
+				return "end";
+			}
+		}).text(function(d){
+			return d.name;
+		})
+	;
+
+	nameLabels.enter().append("svg:text")
+		.attr("class", "pie-units")
+		.attr("transform", function(d) {
+			return "translate(" + Math.cos(((d.startAngle+d.endAngle - Math.PI)/2)) * (r+textOffset) + "," + Math.sin((d.startAngle+d.endAngle - Math.PI)/2) * (r+textOffset) + ")";
+		})
+		.attr("dy", function(d){
+			if ((d.startAngle+d.endAngle)/2 > Math.PI/2 && (d.startAngle+d.endAngle)/2 < Math.PI*1.5 ) {
+				return 17;
+			} else {
+				return 5;
+			}
+		})
+		.attr("text-anchor", function(d){
+			if ((d.startAngle+d.endAngle)/2 < Math.PI ) {
+				return "beginning";
+			} else {
+				return "end";
+			}
+		}).text(function(d){
+			return d.name;
+		})
+	;
 
 }

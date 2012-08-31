@@ -28,72 +28,82 @@
 
 ?><div class="container" id="main">
 	<div class="page-header">
-		<h2>Jobs <small class="subtitle">View jobs details</small></h2>
+		<h1>Jobs <small class="subtitle">View jobs details</small></h1>
 	</div>
 	<div class="row">
 
 		<div class="span12">
-		<h3>Jobs repartition</h3>
+		<h2>Jobs distribution</h2>
 
-		<div class="row">
-			<div class="span6">
-				<table class="table table-condensed table-hover">
-					<thead>
-						<tr>
-							<th>Job class</th>
-							<th class="stats-nb">Count</th>
-							<th class="stats-nb">Distribution</th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php
-						$total = 0;
-						foreach ($jobsRepartitionStats->stats as $stat) {
-							echo '<tr>';
-							echo '<td>' . $stat['_id'] . '</td>';
-							echo '<td class="stats-nb">' . number_format($stat['value']) . '</td>';
-							echo '<td class="stats-nb">' . $stat['percentage'] . '%</td>';
-							echo '</tr>';
-
-							$total += $stat['value'];
-						}
-
-						if ($total < $jobsRepartitionStats->total) {
-							echo '<tr>';
-							echo '<td>Other</td>';
-							echo '<td class="stats-nb">' . number_format($jobsRepartitionStats->total - $total) . '</td>';
-							echo '<td class="stats-nb">' . round(($jobsRepartitionStats->total - $total) / $jobsRepartitionStats->total * 100, 2) . '%</td>';
-							echo '</tr>';
-						}
-
-						echo '<tr class="info">';
-						echo '<td>Total</td>';
-						echo '<td class="stats-nb">' . number_format($jobsRepartitionStats->total) . '</td>';
-						echo '<td class="stats-nb">100%</td>';
-						echo '</tr>';
-
-						?>
-					</tbody>
-				</table>
-			</div>
-
-			<div class="span6">
+		<div class="span6">
+			<div id="jobRepartition">
 				<?php
 					$pieDatas = array();
 					$total = 100;
 					foreach($jobsRepartitionStats->stats as $stat) {
 						if ($stat['percentage'] >= 15) {
-							$pieDatas[$stat['_id']] = $stat['percentage'];
+							$pieDatas[] = array('name' => $stat['_id'], 'count' => $stat['percentage']);
 							$total -= $stat['percentage'];
 						}
 					}
 					if (count($pieDatas <= count($jobsRepartitionStats->stats))) {
-						$pieDatas['Other'] = $total;
+						$pieDatas[] = array('name' => 'Other', 'count' => $total);
 					}
 
-					echo("<script>var data.jobs.repartition = " . json_encode($pieDatas) . ";</script>");
+					echo "<script type='text/javascript'>";
+					echo "$(document).ready(function() { ";
+						echo "pieChart('jobRepartition', " . $jobsRepartitionStats->total . ", " . json_encode($pieDatas) . ");";
+					echo "})</script>";
 				?>
 			</div>
+
+
+			<table class="table table-condensed table-hover">
+				<thead>
+					<tr>
+						<th>Job class</th>
+						<th class="stats-nb">Count</th>
+						<th class="stats-nb">Distribution</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+					$total = 0;
+					foreach ($jobsRepartitionStats->stats as $stat) {
+						echo '<tr>';
+						echo '<td>' . $stat['_id'] . '</td>';
+						echo '<td class="stats-nb">' . number_format($stat['value']) . '</td>';
+						echo '<td class="stats-nb"><div style="position:relative;">';
+						echo '<span class="chart-bar" style="width:' . $stat['percentage'] . '%;"></span>';
+						echo '<b>' . $stat['percentage'] . '%</b></div></div></td>';
+						echo '</tr>';
+
+						$total += $stat['value'];
+					}
+
+					if ($total < $jobsRepartitionStats->total) {
+						$p = round(($jobsRepartitionStats->total - $total) / $jobsRepartitionStats->total * 100, 2);
+
+						echo '<tr>';
+						echo '<td>Other</td>';
+						echo '<td class="stats-nb">' . number_format($jobsRepartitionStats->total - $total) . '</td>';
+						echo '<td class="stats-nb"><div style="position:relative;">';
+						echo '<span class="chart-bar" style="width:' . $p . '%;"></span>';
+						echo '<b>' . $p . '%</b></div></div></td>';
+						echo '</tr>';
+					}
+
+					echo '<tr class="info">';
+					echo '<td>Total</td>';
+					echo '<td class="stats-nb">' . number_format($jobsRepartitionStats->total) . '</td>';
+					echo '<td class="stats-nb">100%</td>';
+					echo '</tr>';
+
+					?>
+				</tbody>
+			</table>
+
+
 
 		</div>
 		<div class="row">

@@ -28,12 +28,12 @@
 
 ?><div class="container" id="main">
 	<div class="page-header">
-		<h1>Jobs <small class="subtitle">View jobs details</small></h1>
+		<h1>Jobs <small class="subtitle">Jobs dashboard</small></h1>
 	</div>
 	<div class="row">
 
 		<div class="span12">
-		<h2>Jobs distribution</h2>
+		<h2>Distribution by classes</h2>
 
 		<div class="span6">
 			<div id="jobRepartition">
@@ -46,7 +46,7 @@
 							$total -= $stat['percentage'];
 						}
 					}
-					if (count($pieDatas <= count($jobsRepartitionStats->stats))) {
+					if (count($pieDatas) < count($jobsRepartitionStats->stats)) {
 						$pieDatas[] = array('name' => 'Other', 'count' => $total);
 					}
 
@@ -93,15 +93,22 @@
 						echo '</tr>';
 					}
 
-					echo '<tr class="info">';
-					echo '<td>Total</td>';
-					echo '<td class="stats-nb">' . number_format($jobsRepartitionStats->total) . '</td>';
-					echo '<td class="stats-nb">100%</td>';
-					echo '</tr>';
+					if ($jobsRepartitionStats->total > 0) {
+						echo '<tr class="info">';
+						echo '<td>Total</td>';
+						echo '<td class="stats-nb">' . number_format($jobsRepartitionStats->total) . '</td>';
+						echo '<td class="stats-nb">100%</td>';
+						echo '</tr>';
+					} else {
+						echo '<tr class="info">';
+						echo '<td colspan=3>No jobs found</td>';
+						echo '</tr>';
+					}
 
 					?>
 				</tbody>
 			</table>
+			<a href="jobs/distribution">View all</a>
 
 
 
@@ -115,7 +122,7 @@
 		if ($searchToken !== null) {
 			echo '<h2>Results for <mark>' . $searchToken . '</mark></h2>';
 		} else {
-			echo '<h2>'.$pageTitle. '</h2>';
+			echo '<h2>Latest Jobs</h2>';
 		}
 
 		if (!empty($jobs)) {

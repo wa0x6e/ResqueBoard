@@ -245,7 +245,9 @@ class ResqueStat
 
 
     /**
-     * Return the proportion of jobs
+     * Return the distribution of jobs by classes
+     *
+     * @param int $limit Number of results to return
      */
     public function getJobsRepartionStats($limit = 10)
     {
@@ -263,7 +265,7 @@ class ResqueStat
     	"}");
 
     	$cube->command(array(
-    			'mapreduce' => 'got_events',
+    		'mapreduce' => 'got_events',
     		'map' => $map,
     		'reduce' => $reduce,
     		'query' => array('t' => array('$gte' => $now)),

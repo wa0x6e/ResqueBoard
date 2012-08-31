@@ -956,7 +956,9 @@ function pieChart(id, total, data)
 
 	var parent = $("#"+id);	
 	var w = parent.width();	
-	var h = w*0.5;
+	var h = 250;
+
+	console.log(data);
 
 	// Define the margin, radius, and color scale. The color scale will be
 	// assigned by index, but if you define your data using objects, you could pass
@@ -964,7 +966,6 @@ function pieChart(id, total, data)
 	// are assigned lazily, so if you want deterministic behavior, define a domain
 	// for the color scale.
 	
-
 	var arc = d3.svg.arc()
 	.startAngle(function(d){ return d.startAngle; })
 	.endAngle(function(d){ return d.endAngle; })
@@ -1021,8 +1022,24 @@ function pieChart(id, total, data)
 	;
 
 	///////////////////////////////////////////////////////////
+	// PLACEHOLDER ////////////////////////////////////////////
+	///////////////////////////////////////////////////////////
+	
+	if (data.length == 0) {
+		var paths = arc_group.append("svg:circle")
+	    .attr("fill", "#EFEFEF")
+	    .attr("r", r);
+
+	    var whiteCircle = center_group.append("svg:circle")
+			.attr("fill", "white")
+			.attr("r", ir);
+	}
+
+	///////////////////////////////////////////////////////////
 	// CENTER TEXT ////////////////////////////////////////////
 	///////////////////////////////////////////////////////////
+
+	
 
 	// // "TOTAL" LABEL
 	var totalLabel = center_group.append("svg:text")

@@ -128,7 +128,7 @@ $app->map(
                     'searchToken' => $searchToken,
                     'workers' => $resqueStat->getWorkers(),
                     'resultLimits' => $resultLimits,
-                    'pageTitle' => 'Last '.$limit.' Jobs'
+                    'pageTitle' => 'Jobs'
                 )
             );
 
@@ -137,6 +137,26 @@ $app->map(
         }
     }
 )->via('GET', 'POST');
+
+$app->get(
+	'/jobs/distribution',
+	function () use ($app, $settings) {
+		try {
+			$resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+
+			$app->render(
+				'jobs_distribution.ctp',
+				array(
+					'jobsRepartitionStats' => $resqueStat->getJobsRepartionStats(null),
+					'pageTitle' => 'Jobs distribution'
+				)
+			);
+
+		} catch (\Exception $e) {
+			$app->error($e);
+		}
+	}
+);
 
 $app->get(
     '/jobs/:workerHost/:workerProcess(/:limit(/:page))',

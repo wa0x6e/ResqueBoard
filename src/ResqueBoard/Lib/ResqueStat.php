@@ -301,8 +301,14 @@ class ResqueStat
     	$stats->count[self::JOB_STATUS_COMPLETE] = $cube->selectCollection('done_events')->find()->count();
     	$stats->count[self::JOB_STATUS_FAILED] = $cube->selectCollection('fail_events')->find()->count();
     	$stats->perc[self::JOB_STATUS_FAILED] = round($stats->count[self::JOB_STATUS_FAILED] / $stats->count[self::JOB_STATUS_COMPLETE] * 100, 2);
+    	$stats->count[self::JOB_STATUS_WAITING] = 0;
+
+    	$queues = $this->getQueues();
+    	foreach ($queues as $queue => $val) {
+    		$stats->count[self::JOB_STATUS_WAITING] += $this->getRedis()->llen($this->settings['resquePrefix'] . 'queue:' . $queue);
+    	}
+
     	$stats->count[self::JOB_STATUS_RUNNING] = 0; // TODO
-    	$stats->count[self::JOB_STATUS_WAITING] = 0; // TODO
 
     	return $stats;
     }

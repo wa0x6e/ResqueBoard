@@ -118,8 +118,8 @@
 				<small><?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?> % fails</small>
 				</div></li>
 				<li><div><strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]) ?></strong> failed Jobs</div></li>
-				<li><div><strong>0</strong> running jobs</div></li>
-				<li><div><strong>0</strong> waiting jobs</div></li>
+				<li><div><strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_RUNNING]) ?></strong> Running jobs</div></li>
+				<li><div><strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING]) ?></strong> Waiting jobs</div></li>
 			</ul>
 
 		</div>

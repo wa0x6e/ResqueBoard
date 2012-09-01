@@ -572,6 +572,11 @@ td.stats-nb, th.stats-nb
 	text-align: right;
 }
 
+.table-condensed
+{
+	font-size: 13px;
+}
+
 
 .classyPieChart {
   font: 10px sans-serif;
@@ -593,4 +598,84 @@ td.stats-nb, th.stats-nb
 .classyPieChart .pie-value{
   font-size: 12px;
   font-weight: bold;
+}
+
+.jobs-stats
+{
+	li
+	{
+		color: @grayLight;
+		display:block;
+		float: left;
+		border-right: 1px solid @grayLighter;
+		width: 33%;
+		background-color: lighten(@grayLighter, 5);
+				
+		& > div
+		{
+			padding: 10px;
+		}
+	
+		strong
+		{
+			color: @textColor;
+			font-size: 24px;
+			display: block;
+		}
+	
+		&.total
+		{
+			font-size: 120%;
+			width: 100%;
+			clear: both;
+			float: none;
+			border-right: none;
+			border-bottom: 2px solid @grayLighter;
+			background-color: #fff;
+			
+			strong
+			{
+				font-size: 24px * 1.2;
+				line-height: @baseLineHeight * 2;
+			}
+			
+			@errorcolor : darken(spin(#d8ecf7, 160), 15);
+			
+			.chart-bar
+			{
+				width: 66%;
+				height: 10px;
+				position: relative;
+				margin: 5px 10px 10px 0;
+				float: left;
+				clear: left;
+				
+				
+				
+				.chart-bar-in
+				{
+					background-color: @errorcolor;
+					position: absolute;
+					right: -10px;
+					display: block;
+					height: 100%;
+				}
+			}
+			
+			small
+			{
+				font-size: 11px;
+				float: left;
+				color: @errorcolor;
+				font-weight: 800;
+				display: block;
+				margin-left: 10px;
+			}
+		}
+		
+		&:last-child
+		{
+			border-right: none;
+		}
+	}
 }

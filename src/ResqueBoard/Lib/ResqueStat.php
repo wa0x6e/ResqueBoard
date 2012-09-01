@@ -289,9 +289,22 @@ class ResqueStat
     }
 
 
-    public function getJobsStatsByQueue()
+    /**
+     * Get general jobs statistics
+     */
+    public function getJobsStats()
     {
+    	$cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
 
+    	$stats = new \stdClass();
+    	$stats->total = $cube->selectCollection('got_events')->find()->count();
+    	$stats->count[self::JOB_STATUS_COMPLETE] = $cube->selectCollection('done_events')->find()->count();
+    	$stats->count[self::JOB_STATUS_FAILED] = $cube->selectCollection('fail_events')->find()->count();
+    	$stats->perc[self::JOB_STATUS_FAILED] = round($stats->count[self::JOB_STATUS_FAILED] / $stats->count[self::JOB_STATUS_COMPLETE] * 100, 2);
+    	$stats->count[self::JOB_STATUS_RUNNING] = 0; // TODO
+    	$stats->count[self::JOB_STATUS_WAITING] = 0; // TODO
+
+    	return $stats;
     }
 
 

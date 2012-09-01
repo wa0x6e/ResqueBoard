@@ -32,10 +32,9 @@
 	</div>
 	<div class="row">
 
-		<div class="span12">
-		<h2>Distribution by classes</h2>
-
 		<div class="span6">
+			<h2>Distribution by classes</h2>
+
 			<div id="jobRepartition">
 				<?php
 					$pieDatas = array();
@@ -57,7 +56,6 @@
 				?>
 			</div>
 
-
 			<table class="table table-condensed table-hover">
 				<thead>
 					<tr>
@@ -75,7 +73,7 @@
 						echo '<td class="stats-nb">' . number_format($stat['value']) . '</td>';
 						echo '<td class="stats-nb"><div style="position:relative;">';
 						echo '<span class="chart-bar" style="width:' . $stat['percentage'] . '%;"></span>';
-						echo '<b>' . $stat['percentage'] . '%</b></div></div></td>';
+						echo '<b>' . ($stat['percentage'] != 0 ? '' : '~') . $stat['percentage'] . '%</b></div></div></td>';
 						echo '</tr>';
 
 						$total += $stat['value'];
@@ -89,7 +87,7 @@
 						echo '<td class="stats-nb">' . number_format($jobsRepartitionStats->total - $total) . '</td>';
 						echo '<td class="stats-nb"><div style="position:relative;">';
 						echo '<span class="chart-bar" style="width:' . $p . '%;"></span>';
-						echo '<b>' . $p . '%</b></div></div></td>';
+						echo '<b>' . ($p != 0 ? '' : '~') . $p . '%</b></div></div></td>';
 						echo '</tr>';
 					}
 
@@ -109,12 +107,26 @@
 				</tbody>
 			</table>
 			<a href="jobs/distribution">View all</a>
+		</div>
 
+		<div class="span6">
 
+			<ul class="jobs-stats unstyled">
+				<li class="total clearfix"><div><strong><?php echo number_format($jobsStats->total) ?></strong> <span class="pull-left">Total Jobs</span>
+
+				<span class="chart-bar"><span class="chart-bar-in" style="width:<?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?>%"></span></span>
+				<small><?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?> % fails</small>
+				</div></li>
+				<li><div><strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]) ?></strong> failed Jobs</div></li>
+				<li><div><strong>0</strong> running jobs</div></li>
+				<li><div><strong>0</strong> waiting jobs</div></li>
+			</ul>
 
 		</div>
-		<div class="row">
 
+	</div>
+
+	<div class="row">
 		<div class="span8">
 
 		<?php

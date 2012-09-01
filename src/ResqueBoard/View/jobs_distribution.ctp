@@ -64,7 +64,7 @@
 						echo '<td class="stats-nb">' . number_format($stat['value']) . '</td>';
 						echo '<td class="stats-nb"><div style="position:relative;">';
 						echo '<span class="chart-bar" style="width:' . $stat['percentage'] . '%;"></span>';
-						echo '<b>' . $stat['percentage'] . '%</b></div></div></td>';
+						echo '<b>' . ($stat['percentage'] != 0 ? '' : '~') . $stat['percentage'] . '%</b></div></div></td>';
 						echo '</tr>';
 
 					}

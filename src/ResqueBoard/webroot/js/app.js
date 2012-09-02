@@ -15,6 +15,9 @@
 
 var stop = new Date(Date.now());
 
+// Init syntax highlighter
+hljs.initHighlightingOnLoad();
+
 /**
  * Convert a date to ISO 8601 format
  * @param  Date date A date object

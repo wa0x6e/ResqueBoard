@@ -26,7 +26,7 @@ if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
 
-define('APPLICATION_VERSION', '1.0.0');
+define('APPLICATION_VERSION', '1.1.0');
 
 
 include ROOT . DS . 'Config' . DS . 'Core.php';

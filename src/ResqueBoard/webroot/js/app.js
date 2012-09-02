@@ -88,9 +88,9 @@ function listenToJobsActivities()
 			 * Find the next time after the last entry
 			 * because the last entry doesn't have a x axis
 			 */
-			var getNextTick = function(date) {
+			var getNextTick = function(date) { 
 				date = new Date(date);
-				return new Date(date.setSeconds(date.getSeconds() + step.second));
+				return new Date(date.setSeconds(date.getSeconds() + step[0].second));
 			}
 
 			data = data.map(function(d){return {time:new Date(d.time), value:  d.value};}).slice(0, limit);
@@ -106,41 +106,41 @@ function listenToJobsActivities()
 
 
 			var chart = d3.select("#lastest-jobs").append("svg")
-			.attr("class", "chart")
-			.attr("width", width + margin.left + margin.right)
-			.attr("height", height + margin.top + margin.bottom)
-			.append("g")
-			.attr("transform", "translate(" + margin.left  + "," + margin.top + ")")
+				.attr("class", "chart")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+				.append("g")
+				.attr("transform", "translate(" + margin.left  + "," + margin.top + ")")
 			;
 
 			chart.append("svg:clipPath")
-			.attr("id", "clip")
-			.append("svg:rect")
-			.attr("width", width)
-			.attr("height", height)
+				.attr("id", "clip")
+				.append("svg:rect")
+				.attr("width", width)
+				.attr("height", height)
 			;
 
 
 			chart.append("svg:text")
-			.attr("x", width)
-			.attr("y", -5)
-			.attr("text-anchor", "end")
-			.text("jobs/10sec")
-			.attr("class", "axis-legend")
+				.attr("x", width)
+				.attr("y", -5)
+				.attr("text-anchor", "end")
+				.text("jobs/10sec")
+				.attr("class", "axis-legend")
 			;
 
 			chart.append("svg:text")
-			.attr("x", width / 2)
-			.attr("y", height + barLabelHeight + 10)
-			.attr("text-anchor", "middle")
-			.text("time (min:sec)")
-			.attr("class", "axis-legend")
+				.attr("x", width / 2)
+				.attr("y", height + barLabelHeight + 10)
+				.attr("text-anchor", "middle")
+				.text("time (min:sec)")
+				.attr("class", "axis-legend")
 			;
 
 			var barArea = chart
-			.append("svg")
-			.attr("clip-path", "url(#clip)")
-			.attr("class", "bar-area")
+				.append("svg")
+				.attr("clip-path", "url(#clip)")
+				.attr("class", "bar-area")
 			;
 
 			var barProp = function(selection)
@@ -167,10 +167,10 @@ function listenToJobsActivities()
 
 
 			barArea.selectAll("rect")
-			.data(data)
-			.enter()
-			.append("rect")
-			.call(barProp)
+				.data(data)
+				.enter()
+				.append("rect")
+				.call(barProp)
 			;
 
 			var barLabelProp = function(selection)
@@ -193,33 +193,37 @@ function listenToJobsActivities()
 			}
 
 			barArea.selectAll("text").data(data).enter().append("text")
-			.attr("x", function(d) { return x(d.time) + barWidth/2; })
-			.call(barLabelProp)
+				.attr("x", function(d) { return x(d.time) + barWidth/2; })
+				.call(barLabelProp)
 			;
 
 			var xAxis = d3.svg.axis()
-			.scale(x)
-			.ticks(d3.time.seconds, 30)
-			.tickFormat(d3.time.format("%M:%S"))
-			.tickSubdivide(2)
-			.tickSize(6,3,0)
-			.orient("bottom");
+				.scale(x)
+				.ticks(d3.time.seconds, 30)
+				.tickFormat(d3.time.format("%M:%S"))
+				.tickSubdivide(2)
+				.tickSize(6,3,0)
+				.orient("bottom")
+			;
 
 			var yAxis = d3.svg.axis()
-			.scale(y)
-			.tickSize(6,3,0)
-			.orient("right")
-			.ticks(4);
+				.scale(y)
+				.tickSize(6,3,0)
+				.orient("right")
+				.ticks(4)
+			;
 
 			var xAxisParent = chart.append("g")
-			.attr("transform", "translate(0," + height + ")")
-			.attr("class", "x-axis")
-			.call(xAxis);
+				.attr("transform", "translate(0," + height + ")")
+				.attr("class", "x-axis")
+				.call(xAxis)
+			;
 
 			var yAxisParent = chart.append("g")
-			.attr("class", "y-axis")
-			.attr("transform", "translate(" + width + ",0)")
-			.call(yAxis);
+				.attr("class", "y-axis")
+				.attr("transform", "translate(" + width + ",0)")
+				.call(yAxis)
+			;
 
 
 			function redraw() {
@@ -233,61 +237,63 @@ function listenToJobsActivities()
 				// BAR
 				// *****
 				rect.enter().insert("rect")
-				.call(barProp)
-				.attr("x", function(d, i) { return x(getNextTick(d.time)); })
-				.attr("clip-path", "url(#clip)")
-				.transition()
-				.duration(duration)
-				.attr("x", function(d) { return x(d.time) + barWidth + 2; })
+					.call(barProp)
+					.attr("x", function(d, i) { return x(getNextTick(d.time)); })
+					.attr("clip-path", "url(#clip)")
+					.transition()
+					.duration(duration)
+					.attr("x", function(d) { return x(d.time) + barWidth + 2; })
 				;
 
 				
 				rect.transition()
-				.duration(duration)
-				.attr("clip-path", "url(#clip)")
-				.call(barDim)
+					.duration(duration)
+					.attr("clip-path", "url(#clip)")
+					.call(barDim)
 				;
 
 				rect.exit().transition()
-				.duration(duration)
-				.attr("x", function(d, i) { return x(d.time) + barGutter; })
-				.remove()
+					.duration(duration)
+					.attr("x", function(d, i) { return x(d.time) + barGutter; })
+					.remove()
 				;
 
 
 				// TEXT
 				// *****
 				text.enter().insert("text")
-				.call(barLabelProp)
-				.attr("x", function(d) { return x(getNextTick(getNextTick(d.time))) - barWidth/2; })
-				.transition()
-				.duration(duration)
-				.attr("x", function(d) { return x(d.time) + barWidth/2; })
+					.call(barLabelProp)
+					.attr("x", function(d) { return x(getNextTick(getNextTick(d.time))) - barWidth/2; })
+					.transition()
+					.duration(duration)
+					.attr("x", function(d) { return x(d.time) + barWidth/2; })
 				;
 
 
 				text.transition()
-				.duration(duration)
-				.call(barLabelDim)
+					.duration(duration)
+					.call(barLabelDim)
 				;
 
 
 				text.exit().transition()
-				.duration(duration)
-				.attr("x", function(d) { return x(d.time) + barWidth/2; })
-				.remove()
+					.duration(duration)
+					.attr("x", function(d) { return x(d.time) + barWidth/2; })
+					.remove()
 				;
 
 
 				// AXIS
 				// *****
 				xAxisParent.transition()
-				.duration(duration)
-				.call(xAxis);
+					.duration(duration)
+					.call(xAxis)
+				;
 
 				yAxisParent.transition()
-				.duration(duration)
-				.call(yAxis);
+					.duration(duration)
+					.call(yAxis)
+				;
 
 			}
 
@@ -301,7 +307,7 @@ function listenToJobsActivities()
 					"start" : nextDate.toISOString(),
 					"stop": getNextTick(nextDate).toISOString(),
 					"limit": 1,
-					"step" : step.code
+					"step" : step[0].code
 				}));
 			};
 
@@ -315,15 +321,15 @@ function listenToJobsActivities()
 					redraw();
 
 					setTimeout(function() { 
-						var nextDate = getNextTick(data[data.length-1].time);
+						var nextDate = getNextTick(data[data.length-1].time); 
 						metricSocket.send(JSON.stringify({
 							"expression": "sum(got)",
 							"start" : nextDate.toISOString(),
 							"stop": getNextTick(nextDate).toISOString(),
 							"limit": 1,
-							"step" : step.code 
+							"step" : step[0].code 
 						}))
-					}, step.second * 1000);
+					}, step[0].second * 1000);
 				}
 			};
 		}
@@ -1232,7 +1238,7 @@ function monthlyJobsLoad()
 				.range([0, w - margin_left - margin_right]);
 
 				var yScale = d3.scale.linear()
-				.domain([0,d3.max(data.map(function(d){return d.value;}))])
+				.domain([0,d3.max(data.map(function(d){return d.value;}))*1.25])
 				.range([h - margin_top - margin_bottom, 0]);
 
 				d3.select('#jobs-load-monthly').selectAll("svg").remove();
@@ -1275,7 +1281,7 @@ function monthlyJobsLoad()
 
 				svg.append("g")
 					.attr("class", "y-axis")
-					.attr('transform', 'translate(' + margin_left + ',' + margin_top + ')')
+					.attr('transform', 'translate(' + (margin_left-1) + ',' + margin_top + ')')
 					.call(yAxis)
 				;
 

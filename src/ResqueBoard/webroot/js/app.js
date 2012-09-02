@@ -13,10 +13,17 @@
  * @license	 MIT License (http://www.opensource.org/licenses/mit-license.ctp)
  */
 
-var stop = new Date(Date.now());
+$(document).ready(function() {
+	$('[data-event~=tooltip]').tooltip();
+	$('[data-event~=collapse-all]').on('click', function(e){ e.preventDefault(); $('.collapse.in').collapse('hide'); });
+	$('[data-event~=expand-all]').on('click', function(e){ e.preventDefault(); $('.collapse').not('.in').collapse('show'); });
+	$('[data-event~=ajax-pagination]').on('change', 'select', function(e){window.location=$(this).val();});
 
-// Init syntax highlighter
-hljs.initHighlightingOnLoad();
+	// Init syntax highlighter
+	hljs.initHighlightingOnLoad();
+});
+
+var stop = new Date(Date.now());
 
 /**
  * Convert a date to ISO 8601 format
@@ -931,13 +938,6 @@ function listenToWorkersActivities()
 
 }
 
-
-$(document).ready(function() {
-	$('[data-event~=tooltip]').tooltip();
-	$('[data-event~=collapse-all]').on('click', function(e){ e.preventDefault(); $('.collapse.in').collapse('hide'); });
-	$('[data-event~=expand-all]').on('click', function(e){ e.preventDefault(); $('.collapse').not('.in').collapse('show'); });
-	$('[data-event~=ajax-pagination]').on('change', 'select', function(e){window.location=$(this).val();});
-});
 
 function parseInteger(str)
 {

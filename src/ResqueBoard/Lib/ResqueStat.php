@@ -182,7 +182,9 @@ class ResqueStat
         $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
         $jobsCollection = $cube->selectCollection('got_events');
 
-        $jobsCursor = $jobsCollection->find(array('t' => array('$gte' => new \MongoDate($start), '$lt' => new \MongoDate($end))));
+        $jobsCursor = $jobsCollection->find(
+            array('t' => array('$gte' => new \MongoDate($start), '$lt' => new \MongoDate($end)))
+        );
         $jobsCursor->sort(array('d.worker' => 1));
 
         $result = $this->formatJobs($jobsCursor);
@@ -247,70 +249,105 @@ class ResqueStat
     /**
      * Return the distribution of jobs by classes
      *
-     * @param int $limit Number of results to return
+     * @since 1.1.0
+     * @param int $limit Number of results to return, null to return all results
      */
     public function getJobsRepartionStats($limit = 10)
     {
-    	$cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $mapReduceStats = new \MongoCollection($cube, 'map_reduce_stats');
+        $startDate = $mapReduceStats->findOne(array('_id' => 'job_stats'), array('date'));
+        if (!isset($startDate['date']) || empty($startDate['date'])) {
+            $startDate = null;
+        } else {
+            $startDate = $startDate['date'];
+        }
 
-    	$now = new \MongoDate();
+        $stopDate = new \MongoDate();
 
-    	$map = new \MongoCode("function() {emit(this.d.args.payload.class, 1); }");
-    	$reduce = new \MongoCode("function(key, val) {".
-    		"var sum = 0;".
-    		"for (var i in val) {".
-    			"sum += val[i];".
-    		"}".
-    		"return sum;".
-    	"}");
+        $stats = new \stdClass();
 
-    	$cube->command(array(
-    		'mapreduce' => 'got_events',
-    		'map' => $map,
-    		'reduce' => $reduce,
-    		'query' => array('t' => array('$gte' => $now)),
-			'out' => array('merge' => 'jobs_repartition_stats')
-    		));
+        // Computing total jobs distribution stats
+        $map = new \MongoCode("function() {emit(this.d.args.payload.class, 1); }");
+        $reduce = new \MongoCode(
+            "function(key, val) {".
+            "var sum = 0;".
+            "for (var i in val) {".
+            "sum += val[i];".
+            "}".
+            "return sum;".
+            "}"
+        );
 
-    	$mapReduceStats = new \MongoCollection($cube, 'map_reduce_stats');
-    	$mapReduceStats->insert(array('jobs_repartition_stats' => $now));
+        $conditions = array('$lt' => $stopDate);
+        if ($startDate != null) {
+            $conditions['$gte'] = $startDate;
+        }
+        $cube->command(
+            array(
+                'mapreduce' => 'got_events',
+                'map' => $map,
+                'reduce' => $reduce,
+                'query' => array('t' => $conditions),
+                'out' => array('merge' => 'jobs_repartition_stats')
+            )
+        );
 
+        $cursor = $cube->selectCollection('jobs_repartition_stats')->find()->sort(array('value' => -1))->limit($limit);
 
-    	$cursor = $cube->selectCollection('jobs_repartition_stats')->find()->sort(array('value' => -1))->limit($limit);
+        $stats->total = $cube->selectCollection('got_events')->find()->count();
+        foreach ($cursor as $c) {
+            $c['percentage'] = round($c['value'] / $stats->total * 100, 2);
+            $stats->stats[] = $c;
+        }
 
-    	$stats = new \stdClass();
-    	$stats->total = $cube->selectCollection('got_events')->find()->count();
-    	foreach($cursor as $c) {
-    		$c['percentage'] = round($c['value'] / $stats->total * 100, 2);
-    		$stats->stats[] = $c;
-    	}
+        $mapReduceStats->update(
+            array('_id' => 'job_stats'),
+            array('$set' => array('date' => $stopDate)),
+            array('upsert' => true)
+        );
 
-    	return $stats;
+        return $stats;
     }
 
 
     /**
-     * Get general jobs statistics
+     * Get general jobs statistics, by status
+     *
+     * @since 1.1.0
      */
     public function getJobsStats()
     {
-    	$cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
 
-    	$stats = new \stdClass();
-    	$stats->total = $cube->selectCollection('got_events')->find()->count();
-    	$stats->count[self::JOB_STATUS_COMPLETE] = $cube->selectCollection('done_events')->find()->count();
-    	$stats->count[self::JOB_STATUS_FAILED] = $cube->selectCollection('fail_events')->find()->count();
-    	$stats->perc[self::JOB_STATUS_FAILED] = round($stats->count[self::JOB_STATUS_FAILED] / $stats->count[self::JOB_STATUS_COMPLETE] * 100, 2);
-    	$stats->count[self::JOB_STATUS_WAITING] = 0;
+        $stats = new \stdClass();
+        $stats->total = $cube->selectCollection('got_events')->find()->count();
+        $stats->count[self::JOB_STATUS_COMPLETE] = $cube->selectCollection('done_events')->find()->count();
+        $stats->count[self::JOB_STATUS_FAILED] = $cube->selectCollection('fail_events')->find()->count();
+        $stats->perc[self::JOB_STATUS_FAILED] =
+            round($stats->count[self::JOB_STATUS_FAILED] / $stats->count[self::JOB_STATUS_COMPLETE] * 100, 2);
+        $stats->count[self::JOB_STATUS_WAITING] = 0;
 
-    	$queues = $this->getQueues();
-    	foreach ($queues as $queue => $val) {
-    		$stats->count[self::JOB_STATUS_WAITING] += $this->getRedis()->llen($this->settings['resquePrefix'] . 'queue:' . $queue);
-    	}
+        $queues = $this->getQueues();
+        foreach ($queues as $queue => $val) {
+            $stats->count[self::JOB_STATUS_WAITING] +=
+                $this->getRedis()->llen($this->settings['resquePrefix'] . 'queue:' . $queue);
+        }
 
-    	$stats->count[self::JOB_STATUS_RUNNING] = 0; // TODO
+        $stats->count[self::JOB_STATUS_RUNNING] = 0; // TODO
+        $stats->total_active = $this->getRedis()->get($this->settings['resquePrefix'] . 'stat:processed');
 
-    	return $stats;
+        $cursors = $cube->selectCollection('got_events')->find(array(), array('t'))->sort(array('t' => 1))->limit(1);
+        foreach ($cursors as $cursor) {
+            $stats->oldest = new \DateTime('@'.$cursor['t']->sec);
+        }
+
+        $cursors = $cube->selectCollection('got_events')->find(array(), array('t'))->sort(array('t' => -1))->limit(1);
+        foreach ($cursors as $cursor) {
+            $stats->newest = new \DateTime('@'.$cursor['t']->sec);
+        }
+
+        return $stats;
     }
 
 

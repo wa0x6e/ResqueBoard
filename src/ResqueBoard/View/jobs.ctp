@@ -51,6 +51,8 @@
 
 					echo "<script type='text/javascript'>";
 					echo "$(document).ready(function() { ";
+						echo "jobsLoad();";
+						echo "monthlyJobsLoad();";
 						echo "pieChart('jobRepartition', " . $jobsRepartitionStats->total . ", " . json_encode($pieDatas) . ");";
 					echo "})</script>";
 				?>
@@ -111,9 +113,15 @@
 
 		<div class="span6">
 
-			<ul class="jobs-stats unstyled">
-				<li class="total clearfix"><div><strong><?php echo number_format($jobsStats->total) ?></strong> <span class="pull-left">Total Jobs</span>
+			<ul class="jobs-stats unstyled clearfix">
+				<li class="total clearfix"><div>
 
+				<div class="pull-right secondary">
+				<strong><?php echo number_format($jobsStats->total_active) ?></strong>
+				from active workers
+				</div>
+
+				<strong><?php echo number_format($jobsStats->total) ?></strong> <span class="pull-left">Total Jobs</span>
 				<span class="chart-bar"><span class="chart-bar-in" style="width:<?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?>%"></span></span>
 				<small><?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?> % fails</small>
 				</div></li>
@@ -122,6 +130,35 @@
 				<li><div><strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING]) ?></strong> Waiting jobs</div></li>
 			</ul>
 
+			<h2>Jobs load <small>for the past hour</small></h2>
+			<div id="jobs-load" style="position:relative;"></div>
+
+
+			<h2><form class="pull-right">
+
+					<?php
+					$startDate = $jobsStats->oldest->setDate($jobsStats->oldest->format('Y'), $jobsStats->oldest->format('m'), 1);
+					$endDate = $jobsStats->newest->setDate($jobsStats->newest->format('Y'), $jobsStats->newest->format('m'), 1);
+
+					$dateRange = array(clone $startDate);
+					while ($startDate->modify('first day of next month') < $endDate) {
+						$dateRange[] = clone $startDate;
+					}
+
+
+					echo '<select class="span2" id="jobs-load-monthly-selector">';
+					$i = 0;
+					foreach ($dateRange as $date) {
+						echo '<option value="'.$date->format('Y-m').'"'. (++$i == count($dateRange) ? ' selected="selected"' : '') .'>'. $date->format('F Y') .'</option>';
+					}
+					echo '</select>';
+
+					?>
+
+			</form>
+			Jobs load <small>by month</small></h2>
+
+			<div id="jobs-load-monthly"></div>
 		</div>
 
 	</div>
@@ -266,9 +303,11 @@
 				Search Job
 			</li>
 			<li>
-			<form class="form-search" action="/jobs" method="POST">
-				<input type="text" name="job_id" class="input-medium search-query" placeholder="Job #Id"/>
-				<button type="submit" class="btn">Search Job</button>
+			<form class="" action="/jobs" method="POST">
+				<div class="input-append">
+					<input type="text" name="job_id" class="span3" placeholder="Job #Id"/>
+					<button type="submit" class="btn"><i class="icon-search"></i></button>
+				</div>
 			</form>
 			</li>
 			<li class="nav-header">

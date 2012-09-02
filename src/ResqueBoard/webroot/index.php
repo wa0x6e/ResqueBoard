@@ -123,8 +123,8 @@ $app->map(
                 'jobs.ctp',
                 array(
                     'jobs' => $jobs,
-                	'jobsStats' => $resqueStat->getJobsStats(),
-                	'jobsRepartitionStats' => $resqueStat->getJobsRepartionStats(),
+                    'jobsStats' => $resqueStat->getJobsStats(),
+                    'jobsRepartitionStats' => $resqueStat->getJobsRepartionStats(),
                     'searchToken' => $searchToken,
                     'workers' => $resqueStat->getWorkers(),
                     'resultLimits' => $resultLimits,
@@ -139,23 +139,23 @@ $app->map(
 )->via('GET', 'POST');
 
 $app->get(
-	'/jobs/distribution',
-	function () use ($app, $settings) {
-		try {
-			$resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+    '/jobs/distribution',
+    function () use ($app, $settings) {
+        try {
+            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
 
-			$app->render(
-				'jobs_distribution.ctp',
-				array(
-					'jobsRepartitionStats' => $resqueStat->getJobsRepartionStats(null),
-					'pageTitle' => 'Jobs distribution'
-				)
-			);
+            $app->render(
+                'jobs_distribution.ctp',
+                array(
+                    'jobsRepartitionStats' => $resqueStat->getJobsRepartionStats(null),
+                    'pageTitle' => 'Jobs distribution'
+                )
+            );
 
-		} catch (\Exception $e) {
-			$app->error($e);
-		}
-	}
+        } catch (\Exception $e) {
+            $app->error($e);
+        }
+    }
 );
 
 $app->get(

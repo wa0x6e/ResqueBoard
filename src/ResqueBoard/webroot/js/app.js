@@ -35,7 +35,13 @@ var duration = 1500;
  * Datas about the polling delay
  * @type Object
  */
-var step = {second : 10, code : "1e4"};
+var step = new Array(
+	{second : 10, 		code : "1e4"},
+	{second : 60, 		code : "6e4"},
+	{second : 300, 		code : "3e5"},
+	{second : 3600, 	code : "36e5"},
+	{second : 84600, 	code : "864e5"}
+);
 
 
 /**
@@ -56,7 +62,7 @@ function listenToJobsActivities()
 		'&start=2012-07-07T16:00:00Z'+
 		'&stop=' + formatISO(stop)+
 		'&limit=' + limit + 
-		'&step=' + step.code, function(data){
+		'&step=' + step[0].code, function(data){
 
 			var 
 				margin = {top:25, right:35, bottom: 35, left: 20},
@@ -958,8 +964,6 @@ function pieChart(id, total, data)
 	var w = parent.width();	
 	var h = 250;
 
-	console.log(data);
-
 	// Define the margin, radius, and color scale. The color scale will be
 	// assigned by index, but if you define your data using objects, you could pass
 	// in a named field from the data object instead, such as `d.name`. Colors
@@ -1165,4 +1169,160 @@ function pieChart(id, total, data)
 		})
 	;
 
+}
+
+
+function jobsLoad()
+{
+	var
+		context = cubism.context().size($("#jobs-load").width()),
+		cube = context.cube("http://"+serverIp+":1081"),
+		horizon = context.horizon().metric(cube.metric).height(100),
+		rule = context.rule();
+
+	var workersIds = [];
+	var metrics = [];
+	
+
+	metrics.push("sum(got)");
+		
+
+	d3.select("#jobs-load").append("div")
+	.attr("class", "rule")
+	.call(context.rule());
+
+	d3.select("#jobs-load").selectAll(".horizon")
+	.data(metrics)
+	.enter().append("div")
+	.attr("class", "horizon")
+	.call(horizon.extent([-180, 180]).title(null));
+
+	d3.select("#jobs-load").append("div")
+	.attr("class", "axis")
+	.call(context.axis().orient("bottom").ticks(d3.time.minutes, 10).tickSize(6,3,0)
+	.tickFormat(d3.time.format("%H:%M")));
+}
+
+
+function monthlyJobsLoad()
+{
+	var loadChart = function(start, end, title)
+	{
+		d3.json('http://'+serverIp+':1081/1.0/metric/get'+
+			'?expression=sum(got)'+
+			'&start='+ start +
+			'&stop=' + end +
+			'&step=' + step[4].code, 
+			function(data){
+
+				data = data.map(function(d){return {time:new Date(d.time), value:  d.value};});
+
+				var w = $('#jobs-load-monthly').width();			
+				var h = $('#jobs-load-monthly').height();
+				var margin_top = 20;
+				var margin_right = 5;
+				var margin_bottom = 35;
+				var margin_left = 45;
+
+				var xScale = d3.time.scale()
+				.domain([data[0].time, data[data.length-1].time])
+				.range([0, w - margin_left - margin_right]);
+
+				var yScale = d3.scale.linear()
+				.domain([0,d3.max(data.map(function(d){return d.value;}))])
+				.range([h - margin_top - margin_bottom, 0]);
+
+				d3.select('#jobs-load-monthly').selectAll("svg").remove();
+
+				svg = d3.select('#jobs-load-monthly').append('svg')
+					.attr("width", w)
+					.attr("height", h)
+				;
+
+				var line = d3.svg.line()
+					.x(function(d) {return xScale(d.time);})
+					.y(function(d) {return yScale(d.value);})
+				;
+
+				var garea = d3.svg.area()
+					.x(function(d) {return xScale(d.time);})
+					.y0(h - margin_bottom - margin_top)
+					.y1(function(d) {return yScale(d.value);})
+				;
+
+				var xAxis = d3.svg.axis()
+					.scale(xScale)
+					.tickFormat(d3.time.format("%d"))
+					.tickSubdivide(1)
+					.orient("bottom")
+				;
+
+				var yAxis = d3.svg.axis()
+					.scale(yScale)
+					.tickSize(-w + margin_left + margin_right)
+					.ticks(8)
+					.orient("left")
+				;
+
+				svg.append("g")
+					.attr("class", "x-axis")
+					.attr('transform', 'translate(' + margin_left + ',' + (h - margin_bottom) + ')')
+					.call(xAxis)
+				;
+
+				svg.append("g")
+					.attr("class", "y-axis")
+					.attr('transform', 'translate(' + margin_left + ',' + margin_top + ')')
+					.call(yAxis)
+				;
+
+				var graph_group = svg.append("g")
+					.attr("width", w - margin_left + margin_right)
+					.attr("height", h - margin_top + margin_bottom)
+					.attr('transform', 'translate(' + margin_left + ',' + margin_top + ')')
+				;
+
+				graph_group.append("path")
+					.attr("class", "graph-line")
+					.attr("d", line(data))
+				;	
+
+				graph_group.append("path")
+					.attr("class", "graph-area")
+					.attr("d", garea(data))
+				;	
+
+				svg.append("text")
+					.attr("x", w/2)
+					.attr("y", h - 3)
+					.attr("text-anchor", "middle")
+					.text(title)
+					.attr("class", "graph-title")
+				;
+
+				svg.append("text")
+					.attr("x", margin_left/2)
+					.attr("y", 10)
+					.attr("text-anchor", "left")
+					.text("Jobs/days")
+					.attr("class", "graph-legend")
+				;
+			}
+		);
+	} // end load chart
+
+	var initChart = function()
+	{
+		var selection = $("#jobs-load-monthly-selector option:selected");
+		var startTime = moment(selection.val() + "-01", "YYYY-MM-DD");
+		var stopTime = moment(startTime).add("M", 1);
+
+		loadChart(startTime.format("YYYY-MM-DD"), stopTime.format("YYYY-MM-DD"), selection.text());
+	}
+	
+	initChart();
+
+	$("#jobs-load-monthly-selector").on("change", function(e){
+		initChart();
+	});
 }

@@ -527,44 +527,46 @@ span.chart-bar + b
 	position: absolute;
 	z-index: 2;
 	
-	.horizon {
-		border-bottom: 1px solid transparent;
-	  	overflow: hidden;
-	  	position: relative;
-	}
 	
-	
-	
-	.horizon canvas {
-	  	display: block;
-	}
-	
-	.horizon .title,
-	.horizon .value {
-	  bottom: 0;
-	  line-height: 30px;
-	  margin: 0 6px;
-	  position: absolute;
-	  text-shadow: 0 1px 0 rgba(255,255,255,.5);
-	  white-space: nowrap;
-	}
-	
-	.horizon .title {
-	  left: 0;
-	}
-	
-	.horizon .value {
-	  right: 0;
-	}
-	
-	.line {
-	  background: #000;
-	  opacity: .2;
-	  z-index: 2;
-	}
-
 	
 }
+
+.horizon 
+{
+	border-bottom: 1px solid transparent;
+  	overflow: hidden;
+  	position: relative;
+}
+	
+.horizon canvas 
+{
+  	display: block;
+}
+
+.horizon .title,
+.horizon .value {
+  bottom: 0;
+  line-height: 30px;
+  margin: 0 6px;
+  position: absolute;
+  text-shadow: 0 1px 0 rgba(255,255,255,.5);
+  white-space: nowrap;
+}
+
+.horizon .title {
+  left: 0;
+}
+
+.horizon .value {
+  right: 0;
+}
+
+.line {
+  background: #000;
+  opacity: .2;
+  z-index: 2;
+}
+
 
 
 td.stats-nb, th.stats-nb
@@ -602,12 +604,16 @@ td.stats-nb, th.stats-nb
 
 .jobs-stats
 {
+	@borderColor : lighten(@grayLight, 25);
+	border: 1px solid @borderColor;
+	margin-bottom: @baseLineHeight;
+	
 	li
 	{
 		color: @grayLight;
 		display:block;
 		float: left;
-		border-right: 1px solid @grayLighter;
+		border-right: 1px solid @borderColor;
 		width: 33%;
 		background-color: lighten(@grayLighter, 5);
 				
@@ -630,7 +636,7 @@ td.stats-nb, th.stats-nb
 			clear: both;
 			float: none;
 			border-right: none;
-			border-bottom: 2px solid @grayLighter;
+			border-bottom: 2px solid @borderColor;
 			background-color: #fff;
 			
 			strong
@@ -643,14 +649,12 @@ td.stats-nb, th.stats-nb
 			
 			.chart-bar
 			{
-				width: 66%;
+				width: 80%;
 				height: 10px;
 				position: relative;
 				margin: 10px 10px 10px 0;
 				float: left;
 				clear: left;
-				
-				
 				
 				.chart-bar-in
 				{
@@ -672,11 +676,54 @@ td.stats-nb, th.stats-nb
 				margin-left: 10px;
 				line-height: 2.5;
 			}
+			
+			.secondary, .secondary strong
+			{
+				color: lighten(@grayLight, 20);
+				text-align: right;
+			}
 		}
 		
 		&:last-child
 		{
 			border-right: none;
 		}
+	}
+}
+
+
+#jobs-load-monthly
+{
+	height: 200px;
+	
+	.graph-area
+	{
+		fill: #b5c7e6;
+	}
+	
+	.graph-line
+	{
+		stroke: #4777b2;
+		stroke-width: 2;
+		fill: none;
+	}
+	
+	line {
+		stroke: @grayLighter;
+		stroke-width: 0.5;
+		fill: none;
+	}
+	
+	.graph-title
+	{
+		fill: steelblue;
+		font-size: 13px;
+		font-weight: bold;
+	}
+	
+	.graph-legend
+	{
+		fill: @grayLight;
+		font-size: 11px;
 	}
 }

@@ -7,10 +7,10 @@
  * Redistributions of files must retain the above copyright notice.
  *
  * @author		Wan Qi Chen <kami@kamisama.me>
- * @copyright     Copyright 2012, Wan Qi Chen <kami@kamisama.me>
- * @link			http://resqueboard.kamisama.me
- * @since		 1.0.0
- * @license	 MIT License (http://www.opensource.org/licenses/mit-license.ctp)
+ * @copyright  	Copyright 2012, Wan Qi Chen <kami@kamisama.me>
+ * @link		http://resqueboard.kamisama.me
+ * @since		1.0.0
+ * @license	 	MIT License (http://www.opensource.org/licenses/mit-license.ctp)
  */
 
 $(document).ready(function() {
@@ -52,7 +52,6 @@ var step = new Array(
 	{second : 3600, 	code : "36e5"},
 	{second : 84600, 	code : "864e5"}
 );
-
 
 /**
  * Display lastest jobs stats

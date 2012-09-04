@@ -108,7 +108,12 @@ $app->get(
                 'jobs.ctp',
                 array(
                     'jobs' => $resqueStat->getJobs(array('limit' => PAGINATION_LIMIT)),
-                	'failedJobs' =>  $resqueStat->getJobs(array('status' => ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED, 'limit' => 10)),
+                    'failedJobs' =>  $resqueStat->getJobs(
+                        array(
+                            'status' => ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED,
+                            'limit' => 10
+                        )
+                    ),
                     'jobsStats' => $resqueStat->getJobsStats(),
                     'jobsRepartitionStats' => $resqueStat->getJobsRepartionStats(),
                     'workers' => $resqueStat->getWorkers(),
@@ -155,61 +160,70 @@ $app->map(
             $resultLimits = array(15, 50, 100);
 
             $defaults = array(
-            		'page' => 1,
-            		'limit' => $resultLimits[0],
-            		'class' => null,
-            		'queue' => null,
-            		'date_after' => null,
-            		'date_before' => null,
-            		'worker' => array(),
-            		'workers' => ''
-            	);
+                    'page' => 1,
+                    'limit' => $resultLimits[0],
+                    'class' => null,
+                    'queue' => null,
+                    'date_after' => null,
+                    'date_before' => null,
+                    'worker' => array(),
+                    'workers' => ''
+                );
 
             $searchData = array_merge($defaults, $app->request()->params());
-            array_walk($searchData, function(&$key) {if (is_string($key)) $key = trim($key); });
+            array_walk(
+                $searchData,
+                function (&$key) {
+                    if (is_string($key)) {
+                        $key = trim($key);
+                    }
+                }
+            );
 
             $pagination = new stdClass();
             $pagination->current = $searchData['page'];
-            $pagination->limit = (($app->request()->params('limit') != '') && in_array($app->request()->params('limit'), $resultLimits)) ? $app->request()->params('limit') : PAGINATION_LIMIT;
+            $pagination->limit = (($app->request()->params('limit') != '') && in_array($app->request()->params('limit'), $resultLimits))
+                ? $app->request()->params('limit')
+                : PAGINATION_LIMIT;
             $pagination->baseUrl = '/jobs/view?';
 
             $conditions = array();
             $searchToken = '';
             if ($app->request()->isPost() && $app->request()->post('job_id') != null) {
-            	$jobId = $searchToken = ltrim($app->request()->post('job_id'), '#');
-            	$jobs = $resqueStat->getJobs(array('jobId' => $jobId));
+                $jobId = $searchToken = ltrim($app->request()->post('job_id'), '#');
+                $jobs = $resqueStat->getJobs(array('jobId' => $jobId));
             } else {
-            	$conditions = array(
-            		'page' => $searchData['page'],
-            		'limit' => $searchData['limit'],
-            		'class' => $searchData['class'],
-            		'queue' => $searchData['queue'],
-            		'date_after' => $searchData['date_after'],
-            		'date_before' => $searchData['date_before'],
-            		'worker' => $searchData['worker']
-            	);
+                $conditions = array(
+                    'page' => $searchData['page'],
+                    'limit' => $searchData['limit'],
+                    'class' => $searchData['class'],
+                    'queue' => $searchData['queue'],
+                    'date_after' => $searchData['date_after'],
+                    'date_before' => $searchData['date_before'],
+                    'worker' => $searchData['worker']
+                );
 
-            	if (!empty($searchData['workers'])) {
-            		$conditions['worker'] += array_map('trim', explode(',', $searchData['workers']));
-            	}
+                if (!empty($searchData['workers'])) {
+                    $conditions['worker'] += array_map('trim', explode(',', $searchData['workers']));
+                }
 
-            	// Validate search datas
-            	$dateTimePattern = '/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])(\s+?(0[1-9]|1[0-9]|2[0-4]):([0-5][0-9])(:([0-5][0-9]))*?)*?$/';
-            	if (!empty($conditions['date_after']) && preg_match($dateTimePattern, $conditions['date_after']) == 0) {
-            		$errors['date_after'] = 'Date is not valid';
-            	}
-            	if (!empty($conditions['date_before']) && preg_match($dateTimePattern, $conditions['date_before']) == 0) {
-            		$errors['date_before'] = 'Date is not valid';
-            	}
-            	if ($conditions['worker']) {
+                // Validate search datas
+                $dateTimePattern = '/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])(\s+?(0[1-9]|1[0-9]|2[0-4]):([0-5][0-9])(:([0-5][0-9]))*?)*?$/';
+                if (!empty($conditions['date_after']) && preg_match($dateTimePattern, $conditions['date_after']) == 0) {
+                    $errors['date_after'] = 'Date is not valid';
+                }
+                if (!empty($conditions['date_before']) && preg_match($dateTimePattern, $conditions['date_before']) == 0) {
+                    $errors['date_before'] = 'Date is not valid';
+                }
+                if ($conditions['worker']) {
 
-            	}
+                }
 
-            	if (empty($errors)) {
-            		$jobs = $resqueStat->getJobs($conditions);
-            	} else {
-            		$jobs = array();
-            	}
+                if (empty($errors)) {
+                    $jobs = $resqueStat->getJobs($conditions);
+                } else {
+                    $jobs = array();
+                }
             }
 
             $pagination->totalResult = $resqueStat->getJobs(array_merge($conditions, array('type' => 'count')));
@@ -223,9 +237,9 @@ $app->map(
                     'workers' => $activeWorkers,
                     'resultLimits' => $resultLimits,
                     'pageTitle' => 'Jobs',
-                	'errors' => $errors,
-                	'searchData' => $searchData,
-                	'searchToken' => $searchToken,
+                    'errors' => $errors,
+                    'searchData' => $searchData,
+                    'searchToken' => $searchToken,
                     'pagination' => $pagination
                 )
             );

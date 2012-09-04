@@ -45,6 +45,9 @@ class ResqueStat
     private $redis;
     private $mongo;
 
+    /**
+     * @since 1.0.0
+     */
     public function __construct($settings = array())
     {
         $this->settings = array(
@@ -113,9 +116,16 @@ class ResqueStat
                     ->exec()
             )
         );
+
+        $this->setupIndexes();
     }
 
 
+    /**
+     * Return a mongo connection instance
+     *
+     * @since 1.0.0
+     */
     private function getMongo()
     {
         if ($this->mongo !== null) {
@@ -130,6 +140,12 @@ class ResqueStat
         }
     }
 
+
+    /**
+     * Return a redis connection instance
+     *
+     * @since 1.0.0
+     */
     private function getRedis()
     {
         if ($this->redis !== null) {
@@ -149,6 +165,7 @@ class ResqueStat
     /**
      * Return general stats about active workers
      *
+     * @since 1.0.0
      * @return array:
      */
     public function getStats()
@@ -158,8 +175,9 @@ class ResqueStat
 
 
     /**
-     * Return
+     * Return active workers stats
      *
+     * @since 1.0.0
      * @return multitype:
      */
     public function getWorkers()
@@ -167,6 +185,12 @@ class ResqueStat
         return $this->workers;
     }
 
+
+    /**
+     * Return list of queues
+     *
+     * @since 1.0.0
+     */
     public function getQueues()
     {
         return $this->queues;
@@ -174,7 +198,9 @@ class ResqueStat
 
 
     /**
+     * Return jobs filtered by conditions specified in $options
      *
+     * @since 1.1.0
      */
     public function getJobs($options = array())
     {
@@ -182,94 +208,100 @@ class ResqueStat
         $jobsCollection = $cube->selectCollection('got_events');
 
         $default = array(
-        		'workerId' => null,
-        		'jobId' => null,
-        		'page' => 1,
-        		'limit' => null,
-        		'sort' => array('t' => -1),
-        		'status' => null,
-        		'type' => 'find',
-        		'date_after' => null,
-        		'date_before' => null,
-        		'class' => null,
-        		'queue' => null,
-        		'worker' => array(),
-        		'format' => true
-        	);
+                'workerId' => null,
+                'jobId' => null,
+                'page' => 1,
+                'limit' => null,
+                'sort' => array('t' => -1),
+                'status' => null,
+                'type' => 'find',
+                'date_after' => null,
+                'date_before' => null,
+                'class' => null,
+                'queue' => null,
+                'worker' => array(),
+                'format' => true
+            );
 
         $options = array_merge($default, $options);
 
         $conditions = array();
 
         if (!empty($options['jobId'])) {
-        	if (!is_array($options['jobId'])) {
-        		$options['jobId'] = array($options['jobId']);
-        	}
-        	$conditions['d.args.payload.id'] = array('$in' => $options['jobId']);
+            if (!is_array($options['jobId'])) {
+                $options['jobId'] = array($options['jobId']);
+            }
+            $conditions['d.args.payload.id'] = array('$in' => $options['jobId']);
         } else {
-        	if ($options['workerId'] !== null) {
-        		$conditions['d.worker'] = $options['workerId'];
-        	}
+            if ($options['workerId'] !== null) {
+                $conditions['d.worker'] = $options['workerId'];
+            }
 
-        	if (!empty($options['class'])) {
-        		$conditions['d.args.payload.class'] = array('$in' => array_map('trim', explode(',', $options['class'])));
-        	}
+            if (!empty($options['class'])) {
+                $conditions['d.args.payload.class'] = array('$in' => array_map('trim', explode(',', $options['class'])));
+            }
 
-        	if (!empty($options['queue'])) {
-        		$conditions['d.args.queue'] = array('$in' => array_map('trim', explode(',', $options['queue'])));
-        	}
+            if (!empty($options['queue'])) {
+                $conditions['d.args.queue'] = array('$in' => array_map('trim', explode(',', $options['queue'])));
+            }
 
-        	if (!empty($options['worker'])) {
-        		if (in_array('old', $options['worker'])) {
-					$workers = array_map(function($a) {return $a['host'].':'.$a['process'];}, $this->getWorkers());
-					$exclude = array_diff($workers, $options['worker']);
+            if (!empty($options['worker'])) {
+                if (in_array('old', $options['worker'])) {
+                    $workers = array_map(
+                        function ($a) {
+                            return $a['host'].':'.$a['process'];
+                        },
+                        $this->   getWorkers()
+                    );
+                    $exclude = array_diff($workers, $options['worker']);
 
-					if (!empty($exclude)) {
-						$conditions['d.worker'] = array('$nin' => $exclude);
-					}
-        		} else {
-        			$conditions['d.worker'] = array('$in' => $options['worker']);
-        		}
-        	}
+                    if (!empty($exclude)) {
+                        $conditions['d.worker'] = array('$nin' => $exclude);
+                    }
+                } else {
+                    $conditions['d.worker'] = array('$in' => $options['worker']);
+                }
+            }
 
-        	if ($options['status'] === self::JOB_STATUS_FAILED) {
-        		$cursor = $cube->selectCollection('fail_events')->find(array(), array('d.job_id'))->sort($options['sort'])->limit($options['limit']);
-        		$ids = array();
-        		foreach ($cursor as $c) {
-        			$ids[] = $c['d']['job_id'];
-        		}
-        		$conditions['d.args.payload.id'] = array('$in' => $ids);
-        	}
+            if ($options['status'] === self::JOB_STATUS_FAILED) {
+                $cursor = $cube->selectCollection('fail_events')
+                    ->find(array(), array('d.job_id'))
+                    ->sort($options['sort'])
+                    ->limit($options['limit']);
+                $ids = array();
+                foreach ($cursor as $c) {
+                    $ids[] = $c['d']['job_id'];
+                }
+                $conditions['d.args.payload.id'] = array('$in' => $ids);
+            }
         }
 
         if (!empty($options['date_after'])) {
-        	$conditions['t']['$gte'] = new \MongoDate(strtotime($options['date_after']));
+            $conditions['t']['$gte'] = new \MongoDate(strtotime($options['date_after']));
         }
 
         if (!empty($options['date_before'])) {
-        	$conditions['t']['$lt'] = new \MongoDate(strtotime($options['date_before']));
+            $conditions['t']['$lt'] = new \MongoDate(strtotime($options['date_before']));
         }
 
         $jobsCursor = $jobsCollection->find($conditions);
         $jobsCursor->sort($options['sort']);
 
         if (!empty($options['page']) && !empty($options['limit'])) {
-        	$jobsCursor->skip(($options['page']-1) * $options['limit'])->limit($options['limit']);
+            $jobsCursor->skip(($options['page']-1) * $options['limit'])->limit($options['limit']);
         }
 
         if ($options['type'] == 'count') {
-        	return $jobsCursor->count();
+            return $jobsCursor->count();
         }
 
         $results = $this->formatJobs($jobsCursor);
         if ($options['format']) {
-        	return $this->setJobStatus($results);
+            return $this->setJobStatus($results);
         }
 
         return $results;
     }
-
-
 
     /**
      * Return the distribution of jobs by classes
@@ -376,6 +408,12 @@ class ResqueStat
     }
 
 
+    /**
+     * Convert jobs document from MongoDB to a formatted array
+     *
+     * @param $MongoCursor A MongoCursor from a find() action
+     * @return a array of jobs
+     */
     private function formatJobs($cursor)
     {
         $jobs = array();
@@ -388,7 +426,6 @@ class ResqueStat
                             'class' => $doc['d']['args']['payload']['class'],
                             'args' => var_export($doc['d']['args']['payload']['args'][0], true),
                             'job_id' => $doc['d']['args']['payload']['id']
-
             );
         }
 
@@ -396,7 +433,13 @@ class ResqueStat
     }
 
 
-
+    /**
+     * Assign a status to each jobs
+     *
+     * @since 1.0.0
+     * @param array $jobs An array of jobs
+     * @return An array of jobs
+     */
     private function setJobStatus($jobs)
     {
         $jobIds = array_keys($jobs);
@@ -444,6 +487,23 @@ class ResqueStat
         }
 
         return array_values($jobs);
+    }
+
+    /**
+     * Create Mongo Collection index
+     *
+     * @since 1.1.0
+     */
+    private function setupIndexes()
+    {
+        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $cube->selectCollection('got_events')->ensureIndex('d.args.queue');
+        $cube->selectCollection('got_events')->ensureIndex('d.args.payload.class');
+        $cube->selectCollection('got_events')->ensureIndex('d.worker');
+        $cube->selectCollection('fail_events')->ensureIndex('d.job_id');
+        $cube->selectCollection('done_events')->ensureIndex('d.job_id');
+        $cube->selectCollection('shutdown_events')->ensureIndex('d.worker');
+        $cube->selectCollection('start_events')->ensureIndex('d.worker');
     }
 }
 

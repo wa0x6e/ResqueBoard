@@ -52,7 +52,7 @@ class ResqueStat
     {
         $this->settings = array(
                 'mongo' => array('host' => 'localhost', 'port' => 27017, 'database' => 'cube_development'),
-                'redis' => array('host' => '127.0.0.1', 'port' => 6379),
+                'redis' => array('host' => '127.0.0.1', 'port' => 6379, 'database' => 0),
                 'resquePrefix' => 'resque'
         );
 
@@ -117,6 +117,9 @@ class ResqueStat
             )
         );
 
+        $this->stats['total']['processed'] = max($this->stats['total']['processed'], $cube->selectCollection('got_events')->find()->count());
+        $this->stats['total']['failed'] = max($this->stats['total']['failed'], $cube->selectCollection('fail_events')->find()->count());
+
         $this->setupIndexes();
     }
 
@@ -155,6 +158,7 @@ class ResqueStat
         try {
             $this->redis = new \Redis();
             $this->redis->connect($this->settings['redis']['host'], $this->settings['redis']['port']);
+            $this->redis->select($this->settings['redis']['database']);
             return $this->redis;
         } catch (\RedisException $e) {
             throw new DatabaseConnectionException('Could not connect to Redis Server');
@@ -322,6 +326,12 @@ class ResqueStat
 
         $stopDate = new \MongoDate();
 
+        $mapReduceStats->update(
+            array('_id' => 'job_stats'),
+            array('$set' => array('date' => $stopDate)),
+            array('upsert' => true)
+        );
+
         $stats = new \stdClass();
 
         // Computing total jobs distribution stats
@@ -353,16 +363,11 @@ class ResqueStat
         $cursor = $cube->selectCollection('jobs_repartition_stats')->find()->sort(array('value' => -1))->limit($limit);
 
         $stats->total = $cube->selectCollection('got_events')->find()->count();
+        $stats->stats = array();
         foreach ($cursor as $c) {
             $c['percentage'] = round($c['value'] / $stats->total * 100, 2);
             $stats->stats[] = $c;
         }
-
-        $mapReduceStats->update(
-            array('_id' => 'job_stats'),
-            array('$set' => array('date' => $stopDate)),
-            array('upsert' => true)
-        );
 
         return $stats;
     }
@@ -392,7 +397,7 @@ class ResqueStat
         }
 
         $stats->count[self::JOB_STATUS_RUNNING] = 0; // TODO
-        $stats->total_active = $this->getRedis()->get($this->settings['resquePrefix'] . 'stat:processed');
+        $stats->total_active = $this->stats['active']['processed'];
 
         $cursors = $cube->selectCollection('got_events')->find(array(), array('t'))->sort(array('t' => 1))->limit(1);
         foreach ($cursors as $cursor) {
@@ -403,6 +408,7 @@ class ResqueStat
         foreach ($cursors as $cursor) {
             $stats->newest = new \DateTime('@'.$cursor['t']->sec);
         }
+
 
         return $stats;
     }

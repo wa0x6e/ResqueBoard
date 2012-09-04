@@ -49,10 +49,13 @@
 						$pieDatas[] = array('name' => 'Other', 'count' => $total);
 					}
 
+					$diff = date_diff($jobsStats->oldest, new DateTime())->format('%a');
+					$jobsDailyAverage = empty($diff) ? 0 : round($jobsStats->total / $diff);
+
 					echo "<script type='text/javascript'>";
 					echo "$(document).ready(function() { ";
 						echo "jobsLoad();";
-						echo "monthlyJobsLoad();";
+						echo "monthlyJobsLoad(". $jobsDailyAverage .");";
 						echo "pieChart('jobRepartition', " . $jobsRepartitionStats->total . ", " . json_encode($pieDatas) . ");";
 					echo "})</script>";
 				?>

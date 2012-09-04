@@ -19,6 +19,16 @@ body
 	border: 1px solid darken(@grayLighter, 5);
 }
 
+.navbar a.brand
+{
+	padding: 8px 20px;
+	
+	img
+	{
+		vertical-align: text-bottom;
+	}
+}
+
 h4.sep
 {
 	background-color: @grayLighter;
@@ -29,7 +39,6 @@ h4.sep
 
 #lastest-jobs 
 {
-	
 	height: 190px;
 	margin-top: @gridGutterWidth / 2;
 }
@@ -699,6 +708,12 @@ td.stats-nb, th.stats-nb
 	.graph-area
 	{
 		fill: #b5c7e6;
+	}
+	
+	.graph-average-area
+	{
+		fill : #c7e9c0;
+		opacity: 0.4;
 	}
 	
 	.graph-line

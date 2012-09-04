@@ -956,8 +956,16 @@ function number_format(x)
 
 }
 
-
-function pieChart(id, total, data)
+/**
+ * Create a pie chart from a set of data
+ * 
+ * @param  {[type]} id      [description]
+ * @param  {[type]} total   [description]
+ * @param  {[type]} data    [description]
+ * @param  {[type]} average [description]
+ * @return {[type]}         [description]
+ */
+function pieChart(id, total, data, average)
 {
 	var m = 0;
 	var r = 80;
@@ -1212,8 +1220,13 @@ function jobsLoad()
 	.tickFormat(d3.time.format("%H:%M")));
 }
 
-
-function monthlyJobsLoad()
+/**
+ * Create a line graph of monthly jobs load
+ * 
+ * @param  int average 	Total average number of jobs by day
+ * @return void
+ */
+function monthlyJobsLoad(average)
 {
 	var loadChart = function(start, end, title)
 	{
@@ -1238,7 +1251,7 @@ function monthlyJobsLoad()
 				.range([0, w - margin_left - margin_right]);
 
 				var yScale = d3.scale.linear()
-				.domain([0,d3.max(data.map(function(d){return d.value;}))*1.25])
+				.domain([0, Math.max(d3.max(data.map(function(d){return d.value;})), average)*1.25])
 				.range([h - margin_top - margin_bottom, 0]);
 
 				d3.select('#jobs-load-monthly').selectAll("svg").remove();
@@ -1291,6 +1304,14 @@ function monthlyJobsLoad()
 					.attr('transform', 'translate(' + margin_left + ',' + margin_top + ')')
 				;
 
+				graph_group.append("rect")
+					.attr("x", 0)
+					.attr("y", yScale(average))
+					.attr("width", w - margin_left - margin_right)
+					.attr("height", h - yScale(average) - margin_bottom - margin_top)
+					.attr("class", "graph-average-area")
+				;
+
 				graph_group.append("path")
 					.attr("class", "graph-line")
 					.attr("d", line(data))
@@ -1299,7 +1320,9 @@ function monthlyJobsLoad()
 				graph_group.append("path")
 					.attr("class", "graph-area")
 					.attr("d", garea(data))
-				;	
+				;
+
+				
 
 				svg.append("text")
 					.attr("x", w/2)
@@ -1314,6 +1337,14 @@ function monthlyJobsLoad()
 					.attr("y", 10)
 					.attr("text-anchor", "left")
 					.text("Jobs/days")
+					.attr("class", "graph-legend")
+				;
+
+				svg.append("text")
+					.attr("x", w - margin_right)
+					.attr("y", 10)
+					.attr("text-anchor", "end")
+					.text("Average : " + number_format(average) + " jobs/day")
 					.attr("class", "graph-legend")
 				;
 			}

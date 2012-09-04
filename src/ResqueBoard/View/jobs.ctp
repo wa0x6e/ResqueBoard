@@ -33,7 +33,7 @@
 	<div class="row">
 
 		<div class="span6">
-			<h2>Distribution by classes</h2>
+			<h2><a href="/jobs/distribution">Distribution by classes</a></h2>
 
 			<div id="jobRepartition">
 				<?php
@@ -164,47 +164,31 @@
 	</div>
 
 	<div class="row">
-		<div class="span8">
+		<div class="span12">
+		<hr>
+		</div>
+
+
+		<div class="span7">
 
 		<?php
 
-		if ($searchToken !== null) {
-			echo '<h2>Results for <mark>' . $searchToken . '</mark></h2>';
-		} else {
-			echo '<h2>Latest Jobs</h2>';
-		}
+
+		echo '<h2><a href="/jobs/view">Latest Jobs</a></h2>';
+
 
 		if (!empty($jobs)) {
 
 			?>
 			<div class="breadcrumb clearfix">
 				<div class="pull-right">
-				<?php if (isset($pagination)) { ?>
-					<form class="form-inline" data-event="ajax-pagination">
-						<label>Display
-						<select class="span1">
-							<?php
-							foreach ($resultLimits as $limit) {
-								echo '<option value="'.$pagination->baseUrl . $limit . '/' . $pagination->current.'"';
-								if ($limit == $pagination->limit) {
-									echo ' selected="selected"';
-								}
-								echo '>'.$limit.'</option>';
-							}?>
-						</select>
-						</label>
-					</form>
-					<?php } ?>
 					<div class="btn-group">
 						<button class="btn" data-event="expand-all tooltip" title="Expand all"><i class="icon-folder-open"></i></button>
 						<button class="btn" data-event="collapse-all tooltip" title="Collapse all"><i class="icon-folder-close"></i></button>
 					</div>
 				</div>
-			<?php if (isset($pagination)) {
-				echo 'Page ' . $pagination->current .' of ' . $pagination->totalPage . ', found ' . $pagination->totalResult . ' jobs';
-				} ?>
 			</div>
-			<p>All time are UTC <?php echo date('P', strtotime($jobs[0]['time'])); ?>, current server time is <?php echo date('r'); ?></p>
+
 			<?php
 			echo '<ul class="unstyled" id="job-details">';
 
@@ -244,38 +228,6 @@
 			}
 			echo '</ul>';
 
-			if (isset($pagination)) {
-				?>
-						<ul class="pager">
-						<li class="previous<?php if ($pagination->current == 1) echo ' disabled'?>">
-							<a href="<?php
-								if ($pagination->current > 1) {
-									echo $pagination->baseUrl . $pagination->limit . '/' . ($pagination->current - 1);
-								} else {
-									echo '#';
-								}
-							?>">&larr; Older</a>
-						</li>
-						<li>
-							Page <?php echo $pagination->current?> of <?php echo $pagination->totalPage ?>, found <?php echo $pagination->totalResult?> jobs
-						</li>
-						<li class="next<?php if ($pagination->current == $pagination->totalPage) {
-							echo ' disabled';
-						}?>">
-							<a href="<?php
-								if ($pagination->current < $pagination->totalPage) {
-									echo $pagination->baseUrl . $pagination->limit . '/' . ($pagination->current + 1);
-								} else {
-									echo '#';
-								}
-							?>">Newer &rarr;</a>
-						</li>
-						</ul>
-
-				<?php
-			}
-
-
 		}
 		elseif ($searchToken !== null) {
 			?>
@@ -291,37 +243,67 @@
 			<?php
 		}
 		?>
+		<a href="/jobs/view" class="btn btn-block btn-small">More jobs</a>
+		<p><small>All time are UTC <?php echo date('P', strtotime($jobs[0]['time'])); ?>, current server time is <?php echo date('r'); ?></small></p>
 		</div>
 
-		<div class="span4">
+		<div class="span5">
+
+			<div class="">
+				<h2>Recent failures</h2>
+				<?php
+			if (!empty($failedJobs)) {
 
 
+			echo '<ul class="unstyled" id="job-details">';
 
-		<div class="well" style="padding: 8px 0;">
-		<ul class="nav nav-list">
-			<li class="nav-header">
-				Search Job
-			</li>
-			<li>
-			<form class="" action="/jobs" method="POST">
-				<div class="input-append">
-					<input type="text" name="job_id" class="span3" placeholder="Job #Id"/>
-					<button type="submit" class="btn"><i class="icon-search"></i></button>
-				</div>
-			</form>
-			</li>
-			<li class="nav-header">
-				Active workers <span class="label"><?php echo count($workers); ?></span>
-			</li>
-			<?php
-				foreach ($workers as $worker) {
-					echo '<li><a href="/jobs/'.$worker['host'] . '/' . $worker['process'].'"><i class="icon-cog"></i>';
-					echo $worker['host'] . ':' . $worker['process'];
-					echo '</a></li>';
-				}
+			foreach ($failedJobs as $job) {
+				?>
+				<li class="accordion-group<?php if ($job['status'] == ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED) echo ' error' ?>">
+					<div class="accordion-heading" data-toggle="collapse" data-target="#<?php echo $job['job_id']?>">
+						<div class="accordion-toggle">
+							<span title="Job <?php echo $jobStatus[$job['status']] ?>" class="job-status-icon" data-event="tooltip">
+							<img src="/img/job_<?php echo $jobStatus[$job['status']] ?>.png" title="Job <?php echo $jobStatus[$job['status']] ?>" height=24 width=24 /></span>
+							<span class="label label-info pull-right"><?php echo $job['worker']?></span>
+							<h4>#<?php echo $job['job_id']?></h4>
+							<time datetime="<?php echo date('c', strtotime($job['time']))?>"><i class="icon-time"></i> <?php echo date('H:i:s', strtotime($job['time'])); ?></time>
+							<small>Performing <code><?php echo $job['class']?></code> in
+							<span class="label label-success"><?php echo $job['queue']?></span></small>
+
+						</div>
+					</div>
+					<div class="collapse<?php if (count($jobs) == 1) echo ' in'; ?> accordion-body" id="<?php echo $job['job_id']?>">
+						<div class="accordion-inner">
+							<p><i class="icon-time<?php if ($job['status'] == ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED) echo ' icon-white' ?>"></i> <b>Added on </b><?php echo $job['time']; ?></p>
+
+							<?php if (isset($job['log'])) {
+								echo '<div class="alert alert-error">' . $job['log'] . '</div>';
+							}
+
+							if (isset($job['trace'])) {
+								echo '<pre class="job-trace"><code class="language-php">'. $job['trace'] . '</code></pre>';
+							}
+							?>
+
+							<pre class="job-args"><code class="language-php"><?php echo $job['args'] ?></code></pre>
+						</div>
+					</div>
+				</li>
+				<?php
+			}
+			echo '</ul>';
+
+		} else {
 			?>
-		</ul>
-		</div>
+				<div class="alert alert-info">
+					No failed jobs so far :)
+				</div>
+			<?php
+		}
+		?>
+			</div>
+
+
 		</div>
 	</div>
 

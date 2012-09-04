@@ -174,76 +174,101 @@ class ResqueStat
 
 
     /**
-     * Return a list of jobs that was processed between
-     * a $start and an $end date
+     *
      */
-    public function getJobs($start, $end, $withStatus = false)
+    public function getJobs($options = array())
     {
         $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
         $jobsCollection = $cube->selectCollection('got_events');
 
-        $jobsCursor = $jobsCollection->find(
-            array('t' => array('$gte' => new \MongoDate($start), '$lt' => new \MongoDate($end)))
-        );
-        $jobsCursor->sort(array('d.worker' => 1));
+        $default = array(
+        		'workerId' => null,
+        		'jobId' => null,
+        		'page' => 1,
+        		'limit' => null,
+        		'sort' => array('t' => -1),
+        		'status' => null,
+        		'type' => 'find',
+        		'date_after' => null,
+        		'date_before' => null,
+        		'class' => null,
+        		'queue' => null,
+        		'worker' => array(),
+        		'format' => true
+        	);
 
-        $result = $this->formatJobs($jobsCursor);
+        $options = array_merge($default, $options);
 
-        if ($withStatus) {
-            $result =  $this->setJobStatus($result);
+        $conditions = array();
+
+        if (!empty($options['jobId'])) {
+        	if (!is_array($options['jobId'])) {
+        		$options['jobId'] = array($options['jobId']);
+        	}
+        	$conditions['d.args.payload.id'] = array('$in' => $options['jobId']);
+        } else {
+        	if ($options['workerId'] !== null) {
+        		$conditions['d.worker'] = $options['workerId'];
+        	}
+
+        	if (!empty($options['class'])) {
+        		$conditions['d.args.payload.class'] = array('$in' => array_map('trim', explode(',', $options['class'])));
+        	}
+
+        	if (!empty($options['queue'])) {
+        		$conditions['d.args.queue'] = array('$in' => array_map('trim', explode(',', $options['queue'])));
+        	}
+
+        	if (!empty($options['worker'])) {
+        		if (in_array('old', $options['worker'])) {
+					$workers = array_map(function($a) {return $a['host'].':'.$a['process'];}, $this->getWorkers());
+					$exclude = array_diff($workers, $options['worker']);
+
+					if (!empty($exclude)) {
+						$conditions['d.worker'] = array('$nin' => $exclude);
+					}
+        		} else {
+        			$conditions['d.worker'] = array('$in' => $options['worker']);
+        		}
+        	}
+
+        	if ($options['status'] === self::JOB_STATUS_FAILED) {
+        		$cursor = $cube->selectCollection('fail_events')->find(array(), array('d.job_id'))->sort($options['sort'])->limit($options['limit']);
+        		$ids = array();
+        		foreach ($cursor as $c) {
+        			$ids[] = $c['d']['job_id'];
+        		}
+        		$conditions['d.args.payload.id'] = array('$in' => $ids);
+        	}
         }
 
-        return $result;
-    }
+        if (!empty($options['date_after'])) {
+        	$conditions['t']['$gte'] = new \MongoDate(strtotime($options['date_after']));
+        }
 
-
-    /**
-     * Return a single job
-     *
-     * @param string Job ID
-     */
-    public function getJob($id)
-    {
-        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
-        $jobsCollection = $cube->selectCollection('got_events');
-
-        $jobsCursor = $jobsCollection->find(array('d.args.payload.id' => $id));
-
-        $result = $this->setJobStatus($this->formatJobs($jobsCursor));
-
-        return $result === null ? array() : $result;
-    }
-
-
-    public function getJobsByWorker($workerId, $page, $limit)
-    {
-        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
-        $jobsCollection = $cube->selectCollection('got_events');
-
-        $conditions = $workerId === null ? array() : array('d.worker' => $workerId);
+        if (!empty($options['date_before'])) {
+        	$conditions['t']['$lt'] = new \MongoDate(strtotime($options['date_before']));
+        }
 
         $jobsCursor = $jobsCollection->find($conditions);
-        $jobsCursor->sort(array('t' => -1))->skip(($page-1) * $limit)->limit($limit);
+        $jobsCursor->sort($options['sort']);
 
-        $result = $this->setJobStatus($this->formatJobs($jobsCursor));
+        if (!empty($options['page']) && !empty($options['limit'])) {
+        	$jobsCursor->skip(($options['page']-1) * $options['limit'])->limit($options['limit']);
+        }
 
+        if ($options['type'] == 'count') {
+        	return $jobsCursor->count();
+        }
 
-        return $result;
+        $results = $this->formatJobs($jobsCursor);
+        if ($options['format']) {
+        	return $this->setJobStatus($results);
+        }
+
+        return $results;
     }
 
-
-    /**
-     * Return the total number of jobs for a specific worker
-     *
-     * @return int number of jobs processed by the worker
-     */
-    public function getJobsByWorkersCount($workerId)
-    {
-        $conditions = array('d.worker' => $workerId);
-
-        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
-        return $cube->selectCollection('got_events')->find($conditions, array())->count();
-    }
 
 
     /**

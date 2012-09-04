@@ -98,36 +98,21 @@ $app->get(
     }
 );
 
-$app->map(
+$app->get(
     '/jobs',
     function () use ($app, $settings) {
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
 
-            $jobs = array();
-            $searchToken = null;
-
-            $limit = PAGINATION_LIMIT;
-
-            $resultLimits = array(15, 50, 100);
-
-            if ($app->request()->isPost()) {
-                if ($app->request()->post('job_id') != null) {
-                    $jobId = $searchToken = ltrim($app->request()->post('job_id'), '#');
-                    $jobs = $resqueStat->getJob($jobId);
-                }
-
-            }
-            $jobs = $resqueStat->getJobsByWorker(null, 1, $limit);
             $app->render(
                 'jobs.ctp',
                 array(
-                    'jobs' => $jobs,
+                    'jobs' => $resqueStat->getJobs(array('limit' => PAGINATION_LIMIT)),
+                	'failedJobs' =>  $resqueStat->getJobs(array('status' => ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED, 'limit' => 10)),
                     'jobsStats' => $resqueStat->getJobsStats(),
                     'jobsRepartitionStats' => $resqueStat->getJobsRepartionStats(),
-                    'searchToken' => $searchToken,
                     'workers' => $resqueStat->getWorkers(),
-                    'resultLimits' => $resultLimits,
+                    'resultLimits' => array(15, 50, 100),
                     'pageTitle' => 'Jobs'
                 )
             );
@@ -136,7 +121,7 @@ $app->map(
             $app->error($e);
         }
     }
-)->via('GET', 'POST');
+);
 
 $app->get(
     '/jobs/distribution',
@@ -158,32 +143,89 @@ $app->get(
     }
 );
 
-$app->get(
-    '/jobs/:workerHost/:workerProcess(/:limit(/:page))',
-    function ($workerHost, $workerProcess, $limit = PAGINATION_LIMIT, $page = 1) use ($app, $settings) {
+$app->map(
+    '/jobs/view',
+    function () use ($app, $settings) {
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $errors  = array();
 
-            $workerId = $workerHost . ':' . $workerProcess;
+            $activeWorkers = $resqueStat->getWorkers();
 
             $resultLimits = array(15, 50, 100);
 
-            $pagination = new stdClass();
-            $pagination->current = $page;
-            $pagination->limit = (in_array($limit, $resultLimits)) ? $limit : PAGINATION_LIMIT;
-            $pagination->baseUrl = '/jobs/' . $workerHost . '/' . $workerProcess . '/';
-            $pagination->totalResult = $resqueStat->getJobsByWorkersCount($workerId);
-            $pagination->totalPage = ceil($pagination->totalResult / $pagination->limit);
+            $defaults = array(
+            		'page' => 1,
+            		'limit' => $resultLimits[0],
+            		'class' => null,
+            		'queue' => null,
+            		'date_after' => null,
+            		'date_before' => null,
+            		'worker' => array(),
+            		'workers' => ''
+            	);
 
+            $searchData = array_merge($defaults, $app->request()->params());
+            array_walk($searchData, function(&$key) {if (is_string($key)) $key = trim($key); });
+
+            $pagination = new stdClass();
+            $pagination->current = $searchData['page'];
+            $pagination->limit = (($app->request()->params('limit') != '') && in_array($app->request()->params('limit'), $resultLimits)) ? $app->request()->params('limit') : PAGINATION_LIMIT;
+            $pagination->baseUrl = '/jobs/view?';
+
+            $conditions = array();
+            $searchToken = '';
+            if ($app->request()->isPost() && $app->request()->post('job_id') != null) {
+            	$jobId = $searchToken = ltrim($app->request()->post('job_id'), '#');
+            	$jobs = $resqueStat->getJobs(array('jobId' => $jobId));
+            } else {
+            	$conditions = array(
+            		'page' => $searchData['page'],
+            		'limit' => $searchData['limit'],
+            		'class' => $searchData['class'],
+            		'queue' => $searchData['queue'],
+            		'date_after' => $searchData['date_after'],
+            		'date_before' => $searchData['date_before'],
+            		'worker' => $searchData['worker']
+            	);
+
+            	if (!empty($searchData['workers'])) {
+            		$conditions['worker'] += array_map('trim', explode(',', $searchData['workers']));
+            	}
+
+            	// Validate search datas
+            	$dateTimePattern = '/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])(\s+?(0[1-9]|1[0-9]|2[0-4]):([0-5][0-9])(:([0-5][0-9]))*?)*?$/';
+            	if (!empty($conditions['date_after']) && preg_match($dateTimePattern, $conditions['date_after']) == 0) {
+            		$errors['date_after'] = 'Date is not valid';
+            	}
+            	if (!empty($conditions['date_before']) && preg_match($dateTimePattern, $conditions['date_before']) == 0) {
+            		$errors['date_before'] = 'Date is not valid';
+            	}
+            	if ($conditions['worker']) {
+
+            	}
+
+            	if (empty($errors)) {
+            		$jobs = $resqueStat->getJobs($conditions);
+            	} else {
+            		$jobs = array();
+            	}
+            }
+
+            $pagination->totalResult = $resqueStat->getJobs(array_merge($conditions, array('type' => 'count')));
+            $pagination->totalPage = ceil($pagination->totalResult / $pagination->limit);
+            $pagination->uri = $app->request()->params();
 
             $app->render(
-                'jobs.ctp',
+                'jobs_view.ctp',
                 array(
-                    'jobs' => $resqueStat->getJobsByWorker($workerId, $page, $pagination->limit),
-                    'searchToken' => $workerId,
-                    'workers' => $resqueStat->getWorkers(),
+                    'jobs' => $jobs,
+                    'workers' => $activeWorkers,
                     'resultLimits' => $resultLimits,
                     'pageTitle' => 'Jobs',
+                	'errors' => $errors,
+                	'searchData' => $searchData,
+                	'searchToken' => $searchToken,
                     'pagination' => $pagination
                 )
             );
@@ -192,7 +234,7 @@ $app->get(
             $app->error($e);
         }
     }
-);
+)->via('GET', 'POST');
 
 $app->get(
     '/api/jobs/:start/:end',

@@ -229,6 +229,14 @@ class ResqueStat
 
         $options = array_merge($default, $options);
 
+        if ($options['date_before'] !== null && !is_int($options['date_before'])) {
+            $options['date_before'] = strtotime($options['date_before']);
+        }
+
+        if ($options['date_after'] !== null && !is_int($options['date_after'])) {
+            $options['date_after'] = strtotime($options['date_after']);
+        }
+
         $conditions = array();
 
         if (!empty($options['jobId'])) {
@@ -281,11 +289,11 @@ class ResqueStat
         }
 
         if (!empty($options['date_after'])) {
-            $conditions['t']['$gte'] = new \MongoDate(strtotime($options['date_after']));
+            $conditions['t']['$gte'] = new \MongoDate($options['date_after']);
         }
 
         if (!empty($options['date_before'])) {
-            $conditions['t']['$lt'] = new \MongoDate(strtotime($options['date_before']));
+            $conditions['t']['$lt'] = new \MongoDate($options['date_before']);
         }
 
         $jobsCursor = $jobsCollection->find($conditions);

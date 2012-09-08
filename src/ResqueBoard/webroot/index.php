@@ -255,7 +255,7 @@ $app->get(
     function ($start, $end) use ($app, $settings) {
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
-            $jobs = array_values($resqueStat->getJobs($start, $end, false));
+            $jobs = array_values($resqueStat->getJobs(array('date_after' => (int)$start, 'date_before' => (int)$end)));
             $app->response()->header("Content-Type", "application/json");
             echo json_encode($jobs);
         } catch (\Exception $e) {

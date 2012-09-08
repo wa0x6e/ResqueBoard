@@ -7,17 +7,38 @@
  * Redistributions of files must retain the above copyright notice.
  *
  * @author		Wan Qi Chen <kami@kamisama.me>
- * @copyright  	Copyright 2012, Wan Qi Chen <kami@kamisama.me>
+ * @copyright	Copyright 2012, Wan Qi Chen <kami@kamisama.me>
  * @link		http://resqueboard.kamisama.me
  * @since		1.0.0
- * @license	 	MIT License (http://www.opensource.org/licenses/mit-license.ctp)
+ * @license		MIT License (http://www.opensource.org/licenses/mit-license.ctp)
  */
 
+/*jshint
+
+	curly: true,
+	eqeqeq: true,
+	forin: true,
+	noarg: true,
+	noempty: true,
+	undef: true,
+	quotmark: "double",
+	boss: true,
+	regexdash: true,
+	browser: true,
+	devel: true,
+	wsh: true,
+	trailing: true,
+	jquery: true
+
+*/
+
+/*global require:true, hljs:true, d3:true, serverIp:true, moment:true, cubism:true */
+
 $(document).ready(function() {
-	$('[data-event~=tooltip]').tooltip();
-	$('[data-event~=collapse-all]').on('click', function(e){ e.preventDefault(); $('.collapse.in').collapse('hide'); });
-	$('[data-event~=expand-all]').on('click', function(e){ e.preventDefault(); $('.collapse').not('.in').collapse('show'); });
-	$('[data-event~=ajax-pagination]').on('change', 'select', function(e){window.location=$(this).val();});
+	$("[data-event~=tooltip]").tooltip();
+	$("[data-event~=collapse-all]").on("click", function(e){ e.preventDefault(); $(".collapse.in").collapse("hide"); });
+	$("[data-event~=expand-all]").on("click", function(e){ e.preventDefault(); $(".collapse").not(".in").collapse("show"); });
+	$("[data-event~=ajax-pagination]").on("change", "select", function(e){window.location=$(this).val();});
 
 	// Init syntax highlighter
 	hljs.initHighlightingOnLoad();
@@ -33,7 +54,7 @@ var stop = new Date(Date.now());
 var formatISO = function(date){
 	var format = d3.time.format.iso;
 	return format.parse(date); // returns a Date
-}
+};
 
 /**
  * Duration of the transition animation
@@ -46,16 +67,16 @@ var duration = 1500;
  * @type Object
  */
 var step = new Array(
-	{second : 10, 		code : "1e4"},
-	{second : 60, 		code : "6e4"},
-	{second : 300, 		code : "3e5"},
-	{second : 3600, 	code : "36e5"},
-	{second : 84600, 	code : "864e5"}
+	{second : 10,		code : "1e4"},
+	{second : 60,		code : "6e4"},
+	{second : 300,		code : "3e5"},
+	{second : 3600,		code : "36e5"},
+	{second : 84600,	code : "864e5"}
 );
 
 /**
  * Display lastest jobs stats
- * 
+ *
  * @return void
  */
 function listenToJobsActivities()
@@ -66,14 +87,14 @@ function listenToJobsActivities()
 	 */
 	var limit = 25;
 
-	d3.json('http://'+serverIp+':1081/1.0/metric/get'+
-		'?expression=sum(got)'+
-		'&start=2012-07-07T16:00:00Z'+
-		'&stop=' + formatISO(stop)+
-		'&limit=' + limit + 
-		'&step=' + step[0].code, function(data){
+	d3.json("http://"+serverIp+":1081/1.0/metric/get"+
+		"?expression=sum(got)"+
+		"&start=2012-07-07T16:00:00Z"+
+		"&stop=" + formatISO(stop)+
+		"&limit=" + limit +
+		"&step=" + step[0].code, function(data){
 
-			var 
+			var
 				margin = {top:25, right:35, bottom: 35, left: 20},
 				width = 620 - margin.right - margin.left,
 				height = 180 - margin.top - margin.bottom,
@@ -85,12 +106,12 @@ function listenToJobsActivities()
 
 			/**
 			 * Find the next time after the last entry
-			 * because the last entry doesn't have a x axis
+			 * because the last entry doesn"t have a x axis
 			 */
-			var getNextTick = function(date) { 
+			var getNextTick = function(date) {
 				date = new Date(date);
 				return new Date(date.setSeconds(date.getSeconds() + step[0].second));
-			}
+			};
 
 			data = data.map(function(d){return {time:new Date(d.time), value:  d.value};}).slice(0, limit);
 
@@ -152,7 +173,7 @@ function listenToJobsActivities()
 				})
 				.call(barDim)
 				;
-			}
+			};
 
 			var barDim = function(selection)
 			{
@@ -162,7 +183,7 @@ function listenToJobsActivities()
 				.attr("width", barWidth)
 				.attr("height", function(d) { return height - y(d.value);  })
 				;
-			}
+			};
 
 
 			barArea.selectAll("rect")
@@ -180,7 +201,7 @@ function listenToJobsActivities()
 				.text(function(d){return d.value;})
 				.call(barLabelDim)
 				;
-			}
+			};
 
 			var barLabelDim = function(selection)
 			{
@@ -189,7 +210,7 @@ function listenToJobsActivities()
 				.attr("dy", "1.5em")
 				.attr("x", function(d) { return x(d.time) + barWidth/2; })
 				;
-			}
+			};
 
 			barArea.selectAll("text").data(data).enter().append("text")
 				.attr("x", function(d) { return x(d.time) + barWidth/2; })
@@ -228,7 +249,7 @@ function listenToJobsActivities()
 			function redraw() {
 
 				x.domain([data[0].time, getNextTick(data[data.length-1].time)]);
-				y.domain([0,d3.max(data.map(function(d){return d.value;}))])
+				y.domain([0,d3.max(data.map(function(d){return d.value;}))]);
 
 				var rect = barArea.selectAll("rect").data(data, function(d){return d.time;});
 				var text = barArea.selectAll("text").data(data, function(d){return d.time;});
@@ -244,7 +265,7 @@ function listenToJobsActivities()
 					.attr("x", function(d) { return x(d.time) + barWidth + 2; })
 				;
 
-				
+
 				rect.transition()
 					.duration(duration)
 					.attr("clip-path", "url(#clip)")
@@ -311,7 +332,7 @@ function listenToJobsActivities()
 			};
 
 			metricSocket.onmessage = function(message) {
-				JsonData = JSON.parse(message.data);
+				var JsonData = JSON.parse(message.data);
 
 				if(JsonData.hasOwnProperty("value")) {
 					JsonData.time = new Date(JsonData.time);
@@ -319,15 +340,15 @@ function listenToJobsActivities()
 					data.push(JsonData);
 					redraw();
 
-					setTimeout(function() { 
-						var nextDate = getNextTick(data[data.length-1].time); 
+					setTimeout(function() {
+						var nextDate = getNextTick(data[data.length-1].time);
 						metricSocket.send(JSON.stringify({
 							"expression": "sum(got)",
 							"start" : nextDate.toISOString(),
 							"stop": getNextTick(nextDate).toISOString(),
 							"limit": 1,
-							"step" : step[0].code 
-						}))
+							"step" : step[0].code
+						}));
 					}, step[0].second * 1000);
 				}
 			};
@@ -342,40 +363,41 @@ function listenToJobsActivities()
  * jobs between a `start` and an `end` date.
  * End time is automatically computed from the
  * start time, and step.second
- * 
+ *
  * @param  string startTime start time in ISO 8601 format
  * @return void
  */
 function displayJobsModal(startTime)
 {
-	startTimeStamp = (Date.parse(startTime))/1000;
-
+	var startTimeStamp = (Date.parse(startTime))/1000;
 	var modalTimestamp = $("#job-details").data("timestamp");
-	if (modalTimestamp != startTimeStamp)
+
+	if (modalTimestamp !== startTimeStamp)
 	{
 		$.ajax({
 			url : "/api/jobs/" + startTimeStamp + "/" + (startTimeStamp + step.second),
 			success : function(message){
-					$("#job-details .modal-body").html(
-						$("#jobs-tpl").render(message)
-					);
-					$("#job-details").data('timestamp', startTimeStamp);
-					$("#job-details .modal-header .badge").html(message.length);
+				$("#job-details .modal-body").html(
+					$("#jobs-tpl").render(message)
+				);
+				$("#job-details").data("timestamp", startTimeStamp);
+				$("#job-details .modal-header .badge").html(message.length);
 
-					$("#job-details").modal('show');
-				}
-			
+				$("#job-details").modal("show");
+			}
 		});
 	}
 	else
-		$("#job-details-modal").modal('show'); // Repeat because ajax is asynchronous
+	{
+		$("#job-details-modal").modal("show"); // Repeat because ajax is asynchronous
+	}
 }
 
 
 
 /**
  * Display new events in realtime
- * 
+ *
  * @return void
  */
 function loadLogs()
@@ -386,6 +408,9 @@ function loadLogs()
 		verbosity : {}
 	};
 
+	var $el = $('#log-area');
+	var listView = new infinity.ListView($el);
+
 	var addCounter = function(cat, type, dom) {
 			counters[cat][type] = dom;
 	};
@@ -393,24 +418,28 @@ function loadLogs()
 	var incrCounter = function(cat, type, step) {
 			var node = counters[cat][type];
 			node.html(parseInteger(node.html()) + step);
-			if (node.queue("fx") == 0)
+			if (node.queue("fx") === 0)
+			{
 				node.effect("highlight");
+			}
 	};
 
 	var decrCounter = function(cat, type, step) {
 			var node = counters[cat][type];
 			var count = parseInteger(node.html());
-			if (count - step >= 0) 
+			if (count - step >= 0)
 			{
 				node.html(count - step);
-				if (node.queue("fx") == 0)
+				if (node.queue("fx") === 0)
+				{
 					node.effect("highlight");
+				}
 			}
 	};
 
 	// Update counters, by passing a list of nodes to be removed
 	var updateCounters = function(nodeList){
-	 
+
 		nodeList.each(function(){
 
 			var v = $(this);
@@ -418,7 +447,7 @@ function loadLogs()
 			decrCounter("type", v.data("type"), 1);
 			decrCounter("verbosity", v.data("verbosity"), 1);
 			decrCounter("general", "g", 1);
-			
+
 		});
 	};
 
@@ -439,61 +468,61 @@ function loadLogs()
 		fork    : {expression: "fork", format: function(data){return "job #" + data.job_id;}},
 		done    : {expression: "done", format: function(data){return "job #" + data.job_id;}},
 		fail    : {expression: "fail", format: function(data){return "job #" + data.job_id;}}
-	}
+	};
 
 	for(e in events)
 	{
 		init(e);
 	}
-	
+
 	var level = {
-			100 : {name: 'debug', class: 'label-success'},
-			200 : {name: 'info', class: 'label-info'},
-			300 : {name: 'warning', class: 'label-warning'},
-			400 : {name: 'error', class: 'label-important'},
-			500 : {name: 'critical', class: 'label-inverse'},
-			550 : {name: 'alert', class: 'label-inverse'} 
+			100 : {name: "debug", class: "label-success"},
+			200 : {name: "info", class: "label-info"},
+			300 : {name: "warning", class: "label-warning"},
+			400 : {name: "error", class: "label-important"},
+			500 : {name: "critical", class: "label-inverse"},
+			550 : {name: "alert", class: "label-inverse"}
 	};
 
 	var workers = {};
 
-	var formatData = function(type, data){ 
+	var formatData = function(type, data){
 		return {
-			time: data.time, 
-			relativeTime: moment(data.time).fromNow(), 
-			action: type, 
-			levelName: level[data.data.level].name, 
-			levelClass: level[data.data.level].class, 
+			time: data.time,
+			relativeTime: moment(data.time).fromNow(),
+			action: type,
+			levelName: level[data.data.level].name,
+			levelClass: level[data.data.level].class,
 			detail: events[type].format(data.data),
 			worker: data.data.worker,
-			workerClass : data.data.worker.replace(new RegExp("(\\.|:)","gm"), ''),
+			workerClass : data.data.worker.replace(new RegExp("(\\.|:)","gm"), ""),
 			color: getColor(data)
 		};
-	}
+	};
 
 	var getColor = function(data) {
-					if (workers[data.data.worker] == undefined)
-					{
-							workers[data.data.worker] = colors[Object.keys(workers).length];
-					}
-					return workers[data.data.worker];
-			};
+		if (workers[data.data.worker] === undefined)
+		{
+				workers[data.data.worker] = colors[Object.keys(workers).length];
+		}
+		return workers[data.data.worker];
+	};
 
 
-	var colors = ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', 
-	'#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', 
-	'#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d #', '17becf', '#9edae5'];
+	var colors = ["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a",
+	"#d62728", "#ff9896", "#9467bd", "#c5b0d5", "#8c564b", "#c49c94", "#e377c2",
+	"#f7b6d2", "#7f7f7f", "#c7c7c7", "#bcbd22", "#dbdb8d #", "17becf", "#9edae5"];
 
-	
+
 	/**
 	 * Insert new events in the DOM
-	 * 
+	 *
 	 */
 	function appendLog(type, data)
 	{
 		if ($("input[data-rel="+level[data.data.level].name+"]").is(":checked"))
 		{
-			$( "#log-area" ).append(
+			listView.append(
 				$("#log-template").render(formatData(type, data))
 			);
 
@@ -513,7 +542,7 @@ function loadLogs()
 
 			$("#log-area").find("time").each(function() {
 				$(this).html(moment($(this).attr("title")).fromNow()).tooltip();
-			});	
+			});
 		}
 	}
 
@@ -524,13 +553,13 @@ function loadLogs()
 		socket.onopen = function() {
 			socket.send(JSON.stringify({
 				"expression": events[e].expression,
-				"start": formatISO(stop),
+				"start": formatISO(stop)
 			}));
 		};
 
-		socket.onmessage = function(message) { 
+		socket.onmessage = function(message) {
 			appendLog(e, JSON.parse(message.data));
-		}; 
+		};
 	}
 
 	$("#clear-log-area").on("click", function(){
@@ -540,23 +569,23 @@ function loadLogs()
 
 	$("#log-filter-form").on("change", "input", function(e){
 
-		var rel = $(this).data("rel")
+		var rel = $(this).data("rel");
 
-		$("#log-area").append("<li class='filter-event'><b>"+ ($(this).is(":checked") ? "Start" : "Stop") +
+		$("#log-area").append("<li class="filter-event"><b>"+ ($(this).is(":checked") ? "Start" : "Stop") +
 			"</b> listening to <em>" + rel + "</em> events</li>");
 
-		var mutedLevels = $.cookie('ResqueBoard.mutedLevel', {path: '/logs'});
+		var mutedLevels = $.cookie("ResqueBoard.mutedLevel", {path: "/logs"});
 		mutedLevels = mutedLevels.split(",");
 
 		if ($(this).is(":checked")) {
 			var index = mutedLevels.indexOf(rel);
-			if (index != -1) {
+			if (index !== -1) {
 				mutedLevels.splice(index, 1);
 			}
 		} else {
 			mutedLevels[mutedLevels.length] = rel;
 		}
-		$.cookie('ResqueBoard.mutedLevel', mutedLevels.join(","), {expires: 365, path : '/logs'});
+		$.cookie("ResqueBoard.mutedLevel", mutedLevels.join(","), {expires: 365, path : "/logs"});
 
 	});
 
@@ -598,63 +627,73 @@ var Job = function()
 
 	return {
 		initJobsChart : function(chartType) {
-			if ($(".worker-stats").length != 0)
+			if ($(".worker-stats").length !== 0)
 			{
 				var getStaticStats = function(id)
 					{
-						if ($("#" + id).length == 0)
+						if ($("#" + id).length === 0)
+						{
 							return false;
+						}
 
 						var $this = $("#" + id);
-						var processedJobsCountDOM = $this.find('[data-status=processed]');
-						var failedJobsCountDOM = $this.find('[data-status=failed]');
+						var processedJobsCountDOM = $this.find("[data-status=processed]");
+						var failedJobsCountDOM = $this.find("[data-status=failed]");
 						return {
 							processedJobsCountDOM : processedJobsCountDOM,
 							failedJobsCountDOM : failedJobsCountDOM,
 							processedJobsCount : parseInteger(processedJobsCountDOM.html()),
 							failedJobsCount : parseInteger(failedJobsCountDOM.html()),
 							chart: $this.find("[data-type=chart]")
-						}
+						};
 					};
 
 				$(".worker-stats").each(function(data){
 					var $this = $(this);
-					var processedJobsCountDOM = $this.find('[data-status=processed]');
-					var failedJobsCountDOM = $this.find('[data-status=failed]');
+					var processedJobsCountDOM = $this.find("[data-status=processed]");
+					var failedJobsCountDOM = $this.find("[data-status=failed]");
 					var processedJobsCount = parseInteger(processedJobsCountDOM.html());
 					var chartDOM = $this.find("[data-type=chart]");
 
 					jobsStats[$this.attr("id")] = {
-						processedJobsCountDOM: processedJobsCountDOM, 
-						processedJobsCount: processedJobsCount, 
-						failedJobsCountDOM: failedJobsCountDOM, 
+						processedJobsCountDOM: processedJobsCountDOM,
+						processedJobsCount: processedJobsCount,
+						failedJobsCountDOM: failedJobsCountDOM,
 						failedJobsCount : parseInteger(failedJobsCountDOM.html()),
 						chart : chartDOM,
-						chartType : chartDOM.data("chart-type") 
+						chartType : chartDOM.data("chart-type")
 					};
 
 					totalJobs += processedJobsCount;
 				});
 
-				jobsStats['global-worker-stats'] = getStaticStats('global-worker-stats');
-				jobsStats['active-worker-stats'] = getStaticStats('active-worker-stats');
+				jobsStats["global-worker-stats"] = getStaticStats("global-worker-stats");
+				jobsStats["active-worker-stats"] = getStaticStats("active-worker-stats");
 
 				jobsChartInit = 1;
 
-				if (chartType == "pie")
+				if (chartType === "pie")
+				{
 					jobPieChart.init(jobsStats);
+				}
 			}
-			else jobsChartInit = 2;
+			else {
+				jobsChartInit = 2;
+			}
 		},
 
-		updateJobsChart : function(workerId, level) { 
-			if (jobsChartInit === 2) return;
+		updateJobsChart : function(workerId, level) {
+			if (jobsChartInit === 2) {
+				return;
+			}
 
-			jobsStats[workerId]['processedJobsCount']++;
+			jobsStats[workerId]["processedJobsCount"]++;
 			totalJobs++;
 
-			if (level == 400)
-				jobsStats[workerId]['failedJobsCount']++;
+			if (level === 400)
+			{
+				jobsStats[workerId]["failedJobsCount"]++;
+			}
 
 			var updateCounter = function(workerId, success)
 			{
@@ -663,76 +702,78 @@ var Job = function()
 				{
 					index = "failedJobsCount";
 				}
-				
+
 				jobsStats[workerId][index + "DOM"].html(number_format(jobsStats[workerId][index]));
 
-				if (jobsStats[workerId][index + "DOM"].queue("fx") == 0)
-						jobsStats[workerId][index + "DOM"].effect("highlight");
-				
-					
-			}
+				if (jobsStats[workerId][index + "DOM"].queue("fx") === 0)
+				{
+					jobsStats[workerId][index + "DOM"].effect("highlight");
+				}
 
-			
+
+			};
+
+
 			// Refresh Counter
-			if (level == 400)
+			if (level === 400)
 			{
 				updateCounter(workerId, false);
-			} 
+			}
 
 			updateCounter(workerId, true);
 
-			if (jobsStats['active-worker-stats'] != false)
+			if (jobsStats["active-worker-stats"] !== false)
 			{
-				jobsStats['active-worker-stats']['processedJobsCount']++;
-				updateCounter('active-worker-stats', true);
-				
-				if (level == 400)
+				jobsStats["active-worker-stats"]["processedJobsCount"]++;
+				updateCounter("active-worker-stats", true);
+
+				if (level === 400)
 				{
-					jobsStats['active-worker-stats']['failedJobsCount']++;
-					updateCounter('active-worker-stats', false);
+					jobsStats["active-worker-stats"]["failedJobsCount"]++;
+					updateCounter("active-worker-stats", false);
 				}
 
 			}
-			if (jobsStats['global-worker-stats'] != false)
+			if (jobsStats["global-worker-stats"] !== false)
 			{
-				jobsStats['global-worker-stats']['processedJobsCount']++;
-				updateCounter('global-worker-stats', true);
-			
-				if (level == 400)
+				jobsStats["global-worker-stats"]["processedJobsCount"]++;
+				updateCounter("global-worker-stats", true);
+
+				if (level === 400)
 				{
-					jobsStats['global-worker-stats']['failedJobsCount']++;
-					updateCounter('global-worker-stats', false);	
+					jobsStats["global-worker-stats"]["failedJobsCount"]++;
+					updateCounter("global-worker-stats", false);
 				}
 			}
 
 			// Refresh Chart
-			switch (jobsStats[workerId]['chartType'])
+			switch (jobsStats[workerId]["chartType"])
 			{
 				case "pie" :
 					jobPieChart.redraw(jobsStats[workerId], true);
-					jobPieChart.redraw(jobsStats['active-worker-stats'], false);
-					jobPieChart.redraw(jobsStats['global-worker-stats'], false);
+					jobPieChart.redraw(jobsStats["active-worker-stats"], false);
+					jobPieChart.redraw(jobsStats["global-worker-stats"], false);
 					break;
-				case "horizontal-bar" : 
+				case "horizontal-bar" :
 					for (_workerId in jobsStats) {
-						if (jobsStats[_workerId] != false)
+						if (jobsStats[_workerId] !== false)
 						{
-							jobsStats[_workerId]['chart'].animate({
-								width: Math.floor((jobsStats[_workerId]['processedJobsCount'] / totalJobs) * 100) + '%'
+							jobsStats[_workerId]["chart"].animate({
+								width: Math.floor((jobsStats[_workerId]["processedJobsCount"] / totalJobs) * 100) + "%"
 							}, 500);
 						}
-					};
+					}
 			}
-			
+
 		}
-	}	
+	};
 }();
 
 
 /**
  * Listen to workers activities in realtime
  * and update related counters
- * 
+ *
  * @return void
  */
 function listenToWorkersJob(chartType) {
@@ -740,24 +781,24 @@ function listenToWorkersJob(chartType) {
 	var eventProcessor = function(){
 		var getWorkerId = function(message) {
 			return message.data.worker;
-		}
+		};
 
 		return {
 			processDone : function(message){
 				Job.updateJobsChart(
-					getWorkerId(message).replace(new RegExp("(\\.|:)","gm"), ''), 
+					getWorkerId(message).replace(new RegExp("(\\.|:)","gm"), ""),
 					message.data.level
 				);
 			},
 			processGot : function(message){
 				Job.updateJobsChart(
-					getWorkerId(message).replace(new RegExp("(\\.|:)","gm"), ''), 
+					getWorkerId(message).replace(new RegExp("(\\.|:)","gm"), ""),
 					message.data.level
 				);
 			},
 			processFail : function(message){
 				Job.updateJobsChart(
-					getWorkerId(message).replace(new RegExp("(\\.|:)","gm"), ''), 
+					getWorkerId(message).replace(new RegExp("(\\.|:)","gm"), ""),
 					message.data.level
 				);
 			}
@@ -765,7 +806,7 @@ function listenToWorkersJob(chartType) {
 	}();
 
 
-	// Start Listening to events 
+	// Start Listening to events
 	// *************************
 	var events = {
 		//got   : {expression: "got", format: function(data){return "job #" + data.job_id;}},
@@ -785,11 +826,11 @@ function listenToWorkersJob(chartType) {
 		socket.onopen = function() {
 			socket.send(JSON.stringify({
 				"expression": events[e].expression,
-				"start": formatISO(stop),
+				"start": formatISO(stop)
 			}));
 		};
 
-		socket.onmessage = function(message) { 
+		socket.onmessage = function(message) {
 			process(e, JSON.parse(message.data));
 		};
 	}
@@ -799,13 +840,13 @@ function listenToWorkersJob(chartType) {
 
 	function process(type, data) {
 		switch(type) {
-			case 'done' :
+			case "done" :
 				eventProcessor.processDone(data);
 				break;
-			case 'fail' :
+			case "fail" :
 				eventProcessor.processFail(data);
 				break;
-			//case 'done' :
+			//case "done" :
 			//	eventProcessor.processDone(data);
 		}
 	}
@@ -816,19 +857,19 @@ var jobPieChart = function()
 {
 	var initData = function(d){
 
-		var successCount = d['processedJobsCount'] - d['failedJobsCount'];
+		var successCount = d["processedJobsCount"] - d["failedJobsCount"];
 
 		var datas = [{
-				name : "success", 
-				count : (successCount == 0 && d['failedJobsCount'] == 0) ? 1 : successCount,
+				name : "success",
+				count : (successCount === 0 && d["failedJobsCount"] === 0) ? 1 : successCount,
 				color: "#aec7e8"
 			}, {
-				name : "failed", 
-				count : d['failedJobsCount'],
+				name : "failed",
+				count : d["failedJobsCount"],
 				color : "#e7969c"
 			}];
 		return datas;
-	}
+	};
 
 	var m = 0;
 	var z = d3.scale.category20c();
@@ -841,19 +882,19 @@ var jobPieChart = function()
 
 	return {
 		init : function(jobStats)
-		{	
+		{
 			for(domain in jobStats)
 			{
 				var data = initData(jobStats[domain]);
 
-				var parent = jobStats[domain]['chart'];		
+				var parent = jobStats[domain]["chart"];
 
 				// Define the margin, radius, and color scale. The color scale will be
 				// assigned by index, but if you define your data using objects, you could pass
 				// in a named field from the data object instead, such as `d.name`. Colors
 				// are assigned lazily, so if you want deterministic behavior, define a domain
 				// for the color scale.
-				
+
 				var r = (parent.width()-m*2)/2;
 				var arc = d3.svg.arc().innerRadius(r / 2).outerRadius(r);
 
@@ -884,7 +925,7 @@ var jobPieChart = function()
 		{
 			var data = initData(stat);
 
-			var parent = stat['chart'];	
+			var parent = stat["chart"];
 			var r = (parent.width()-m*2)/2;
 			var arc = d3.svg.arc().innerRadius(r / 2).outerRadius(r);
 
@@ -919,12 +960,15 @@ function listenToWorkersActivities()
 
 	$(".worker-stats h4").each(function(i){ workersIds.push($(this).html());});
 
-	if (workersIds.length == 0) return;
+	if (workersIds.length === 0)
+	{
+		return;
+	}
 
 	for(index in workersIds)
 	{
-		metrics.push("sum(done.eq(worker,'"+workersIds[index]+"'))");
-	}	
+		metrics.push("sum(done.eq(worker,""+workersIds[index]+""))");
+	}
 
 	d3.select("#worker-activities").append("div")
 	.attr("class", "rule")
@@ -946,7 +990,7 @@ function listenToWorkersActivities()
 
 function parseInteger(str)
 {
-	return +str.replace(',', '');
+	return +str.replace(",", "");
 }
 
 function number_format(x)
@@ -957,7 +1001,7 @@ function number_format(x)
 
 /**
  * Create a pie chart from a set of data
- * 
+ *
  * @param  {[type]} id      [description]
  * @param  {[type]} total   [description]
  * @param  {[type]} data    [description]
@@ -976,8 +1020,8 @@ function pieChart(id, total, data, average)
 					return d.count;
 				});
 
-	var parent = $("#"+id);	
-	var w = parent.width();	
+	var parent = $("#"+id);
+	var w = parent.width();
 	var h = 250;
 
 	// Define the margin, radius, and color scale. The color scale will be
@@ -985,7 +1029,7 @@ function pieChart(id, total, data, average)
 	// in a named field from the data object instead, such as `d.name`. Colors
 	// are assigned lazily, so if you want deterministic behavior, define a domain
 	// for the color scale.
-	
+
 	var arc = d3.svg.arc()
 	.startAngle(function(d){ return d.startAngle; })
 	.endAngle(function(d){ return d.endAngle; })
@@ -994,14 +1038,16 @@ function pieChart(id, total, data, average)
 
 	var formatCenterText = function(nb)
 	{
-		if (nb > 10000) return Math.round(nb /1000) + "K";
+		if (nb > 10000) {
+			return Math.round(nb /1000) + "K";
+		}
 		return nb;
-	}
+	};
 
 	///////////////////////////////////////////////////////////
 	// GROUP //////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////
-	
+
 	// Insert an svg:svg element (with margin) for each row in our dataset. A
 	// child svg:g element translates the origin to the pie center.
 	var svg = d3.select(parent[0])
@@ -1044,13 +1090,13 @@ function pieChart(id, total, data, average)
 	///////////////////////////////////////////////////////////
 	// PLACEHOLDER ////////////////////////////////////////////
 	///////////////////////////////////////////////////////////
-	
-	if (data.length == 0) {
-		var paths = arc_group.append("svg:circle")
-	    .attr("fill", "#EFEFEF")
-	    .attr("r", r);
 
-	    var whiteCircle = center_group.append("svg:circle")
+	if (data.length === 0) {
+		var paths = arc_group.append("svg:circle")
+		.attr("fill", "#EFEFEF")
+		.attr("r", r);
+
+		var whiteCircle = center_group.append("svg:circle")
 			.attr("fill", "white")
 			.attr("r", ir);
 	}
@@ -1059,7 +1105,7 @@ function pieChart(id, total, data, average)
 	// CENTER TEXT ////////////////////////////////////////////
 	///////////////////////////////////////////////////////////
 
-	
+
 
 	// // "TOTAL" LABEL
 	var totalLabel = center_group.append("svg:text")
@@ -1097,7 +1143,7 @@ function pieChart(id, total, data, average)
 	.attr("y1", -r-3)
 	.attr("y2", -r-8)
 	.attr("stroke", "gray")
-	.attr("transform", function(d) { 
+	.attr("transform", function(d) {
 		return "rotate(" + (d.startAngle+d.endAngle)/2 * (180/Math.PI) + ")";
 	});
 
@@ -1198,10 +1244,10 @@ function jobsLoad()
 
 	var workersIds = [];
 	var metrics = [];
-	
+
 
 	metrics.push("sum(got)");
-		
+
 
 	d3.select("#jobs-load").append("div")
 	.attr("class", "rule")
@@ -1221,25 +1267,25 @@ function jobsLoad()
 
 /**
  * Create a line graph of monthly jobs load
- * 
- * @param  int average 	Total average number of jobs by day
+ *
+ * @param  int average	Total average number of jobs by day
  * @return void
  */
 function monthlyJobsLoad(average)
 {
 	var loadChart = function(start, end, title)
 	{
-		d3.json('http://'+serverIp+':1081/1.0/metric/get'+
-			'?expression=sum(got)'+
-			'&start='+ start +
-			'&stop=' + end +
-			'&step=' + step[4].code, 
+		d3.json("http://"+serverIp+":1081/1.0/metric/get"+
+			"?expression=sum(got)"+
+			"&start="+ start +
+			"&stop=" + end +
+			"&step=" + step[4].code,
 			function(data){
 
 				data = data.map(function(d){return {time:new Date(d.time), value:  d.value};});
 
-				var w = $('#jobs-load-monthly').width();			
-				var h = $('#jobs-load-monthly').height();
+				var w = $("#jobs-load-monthly").width();
+				var h = $("#jobs-load-monthly").height();
 				var margin_top = 20;
 				var margin_right = 5;
 				var margin_bottom = 35;
@@ -1253,9 +1299,9 @@ function monthlyJobsLoad(average)
 				.domain([0, Math.max(d3.max(data.map(function(d){return d.value;})), average)*1.25])
 				.range([h - margin_top - margin_bottom, 0]);
 
-				d3.select('#jobs-load-monthly').selectAll("svg").remove();
+				d3.select("#jobs-load-monthly").selectAll("svg").remove();
 
-				svg = d3.select('#jobs-load-monthly').append('svg')
+				var svg = d3.select("#jobs-load-monthly").append("svg")
 					.attr("width", w)
 					.attr("height", h)
 				;
@@ -1287,20 +1333,20 @@ function monthlyJobsLoad(average)
 
 				svg.append("g")
 					.attr("class", "x-axis")
-					.attr('transform', 'translate(' + margin_left + ',' + (h - margin_bottom) + ')')
+					.attr("transform", "translate(" + margin_left + "," + (h - margin_bottom) + ")")
 					.call(xAxis)
 				;
 
 				svg.append("g")
 					.attr("class", "y-axis")
-					.attr('transform', 'translate(' + (margin_left-1) + ',' + margin_top + ')')
+					.attr("transform", "translate(" + (margin_left-1) + "," + margin_top + ")")
 					.call(yAxis)
 				;
 
 				var graph_group = svg.append("g")
 					.attr("width", w - margin_left + margin_right)
 					.attr("height", h - margin_top + margin_bottom)
-					.attr('transform', 'translate(' + margin_left + ',' + margin_top + ')')
+					.attr("transform", "translate(" + margin_left + "," + margin_top + ")")
 				;
 
 				graph_group.append("rect")
@@ -1314,14 +1360,14 @@ function monthlyJobsLoad(average)
 				graph_group.append("path")
 					.attr("class", "graph-line")
 					.attr("d", line(data))
-				;	
+				;
 
 				graph_group.append("path")
 					.attr("class", "graph-area")
 					.attr("d", garea(data))
 				;
 
-				
+
 
 				svg.append("text")
 					.attr("x", w/2)
@@ -1348,7 +1394,7 @@ function monthlyJobsLoad(average)
 				;
 			}
 		);
-	} // end load chart
+	}; // end load chart
 
 	var initChart = function()
 	{
@@ -1357,8 +1403,8 @@ function monthlyJobsLoad(average)
 		var stopTime = moment(startTime).add("M", 1);
 
 		loadChart(startTime.format("YYYY-MM-DD"), stopTime.format("YYYY-MM-DD"), selection.text());
-	}
-	
+	};
+
 	initChart();
 
 	$("#jobs-load-monthly-selector").on("change", function(e){

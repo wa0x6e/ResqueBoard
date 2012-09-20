@@ -1,5 +1,12 @@
 ##Changelog
 
+###v1.1.1 (unreleased)
+
+* [fix] Fix getting jobs by date where date was already a timestamp
+* [new] Add Infinite.js to optimize long list of logs
+* [fix] Validate JS with JSLint
+* [new] Log `start` and `stop` event
+
 ###v1.1.0 (2012-09-04)
 
 * [change] PHP Code PSR2 valid

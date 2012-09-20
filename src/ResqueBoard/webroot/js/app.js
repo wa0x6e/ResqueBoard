@@ -474,7 +474,9 @@
 			process : {expression: "process", format: function(data){return "job #" + data.job_id;}},
 			fork    : {expression: "fork", format: function(data){return "job #" + data.job_id;}},
 			done    : {expression: "done", format: function(data){return "job #" + data.job_id;}},
-			fail    : {expression: "fail", format: function(data){return "job #" + data.job_id;}}
+			fail    : {expression: "fail", format: function(data){return "job #" + data.job_id;}},
+			start   : {expression: "start", format: function(data){return "worker #" + data.worker;}},
+			stop    : {expression: "shutdown", format: function(data){return "worker #" + data.worker;}}
 		};
 
 		for(var i in events)

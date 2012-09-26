@@ -37,7 +37,7 @@
 		<?php
 
 		if (!empty($searchToken)) {
-			echo '<h2>Search results/h2>';
+			echo '<h2>Search results</h2>';
 		} else {
 			echo '<h2>Latest Jobs</h2>';
 		}
@@ -75,7 +75,7 @@
 			</div>
 			<p>All time are UTC <?php echo date('P', strtotime($jobs[0]['time'])); ?>, current server time is <?php echo date('r'); ?></p>
 			<?php
-			echo '<ul class="unstyled" id="job-details">';
+			echo '<ul class="unstyled infinite-scroll" id="job-details">';
 
 			foreach ($jobs as $job) {
 				?>
@@ -171,7 +171,7 @@
 		<div class="span4">
 
 			<h2>Search</h2>
-			<form class="" action="/jobs/view" method="POST">
+			<form class="" action="/jobs/view" method="GET">
 				<div class="input-append">
 					<input type="text" name="job_id" class="span3" placeholder="Job #Id"/>
 					<button type="submit" class="btn"><i class="icon-search"></i></button>

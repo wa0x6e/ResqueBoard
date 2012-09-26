@@ -1,5 +1,18 @@
 ##Changelog
 
+###v1.2.0 (2011-09-26)
+
+* [fix] Fix getting jobs by date where date was already a timestamp
+* [fix] Validate JS with JSLint
+* [new] Listen `start` and `stop` event in logs
+* [new] Workers and queues lists on Index tab are dynamic, and respond to start and stop events
+* [new] Workers List on Worker tab are dynamic, and respond to start/stop events
+* [new] Stop a worker
+* [new] Search and browse logs
+* [new] Add links to job details in logs
+* [new] Add infinite Scroll to logs and jobs browser
+* [ui] Some new shiny icons, and UI fixes
+
 ###v1.1.0 (2012-09-04)
 
 * [change] PHP Code PSR2 valid

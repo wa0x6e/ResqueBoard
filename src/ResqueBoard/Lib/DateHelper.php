@@ -67,4 +67,3 @@ class DateHelper
         return self::pluralize($interval->s, 'second') . $suffix;
     }
 }
-

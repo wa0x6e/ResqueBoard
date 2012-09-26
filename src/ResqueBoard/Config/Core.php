@@ -39,7 +39,9 @@
              	'port' => 6379,
              	'database' => 0
             ),*/
-            /*'resquePrefix' => 'resque'*/
+            /*'resquePrefix' => 'resque',*/
+            'readOnly' => true,
+            'resqueConfig' => __DIR__ . DIRECTORY_SEPARATOR . './resque.ini'
     );
 
 
@@ -62,14 +64,13 @@
      * @var array
      */
     $logLevels = array(
-            'debug' => 'label-success',
-            'info' => 'label-info',
-            'warning' => 'label-warning',
-            'error' => 'label-important',
-            'criticial' => 'label-inverse',
-            'alert' => 'label-inverse'
+            100 => array('class' => 'label-success', 'name' => 'debug'),
+            200 => array('class' => 'label-info', 'name' => 'info'),
+            300 => array('class' => 'label-warning', 'name' => 'warning'),
+            400 => array('class' => 'label-important', 'name' => 'error'),
+            500 => array('class' => 'label-inverse', 'name' => 'critical'),
+            550 => array('class' => 'label-inverse', 'name' => 'alert')
     );
-
 
     /**
      * List of events type
@@ -104,4 +105,3 @@
     define('TITLE_SEP', ' | ');
 
     require dirname(dirname(ROOT)) . DS . 'vendor' . DS . 'autoload.php';
-

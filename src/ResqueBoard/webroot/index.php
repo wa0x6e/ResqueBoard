@@ -26,19 +26,19 @@ if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
 
-define('APPLICATION_VERSION', '1.1.0');
+define('APPLICATION_VERSION', '1.2.0');
 
 
 include ROOT . DS . 'Config' . DS . 'Core.php';
 
-$app = new Slim($config);
+$app = new Slim\Slim($config);
 
 $app->get(
     '/',
     function () use ($app, $settings) {
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
-
+            $resqueApi = new ResqueBoard\Lib\ResqueApi($settings['resqueConfig']);
             $app->render(
                 'index.ctp',
                 array(
@@ -189,9 +189,13 @@ $app->map(
 
             $conditions = array();
             $searchToken = '';
-            if ($app->request()->isPost() && $app->request()->post('job_id') != null) {
-                $jobId = $searchToken = ltrim($app->request()->post('job_id'), '#');
+
+            $pagination->totalResult = $resqueStat->getJobs(array_merge($conditions, array('type' => 'count')));
+
+            if ($app->request()->params('job_id') != null) {
+                $jobId = $searchToken = ltrim($app->request()->params('job_id'), '#');
                 $jobs = $resqueStat->getJobs(array('jobId' => $jobId));
+                $pagination->totalResult = $resqueStat->getJobs(array_merge(array('jobId' => $jobId), array('type' => 'count')));
             } else {
                 $conditions = array(
                     'page' => $searchData['page'],
@@ -224,9 +228,11 @@ $app->map(
                 } else {
                     $jobs = array();
                 }
+
+                $pagination->totalResult = $resqueStat->getJobs(array_merge($conditions, array('type' => 'count')));
             }
 
-            $pagination->totalResult = $resqueStat->getJobs(array_merge($conditions, array('type' => 'count')));
+
             $pagination->totalPage = ceil($pagination->totalResult / $pagination->limit);
             $pagination->uri = $app->request()->params();
 
@@ -250,14 +256,154 @@ $app->map(
     }
 )->via('GET', 'POST');
 
+$app->map(
+    '/logs/browse',
+    function () use ($app, $settings, $logLevels, $logTypes) {
+        try {
+            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $errors  = array();
+
+            $resultLimits = array(15, 50, 100);
+
+            $defaults = array(
+                'page' => 1,
+                'limit' => $resultLimits[0],
+                'event_level' => null,
+                'event_type' => null,
+                'date_after' => null,
+                'date_before' => null
+            );
+
+            $searchData = array_merge(
+                $defaults,
+                $app->request()->params()
+            );
+            array_walk(
+                $searchData,
+                function (&$key) {
+                    if (is_string($key)) {
+                        $key = trim($key);
+                    }
+                }
+            );
+
+            $pagination = new stdClass();
+            $pagination->current = $searchData['page'];
+            $pagination->limit = (($app->request()->params('limit') != '') && in_array($app->request()->params('limit'), $resultLimits))
+            ? $app->request()->params('limit')
+            : PAGINATION_LIMIT;
+            $pagination->baseUrl = '/logs/browse?';
+
+            $conditions = array();
+
+            $conditions = array(
+                'page' => $searchData['page'],
+                'limit' => $searchData['limit'],
+                'event_level' => $searchData['event_level'],
+                'event_type' => $searchData['event_type'],
+                'date_after' => $searchData['date_after'],
+                'date_before' => $searchData['date_before']
+
+            );
+
+
+            // Validate search datas
+            $dateTimePattern = '/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])*?$/';
+            if (!empty($conditions['date_after']) && preg_match($dateTimePattern, $conditions['date_after']) == 0) {
+                $errors['date_after'] = 'Date is not valid';
+            }
+            if (!empty($conditions['date_before']) && preg_match($dateTimePattern, $conditions['date_before']) == 0) {
+                $errors['date_before'] = 'Date is not valid';
+            }
+
+
+            if (empty($errors) && $app->request()->params() != array()) {
+                $logs = $resqueStat->getLogs($conditions);
+            } else {
+                $logs = null;
+            }
+
+
+            $pagination->totalResult = $resqueStat->getLogs(array_merge($conditions, array('type' => 'count')));
+            $pagination->totalPage = ceil($pagination->totalResult / $pagination->limit);
+            $pagination->uri = $app->request()->params();
+
+            $app->render(
+                'logs_browser.ctp',
+                array(
+                    'logs' => $logs,
+                    'resultLimits' => $resultLimits,
+                    'pageTitle' => 'Logs',
+                    'errors' => $errors,
+                    'searchData' => $searchData,
+                    'pagination' => $pagination,
+                    'logLevels' => $logLevels,
+                    'logTypes' => $logTypes
+                )
+            );
+
+        } catch (\Exception $e) {
+            $app->error($e);
+        }
+    }
+)->via('GET', 'POST');
+
+
 $app->get(
     '/api/jobs/:start/:end',
     function ($start, $end) use ($app, $settings) {
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
-            $jobs = array_values($resqueStat->getJobs($start, $end, false));
+            $jobs = array_values($resqueStat->getJobs(array('date_after' => (int)$start, 'date_before' => (int)$end)));
             $app->response()->header("Content-Type", "application/json");
             echo json_encode($jobs);
+        } catch (\Exception $e) {
+            $app->error($e);
+        }
+    }
+);
+
+$app->get(
+    '/api/workers/getinfo/:workerId',
+    function ($workerId) use ($app, $settings) {
+
+        $resqueApi = new ResqueBoard\Lib\ResqueApi($settings['resqueConfig']);
+        $infos = $resqueApi->getInfos($workerId);
+
+        $app->response()->header("Content-Type", "application/json");
+        echo json_encode($infos);
+    }
+);
+
+$app->get(
+    '/api/workers/stop/:workerId',
+    function ($workerId) use ($app, $settings) {
+
+        $resqueApi = new ResqueBoard\Lib\ResqueApi($settings['resqueConfig']);
+        $stop = $resqueApi->stop($workerId);
+
+        $app->response()->header("Content-Type", "application/json");
+        echo json_encode(array('status' => true));
+    }
+);
+
+$app->get(
+    '/render/worker/:layout/:workerId',
+    function ($layout, $workerId) use ($app, $settings) {
+
+        try {
+            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+
+            switch($layout) {
+                case 'list':
+                    echo ResqueBoard\Lib\WorkerHelper::renderList($resqueStat->getStats(), array($resqueStat->getWorker($workerId)));
+                    break;
+                case 'table':
+                    echo ResqueBoard\Lib\WorkerHelper::renderTable(array($resqueStat->getWorker($workerId)));
+                    break;
+            }
+
+
         } catch (\Exception $e) {
             $app->error($e);
         }
@@ -277,5 +423,47 @@ $app->error(
     }
 );
 
-$app->run();
+$app->map(
+    '/api/workers/start',
+    function () use ($app, $settings) {
 
+        $resqueApi = new ResqueBoard\Lib\ResqueApi($settings['resqueConfig']);
+
+        $data = array(
+                'queues' => '',
+                'workers' => '',
+                'interval' => '',
+                'user' => '',
+                'log' => '',
+                'include' => '',
+                'host' => '',
+                'port' => '',
+                'database' => '',
+                'namespace' => ''
+            );
+
+        $postDatas = $app->request()->params();
+        $postDatas['handler'] = 'Cube';
+        $postDatas['target'] = 'udp://127.0.0.1:1180';
+
+        if ($app->request()->isPost()) {
+            if ($resqueApi->start($postDatas)) {
+                return json_encode(array('status' => true));
+            }
+
+            $data = $app->request()->params();
+        }
+
+        $app->render(
+            'worker_form.ctp',
+            array(
+                'pageTitle' => 'Start a worker',
+                'errors' => $resqueApi->getErrors(),
+                'raw' => true,
+                'data' => $data
+            )
+        );
+    }
+)->via('GET', 'POST');
+
+$app->run();

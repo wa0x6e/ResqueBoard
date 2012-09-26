@@ -19,7 +19,8 @@
  */
 ?>
 		<footer class="container"><p><img src="/img/resqueboard.png" alt="ResqueBoard" width=16 height=16 />
-		Powered by <a href="http://resqueboard.kamisama.me" title="ResqueBoard website">ResqueBoard</a></p></footer>
+		Powered by <a href="http://resqueboard.kamisama.me" title="ResqueBoard website">ResqueBoard <?php echo APPLICATION_VERSION ?></a></p></footer>
+
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="/js/jquery.jsrender-1.0.min.js"></script>
 		<script type="text/javascript" src="/js/moment-1.7.0.min.js"></script>
@@ -27,7 +28,8 @@
 		<script type="text/javascript" src="/js/d3.v2.10.1.min.js"></script>
 		<script type="text/javascript" src="/js/cubism.v1.2.2.min.js"></script>
 		<script type="text/javascript" src="/js/bootstrap-2.1.0.min.js"></script>
+		<script type="text/javascript" src="/js/infinite-scroll-2.0.min.js"></script>
+		<script src="http://yandex.st/highlightjs/7.2/highlight.min.js"></script>
 		<script type="text/javascript" src="/js/app.min.js"></script>
-		<script src="http://yandex.st/highlightjs/7.1/highlight.min.js"></script>
 	</body>
 </html>

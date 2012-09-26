@@ -25,8 +25,8 @@
 		<title><?php echo $pageTitle . TITLE_SEP . APPLICATION_NAME?></title>
 		<link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 		<link href="/css/main-<?php echo APPLICATION_VERSION ?>.css" rel="stylesheet" type="text/css">
-		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-		<link rel="stylesheet" href="http://yandex.st/highlightjs/7.1/styles/default.min.css">
+		<link rel="stylesheet" href="http://yandex.st/highlightjs/7.2/styles/default.min.css">
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 	</head>
 	<body>
 		<script type="text/javascript">serverIp = '<?php echo $_SERVER['SERVER_ADDR'] ?>'</script>
@@ -37,15 +37,58 @@
 						<ul class="nav">
 							<?php
 								$navs = array(
-											'/' => 'Home',
-											'/logs' => 'Logs',
-											'/workers' => 'Workers',
-											'/jobs' => 'Jobs'
+											'/' => array('title' => 'Home'),
+											'/logs' => array('title' => 'Logs'),
+											'/workers' => array('title' => 'Workers'),
+											'/jobs' => array(
+                                                    'title' => 'Jobs',
+                                                    'submenu' => array(
+                                                        '<i class="icon-dashboard"></i> Dashboard' => '/jobs',
+                                                    	false,
+                                                        '<i class="icon-bar-chart"></i> Jobs distribution' => 'jobs/distribution',
+                                                        '<i class="icon-eye-open"></i> Jobs browser' => '/jobs/view'
+                                                    )
+                                             )
 										);
 
 								foreach ($navs as $link => $nav) {
-									echo '<li'. ((strpos($_SERVER['REQUEST_URI'], $link) !== false && $link != '/' || $_SERVER['REQUEST_URI'] == '/' && $link == '/') ? ' class="active"' : '').'>'.
-									'<a href="'.$link.'">'.$nav.'</a></li>';
+
+                                    $class = array();
+                                    if (((strpos($_SERVER['REQUEST_URI'], $link) !== false && $link != '/' || $_SERVER['REQUEST_URI'] == '/' && $link == '/'))) {
+                                        $class[] = 'active';
+                        			};
+
+                        			if (isset($nav['submenu'])) {
+                                        $class[] = 'dropdown';
+                                    }
+
+									echo '<li class="'. implode(' ', $class) .'">'.
+									'<a href="'.$link.'"';
+
+									if (isset($nav['submenu'])) {
+                                        echo 'class="dropdown-toggle" data-toggle="dropdown" id="l-'.strtolower($nav['title']).'" data-target="#"';
+                                    }
+
+									echo '>'.$nav['title'];
+									if (isset($nav['submenu'])) {
+                                        echo ' <b class="caret"></b>';
+                                    }
+									echo '</a>';
+
+									if (isset($nav['submenu'])) {
+                                        echo '<ul class="dropdown-menu" role="menu" aria-labelledby="l-'.strtolower($nav['title']).'">';
+                                        foreach($nav['submenu'] as $title => $link) {
+
+                                            if ($link === false) {
+                                                echo '<li class="divider"></li>';
+                                            } else {
+                                                echo '<li><a href="'.$link.'">'.$title.'</a></li>';
+                                            }
+                                        }
+                                        echo '</ul>';
+                                    }
+
+									echo '</li>';
 								}
 							?>
 						</ul>

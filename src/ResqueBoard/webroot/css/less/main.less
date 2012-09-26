@@ -316,13 +316,24 @@ mark
 	}
 }
 
-.worker-list
+.workers-list-item
 {
 	border: 1px solid darken(#fff, 10);
 	.border-radius(4px);
 	margin-bottom: @gridGutterWidth;
 	#gradient .vertical(#fff, darken(#fff, 5));
 	font-size: 11px;
+	
+	&>.btn-group
+	{
+		margin: 8px 8px 0 0;
+		color: lighten(@textColor, 50);
+		
+		.btn
+		{
+			font-size: 14px;
+		}
+	}
 	
 	h3
 	{
@@ -445,10 +456,24 @@ table .queues-list
 	td
 	{
 		vertical-align:middle;
-		height: 37px;	
+		height: 37px;
 		
-		& > div
+		.btn-group
 		{
+			visibility: hidden;
+		}
+		
+		&:hover
+		{
+			.btn-group
+			{
+				visibility: visible;
+			}
+		}				
+		
+		.padd-fixer
+		{
+			position: relative;
 			vertical-align: bottom;
 			padding: 8px;
 			height: 37px;
@@ -532,6 +557,9 @@ span.chart-bar + b
 {
 	border: 0;
 	background: none;
+	color: lighten(@textColor, 40);
+	.box-shadow(none);
+	text-shadow: none;
 }
 
 // Horizon chart
@@ -747,4 +775,66 @@ td.stats-nb, th.stats-nb
 		fill: @grayLight;
 		font-size: 11px;
 	}
+}
+
+// To fix bug where hover not working for popover
+.pop-over
+{
+	outline: 1px solid transparent;
+}
+
+.popover {
+    z-index: 2060 !important;
+}
+
+form label .icon-info-sign
+{
+	color: lighten(@blue, 30);	
+	cursor: help;
+}
+
+.page-header
+{
+	position: relative;
+}
+
+.page-header .btn-nav
+{
+	position: absolute;
+	bottom: -15px;
+}
+
+.li-head
+{
+	background: @grayLighter;
+	font-weight: bold;
+	color: @gray;
+}
+
+.knight-unit
+{
+	background-color: @grayLighter;
+	padding: 50px;
+	.border-radius(5px);
+	text-align:center;
+
+	h2
+	{
+		font-size: 32px;
+	}
+	
+	p 
+	{
+		font-size: 150%;
+		color: lighten(@textColor, 25);
+	}
+	
+	.icon
+	{
+		font-size: 80px;
+		color: lighten(@textColor, 25);
+		margin-bottom: 30px;
+		display: block;
+	}
+	
 }

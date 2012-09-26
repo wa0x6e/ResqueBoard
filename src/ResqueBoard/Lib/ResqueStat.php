@@ -191,6 +191,32 @@ class ResqueStat
 
 
     /**
+     * Return a worker stats
+     *
+     * @since 1.2.0
+     */
+    public function getWorker($workerId)
+    {
+        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $collection = $cube->selectCollection('start_events');
+        $workerStatsMongo = $collection->findOne(array('d.worker' => $workerId), array('d.queues'));
+
+        $workerFullName = $workerId . ':' . implode(',', $workerStatsMongo['d']['queues']);
+        list($host, $process) = explode(':', $workerId, 2);
+
+        return array(
+            'fullname' => $workerFullName,
+            'host' => $host,
+            'process' => $process,
+            'queues' => $workerStatsMongo['d']['queues'],
+            'start' => new \DateTime($this->getRedis()->get($this->settings['resquePrefix'] . 'worker:' . $workerFullName . ':started')),
+            'processed' => (int)$this->getRedis()->get($this->settings['resquePrefix'] . 'stat:processed:' . $workerFullName),
+            'failed' => (int)$this->getRedis()->get($this->settings['resquePrefix'] . 'stat:failed:' . $workerFullName)
+        );
+    }
+
+
+    /**
      * Return list of queues
      *
      * @since 1.0.0
@@ -263,7 +289,7 @@ class ResqueStat
                         function ($a) {
                             return $a['host'].':'.$a['process'];
                         },
-                        $this->   getWorkers()
+                        $this->getWorkers()
                     );
                     $exclude = array_diff($workers, $options['worker']);
 
@@ -311,6 +337,117 @@ class ResqueStat
         if ($options['format']) {
             return $this->setJobStatus($results);
         }
+
+        return $results;
+    }
+
+    /**
+     * Return logs filtered by conditions specified in $options
+     *
+     * @since 1.2.0
+     */
+    public function getLogs($options = array())
+    {
+        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+
+        $eventTypeList = array('check' ,'done', 'fail', 'fork', 'found', 'got', 'kill', 'process', 'prune', 'reconnect', 'shutdown', 'sleep', 'start');
+
+        $default = array(
+            'page' => 1,
+            'limit' => null,
+            'sort' => array('t' => 1),
+            'event_level' => array(),
+            'event_type' => '',
+            'date_after' => null,
+            'date_before' => null,
+            'type' => 'find'
+        );
+
+
+        $options = array_merge($default, $options);
+
+
+        if ($options['date_before'] !== null && !is_int($options['date_before'])) {
+            $options['date_before'] = strtotime($options['date_before']);
+        }
+
+        if ($options['date_after'] !== null && !is_int($options['date_after'])) {
+            $options['date_after'] = strtotime($options['date_after']);
+        }
+
+        $conditions = array();
+
+
+        if (!empty($options['event_level'])) {
+            $conditions['d.level'] = array(
+                '$in' => array_map(
+                    function ($level) {
+                        return (int)$level;
+                    },
+                    $options['event_level']
+                )
+            );
+        }
+
+        if (!empty($options['date_after'])) {
+            $conditions['t']['$gte'] = new \MongoDate($options['date_after']);
+        }
+
+        if (!empty($options['date_before'])) {
+            $conditions['t']['$lt'] = new \MongoDate($options['date_before']);
+        }
+
+        $results = array();
+        $pageCount = array();
+
+
+        $jobsCollection = $cube->selectCollection($options['event_type'] . '_events');
+
+        $jobsCursor = $jobsCollection->find($conditions);
+        $jobsCursor->sort($options['sort']);
+
+        if (!empty($options['page']) && !empty($options['limit'])) {
+            $jobsCursor->skip(($options['page']-1) * $options['limit'])->limit($options['limit']);
+        }
+
+        if ($options['type'] == 'count') {
+            return $jobsCursor->count();
+        }
+
+        foreach ($jobsCursor as $cursor) {
+            $temp = array();
+
+            $temp['date'] = new \DateTime('@' . $cursor['t']->sec);
+
+            if (isset($cursor['d']['worker'])) {
+                $temp['worker'] = $cursor['d']['worker'];
+            }
+
+            if (isset($cursor['d']['level'])) {
+                $temp['level'] = $cursor['d']['level'];
+            }
+
+            if (isset($cursor['d']['job_id'])) {
+                $temp['job_id'] = $cursor['d']['job_id'];
+            } else if (isset($cursor['d']['args']['payload']['id'])) {
+                $temp['job_id'] = $cursor['d']['args']['payload']['id'];
+            }
+
+            $temp['event_type'] = $options['event_type'];
+
+            $results[] = $temp;
+        }
+
+
+        usort(
+            $results,
+            function ($a, $b) {
+                if ($a['date'] == $b['date']) {
+                    return 0;
+                }
+                return ($a['date'] < $b['date']) ? -1 : 1;
+            }
+        );
 
         return $results;
     }
@@ -520,19 +657,3 @@ class ResqueStat
         $cube->selectCollection('start_events')->ensureIndex('d.worker');
     }
 }
-
-
-/**
- * DatabaseConnectionException class
- *
- * Type of exception thrown when ResqueStat can not connect
- * to a database
- *
- * @subpackage      resqueboard.lib
- * @since            1.0.0
- * @author           Wan Qi Chen <kami@kamisama.me>
- */
-class DatabaseConnectionException extends \Exception
-{
-}
-

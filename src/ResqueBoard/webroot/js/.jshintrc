@@ -1,0 +1,23 @@
+{
+	"globals":	 {
+		"hljs":	true,
+		"d3":	true,
+		"serverIp":	true,
+		"moment":	true,
+		"cubism":	true
+	},
+	"curly":	 true,
+	"eqeqeq":	 true,
+	"noarg":	 true,
+	"noempty":	 true,
+	"undef":	 true,
+	"quotmark":	 "double",
+	"boss":	 true,
+	"regexdash":	 true,
+	"browser":	 true,
+	"devel":	 true,
+	"wsh":	 true,
+	"trailing":	 true,
+	"jquery":	 true,
+	"loopfunc":	 true
+}

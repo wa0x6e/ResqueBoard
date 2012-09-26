@@ -13,36 +13,115 @@
  * @license		MIT License (http://www.opensource.org/licenses/mit-license.ctp)
  */
 
-/*jshint
-
-	curly: true,
-	eqeqeq: true,
-	noarg: true,
-	noempty: true,
-	undef: true,
-	quotmark: "double",
-	boss: true,
-	regexdash: true,
-	browser: true,
-	devel: true,
-	wsh: true,
-	trailing: true,
-	jquery: true,
-	loopfunc:true
-
-*/
-
-/*global require:true, hljs:true, d3:true, serverIp:true, moment:true, cubism:true, infinity:true */
-
-
-
 	$("[data-event~=tooltip]").tooltip();
 	$("[data-event~=collapse-all]").on("click", function(e){ e.preventDefault(); $(".collapse.in").collapse("hide"); });
 	$("[data-event~=expand-all]").on("click", function(e){ e.preventDefault(); $(".collapse").not(".in").collapse("show"); });
 	$("[data-event~=ajax-pagination]").on("change", "select", function(e){window.location=$(this).val();});
 
+	$("#log-area").on("mouseenter", "li", function(){
+		$("#log-area li[data-worker="+$(this).data("worker")+"]").addClass("hover-highlight");
+	});
+
+	$("#log-area").on("mouseleave", "li", function(){
+		$("#log-area li[data-worker="+$(this).data("worker")+"]").removeClass("hover-highlight");
+	});
+
+	$(".infinite-scroll").infinitescroll({
+		navSelector	: "ul.pager",
+		nextSelector : "ul.pager li.next a",
+		itemSelector : ".infinite-scroll li",
+		loading: {
+			finishedMsg: "No more pages to load.",
+			img: "http://www.infinite-scroll.com/loading.gif"
+		},
+		bufferPx: 5000
+	});
+
+
+
 	// Init syntax highlighter
 	hljs.initHighlightingOnLoad();
+
+	var QueuesList = function() {
+
+		var queues = [];
+		var init = false;
+
+		function decrCounter(count) {
+			$(".queues-count").html(parseInt($(".queues-count").html(), 10) - count);
+			fireEffect($(".queues-count"), "highlight");
+		}
+
+		function incrCounter(count) {
+			$(".queues-count").html(parseInt($(".queues-count").html(), 10) + count);
+			fireEffect($(".queues-count"), "highlight");
+		}
+
+		return {
+			init : function() {
+				var tr = $(".queues-list tr");
+
+				tr.each(function(index) {
+
+					if ($(tr[index]).find("td").length > 0) {
+						var name = $(tr[index]).find("td.queues-list-name").text();
+						var count = $(tr[index]).find("td.queues-list-count").text();
+
+						queues[name] = {
+							"count" : parseInt(count, 10),
+							"dom" : $(this)
+						};
+					}
+				});
+
+				init = true;
+
+			},
+			add : function(queueName) {
+				if (init === false) {
+					return false;
+				}
+
+				if (queues.hasOwnProperty(queueName) === false) {
+					$(".queues-list tbody").append($("<tr><td class=\"queues-list-name\">"+queueName+"</td><td class=\"queues-list-count\">0</td></tr>"));
+
+					queues[queueName] = {
+						"count" : 0,
+						"dom" : $(".queues-list tbody tr:last-child")
+					};
+
+					incrCounter(1);
+				}
+
+
+				queues[queueName].count++;
+
+				queues[queueName].dom.find(".queues-list-count").html(queues[queueName].count);
+				fireEffect(queues[queueName].dom, "highlight");
+
+			},
+			substract : function(queueName) {
+				if (init === false) {
+					return false;
+				}
+
+				if (queues.hasOwnProperty(queueName))
+				{
+					queues[queueName].count--;
+
+					if (queues[queueName].count === 0) {
+						queues[queueName].dom.remove();
+						delete queues[queueName];
+						decrCounter(1);
+					} else {
+						queues[queueName].dom.find(".queues-list-count").html(queues[queueName].count);
+						fireEffect(queues[queueName].dom, "highlight");
+					}
+				}
+
+			}
+		};
+	}();
 
 
 	var stop = new Date(Date.now());
@@ -411,9 +490,6 @@
 			verbosity : {}
 		};
 
-		var $el = $("#log-area");
-		var listView = new infinity.ListView($el);
-
 		var addCounter = function(cat, type, dom) {
 				counters[cat][type] = dom;
 		};
@@ -421,10 +497,7 @@
 		var incrCounter = function(cat, type, step) {
 				var node = counters[cat][type];
 				node.html(parseInteger(node.html()) + step);
-				if (node.queue("fx").length === 0)
-				{
-					node.effect("highlight");
-				}
+
 		};
 
 		var decrCounter = function(cat, type, step) {
@@ -433,10 +506,7 @@
 				if (count - step >= 0)
 				{
 					node.html(count - step);
-					if (node.queue("fx").length === 0)
-					{
-						node.effect("highlight");
-					}
+					fireEffect(node, "highlight");
 				}
 		};
 
@@ -469,14 +539,22 @@
 		};
 
 		var events = {
-			sleep   : {expression: "sleep", format: function(data){return "for " + data.second + " seconds";}},
-			got     : {expression: "got", format: function(data){return "job #" + data.args.payload.id;}},
-			process : {expression: "process", format: function(data){return "job #" + data.job_id;}},
-			fork    : {expression: "fork", format: function(data){return "job #" + data.job_id;}},
-			done    : {expression: "done", format: function(data){return "job #" + data.job_id;}},
-			fail    : {expression: "fail", format: function(data){return "job #" + data.job_id;}},
-			start   : {expression: "start", format: function(data){return "worker #" + data.worker;}},
-			stop    : {expression: "shutdown", format: function(data){return "worker #" + data.worker;}}
+			sleep   : {expression: "sleep", format: function(data){
+				return "for " + data.second + " seconds";}},
+			got     : {expression: "got", format: function(data){
+				return "job <a href=\"/jobs/view?job_id="+data.args.payload.id+"\" rel=\"contents\" title=\"View job details\">#" + data.args.payload.id + "</a>";}},
+			process : {expression: "process", format: function(data){
+				return "job <a href=\"/jobs/view?job_id="+data.job_id+"\" rel=\"contents\" title=\"View job details\">#" + data.job_id + "</a>";}},
+			fork    : {expression: "fork", format: function(data){
+				return "job <a href=\"/jobs/view?job_id="+data.job_id+"\" rel=\"contents\" title=\"View job details\">#" + data.job_id + "</a>";}},
+			done    : {expression: "done", format: function(data){
+				return "job <a href=\"/jobs/view?job_id="+data.job_id+"\" rel=\"contents\" title=\"View job details\">#" + data.job_id + "</a>";}},
+			fail    : {expression: "fail", format: function(data){
+				return "job <a href=\"/jobs/view?job_id="+data.job_id+"\" rel=\"contents\" title=\"View job details\">#" + data.job_id + "</a>";}},
+			start   : {expression: "start", format: function(data){
+				return "worker #" + data.worker;}},
+			stop    : {expression: "shutdown", format: function(data){
+				return "worker #" + data.worker;}}
 		};
 
 		for(var i in events)
@@ -506,7 +584,7 @@
 				levelClass: level[data.data.level].classStyle,
 				detail: events[type].format(data.data),
 				worker: data.data.worker,
-				workerClass : data.data.worker.replace(new RegExp("(\\.|:)","gm"), ""),
+				workerClass : cleanWorkerName(data.data.worker),
 				color: getColor(data)
 			};
 		};
@@ -533,17 +611,15 @@
 		{
 			if ($("input[data-rel="+level[data.data.level].name+"]").is(":checked"))
 			{
-				listView.append(
-					$("#log-template").render(formatData(type, data))
-				);
+					$( "#log-area" ).append(
+						$("#log-template").render(formatData(type, data))
+					);
 
-				if (!counters.verbosity.hasOwnProperty(level[data.data.level].name))
-				{
+				if (!counters.verbosity.hasOwnProperty(level[data.data.level].name)) {
 					addCounter("verbosity", level[data.data.level].name, $("#log-sweeper-form span[data-rel="+level[data.data.level].name+"]"));
 				}
 
-				if (!counters.type.hasOwnProperty([type]))
-				{
+				if (!counters.type.hasOwnProperty([type])) {
 					addCounter("type", type, $("#log-sweeper-form span[data-rel="+type+"]"));
 				}
 
@@ -602,12 +678,9 @@
 
 
 		$("#log-sweeper-form").on("click", "button[data-rel=verbosity]", function(e){
-			var toRemove = listView.find($("li[data-verbosity="+$(this).data("level")+"]"));
-			//updateCounters(toRemove);
-
-			for(var i = 0, length = toRemove.length; i < length; i++) {
-				toRemove[i].remove();
-			}
+				var toRemove = $("#log-area").children("li[data-verbosity="+$(this).data("level")+"]");
+				updateCounters(toRemove);
+				toRemove.remove();
 
 			return false;
 		});
@@ -620,15 +693,7 @@
 			return false;
 		});
 
-		$("#log-area").on("mouseenter", "li", function(){
-			$("#log-area li[data-worker="+$(this).data("worker")+"]")
-				.addClass("hover-highlight");
-		});
 
-		$("#log-area").on("mouseleave", "li", function(){
-			$("#log-area li[data-worker="+$(this).data("worker")+"]")
-				.removeClass("hover-highlight");
-		});
 
 
 	}
@@ -638,6 +703,7 @@
 		var totalJobs = 0;
 		var jobsChartInit = 0;
 		var jobsStats = {};
+		var jobChartType = "";
 
 		return {
 			initJobsChart : function(chartType) {
@@ -689,24 +755,57 @@
 					if (chartType === "pie")
 					{
 						jobPieChart.init(jobsStats);
+						jobChartType = chartType;
 					}
 				}
 				else {
 					jobsChartInit = 2;
 				}
 			},
+			/**
+			 * Add a new workers and its stats
+			 * @param String workerId Worker classname
+			 */
+			addJobChart : function(workerId) {
+				var $this = $("#" + workerId);
+				var processedJobsCountDOM = $this.find("[data-status=processed]");
+				var failedJobsCountDOM = $this.find("[data-status=failed]");
+				var processedJobsCount = parseInteger(processedJobsCountDOM.html());
+				var chartDOM = $this.find("[data-type=chart]");
 
+				jobsStats[workerId] = {
+					processedJobsCountDOM: processedJobsCountDOM,
+					processedJobsCount: processedJobsCount,
+					failedJobsCountDOM: failedJobsCountDOM,
+					failedJobsCount : parseInteger(failedJobsCountDOM.html()),
+					chart : chartDOM,
+					chartType : chartDOM.data("chart-type")
+				};
+
+				if (jobChartType === "pie") {
+					jobPieChart.add(jobsStats[workerId]);
+				}
+			},
+			/**
+			 * Remove a worker from the set
+			 *
+			 * @param  String	workerId	Worker ID classname
+			 * @return void
+			 */
+			removeJobChart : function(workerId) {
+				delete jobsStats[workerId];
+			},
 			updateJobsChart : function(workerId, level) {
 				if (jobsChartInit === 2) {
 					return;
 				}
 
-				jobsStats[workerId]["processedJobsCount"]++;
+				jobsStats[workerId].processedJobsCount++;
 				totalJobs++;
 
 				if (level === 400)
 				{
-					jobsStats[workerId]["failedJobsCount"]++;
+					jobsStats[workerId].failedJobsCount++;
 				}
 
 				var updateCounter = function(workerId, success)
@@ -718,13 +817,7 @@
 					}
 
 					jobsStats[workerId][index + "DOM"].html(number_format(jobsStats[workerId][index]));
-
-					if (jobsStats[workerId][index + "DOM"].queue("fx").length === 0)
-					{
-						jobsStats[workerId][index + "DOM"].effect("highlight");
-					}
-
-
+					fireEffect(jobsStats[workerId][index + "DOM"], "highlight");
 				};
 
 
@@ -738,30 +831,30 @@
 
 				if (jobsStats["active-worker-stats"] !== false)
 				{
-					jobsStats["active-worker-stats"]["processedJobsCount"]++;
+					jobsStats["active-worker-stats"].processedJobsCount++;
 					updateCounter("active-worker-stats", true);
 
 					if (level === 400)
 					{
-						jobsStats["active-worker-stats"]["failedJobsCount"]++;
+						jobsStats["active-worker-stats"].failedJobsCount++;
 						updateCounter("active-worker-stats", false);
 					}
 
 				}
 				if (jobsStats["global-worker-stats"] !== false)
 				{
-					jobsStats["global-worker-stats"]["processedJobsCount"]++;
+					jobsStats["global-worker-stats"].processedJobsCount++;
 					updateCounter("global-worker-stats", true);
 
 					if (level === 400)
 					{
-						jobsStats["global-worker-stats"]["failedJobsCount"]++;
+						jobsStats["global-worker-stats"].failedJobsCount++;
 						updateCounter("global-worker-stats", false);
 					}
 				}
 
 				// Refresh Chart
-				switch (jobsStats[workerId]["chartType"])
+				switch (jobsStats[workerId].chartType)
 				{
 					case "pie" :
 						jobPieChart.redraw(jobsStats[workerId], true);
@@ -771,13 +864,16 @@
 					case "horizontal-bar" :
 						for (var i = 0, length = jobsStats.length; i < length; i++) {
 							if (jobsStats[i] !== false) {
-								jobsStats[i]["chart"].animate({
-									width: Math.floor((jobsStats[i]["processedJobsCount"] / totalJobs) * 100) + "%"
+								jobsStats[i].chart.animate({
+									width: Math.floor((jobsStats[i].processedJobsCount / totalJobs) * 100) + "%"
 								}, 500);
 							}
 						}
 				}
 
+			},
+			isInit : function() {
+				return jobsChartInit !== 0;
 			}
 		};
 	}();
@@ -789,7 +885,7 @@
 	 *
 	 * @return void
 	 */
-	function listenToWorkersJob(chartType) {
+	function listenToWorkersJob(chartType, layout) {
 
 		var eventProcessor = function(){
 			var getWorkerId = function(message) {
@@ -799,21 +895,27 @@
 			return {
 				processDone : function(message){
 					Job.updateJobsChart(
-						getWorkerId(message).replace(new RegExp("(\\.|:)","gm"), ""),
+						cleanWorkerName(getWorkerId(message)),
 						message.data.level
 					);
 				},
 				processGot : function(message){
 					Job.updateJobsChart(
-						getWorkerId(message).replace(new RegExp("(\\.|:)","gm"), ""),
+						cleanWorkerName(getWorkerId(message)),
 						message.data.level
 					);
 				},
 				processFail : function(message){
 					Job.updateJobsChart(
-						getWorkerId(message).replace(new RegExp("(\\.|:)","gm"), ""),
+						cleanWorkerName(getWorkerId(message)),
 						message.data.level
 					);
+				},
+				processStop : function(message){
+					stopWorkerEvent(cleanWorkerName(getWorkerId(message)));
+				},
+				processStart : function(message){
+					startWorkerEvent(message.data.worker, layout);
 				}
 			};
 		}();
@@ -825,7 +927,9 @@
 			//got   : {expression: "got", format: function(data){return "job #" + data.job_id;}},
 			//fork  : {expression: "fork", format: function(data){return "job #" + data.job_id;}},
 			done  : {expression: "done", format: function(data){return "job #" + data.job_id;}},
-			fail  : {expression: "fail", format: function(data){return "job #" + data.job_id;}}
+			fail  : {expression: "fail", format: function(data){return "job #" + data.job_id;}},
+			stop  : {expression: "shutdown", format: function(data){return "worker #" + data.worker;}},
+			start : {expression: "start", format: function(data){return "worker #" + data.worker;}}
 		};
 
 		for(var e in events) {
@@ -860,6 +964,12 @@
 				case "fail" :
 					eventProcessor.processFail(data);
 					break;
+				case "stop" :
+					eventProcessor.processStop(data);
+					break;
+				case "start" :
+					eventProcessor.processStart(data);
+					break;
 				//case "done" :
 				//	eventProcessor.processDone(data);
 			}
@@ -871,15 +981,15 @@
 	{
 		var initData = function(d){
 
-			var successCount = d["processedJobsCount"] - d["failedJobsCount"];
+			var successCount = d.processedJobsCount - d.failedJobsCount;
 
 			var datas = [{
 					name : "success",
-					count : (successCount === 0 && d["failedJobsCount"] === 0) ? 1 : successCount,
+					count : (successCount === 0 && d.failedJobsCount === 0) ? 1 : successCount,
 					color: "#aec7e8"
 				}, {
 					name : "failed",
-					count : d["failedJobsCount"],
+					count : d.failedJobsCount,
 					color : "#e7969c"
 				}];
 			return datas;
@@ -902,7 +1012,7 @@
 					if (jobStats.hasOwnProperty(i))
 					{
 						var data = initData(jobStats[i]);
-						var parent = jobStats[i]["chart"];
+						var parent = jobStats[i].chart;
 
 						// Define the margin, radius, and color scale. The color scale will be
 						// assigned by index, but if you define your data using objects, you could pass
@@ -937,11 +1047,48 @@
 					}
 				}
 			},
+
+			add : function(stats) {
+				var data = initData(stats);
+				var parent = stats.chart;
+
+				// Define the margin, radius, and color scale. The color scale will be
+				// assigned by index, but if you define your data using objects, you could pass
+				// in a named field from the data object instead, such as `d.name`. Colors
+				// are assigned lazily, so if you want deterministic behavior, define a domain
+				// for the color scale.
+
+				var r = (parent.width()-m*2)/2;
+				var arc = d3.svg.arc().innerRadius(r / 2).outerRadius(r);
+
+				// Insert an svg:svg element (with margin) for each row in our dataset. A
+				// child svg:g element translates the origin to the pie center.
+				var svg = d3.select(parent[0])
+				.append("svg:svg")
+				.attr("width", (r + m) * 2)
+				.attr("height", (r + m) * 2)
+				.append("svg:g")
+				.attr("transform", "translate(" + (r + m) + "," + (r + m) + ")");
+
+				// The data for each svg:svg element is a row of numbers (an array). We pass
+				// that to d3.layout.pie to compute the angles for each arc. These start and end
+				// angles are passed to d3.svg.arc to draw arcs! Note that the arc radius is
+				// specified on the arc, not the layout.
+				svg.selectAll("path")
+					.data(donut(data))
+					.enter().append("svg:path")
+					.attr("d", arc)
+					.attr("fill", function(d) { return d.data.color; })
+					.attr("title", function(d){return d.data.count + " " +  d.data.name + " jobs"; })
+					.each(function(d) { this._current = d; })
+				;
+			},
+
 			redraw : function(stat)
 			{
 				var data = initData(stat);
 
-				var parent = stat["chart"];
+				var parent = stat.chart;
 				var r = (parent.width()-m*2)/2;
 				var arc = d3.svg.arc().innerRadius(r / 2).outerRadius(r);
 
@@ -963,56 +1110,77 @@
 		};
 	}();
 
-	function listenToWorkersActivities()
-	{
+
+	var WorkerActivities = function() {
+
+		var init = false;
+
 		var
 			context = cubism.context().size(466),
 			cube = context.cube("http://"+serverIp+":1081"),
 			horizon = context.horizon().metric(cube.metric).height(53),
 			rule = context.rule();
 
-		var workersIds = [];
-		var metrics = [];
+		return {
+			isInit : function() {
+				return init;
+			},
+			init : function() {
+				WorkerActivities.redraw();
+				init = true;
+			},
+			redraw : function(initContainer) {
 
-		$(".worker-stats h4").each(function(i){ workersIds.push($(this).html());});
-
-		if (workersIds.length === 0) {
-			return;
-		}
-
-
-		for (var i = 0, length = workersIds.length; i < length; i++) {
-			metrics.push("sum(done.eq(worker, \"" + workersIds[i] + "\"))");
-		}
-
-		d3.select("#worker-activities").append("div")
-			.attr("class", "rule")
-			.call(context.rule());
-
-		d3.select("#worker-activities").selectAll(".horizon")
-			.data(metrics)
-			.enter().append("div")
-			.attr("class", "horizon")
-			.call(horizon.extent([-180, 180]).title(null));
-
-		d3.select("#worker-activities").append("div")
-			.attr("class", "axis")
-			.call(context.axis().orient("bottom").ticks(d3.time.minutes, 10).tickSize(6,3,0)
-			.tickFormat(d3.time.format("%H:%M")));
-
-	}
+				if (initContainer) {
+					$("#working-area tbody tr:first-child td:last-child").append($("<div class=\"padd-fixer\"><div id=\"worker-activities\"></div></div>"));
+				} else {
+					$("#worker-activities").empty();
+				}
 
 
-	function parseInteger(str)
+				var workersIds = [];
+				var metrics = [];
+
+				$(".worker-stats h4").each(function(i){ workersIds.push($(this).text());});
+
+				if (workersIds.length === 0) {
+					context.stop();
+					return;
+				}
+
+
+				for (var i = 0, length = workersIds.length; i < length; i++) {
+					metrics.push("sum(done.eq(worker, \"" + workersIds[i] + "\"))");
+				}
+
+				d3.select("#worker-activities").append("div")
+					.attr("class", "rule")
+					.call(context.rule());
+
+				d3.select("#worker-activities").selectAll(".horizon")
+					.data(metrics)
+					.enter().append("div")
+					.attr("class", "horizon")
+					.call(horizon.extent([-180, 180]).title(null));
+
+				d3.select("#worker-activities").append("div")
+					.attr("class", "axis")
+					.call(context.axis().orient("bottom").ticks(d3.time.minutes, 10).tickSize(6,3,0)
+					.tickFormat(d3.time.format("%H:%M")));
+			}
+		};
+
+	}();
+
+	/**
+	 * Draw a horizon chart of workers activities
+	 * @return void
+	 */
+	function listenToWorkersActivities()
 	{
-		return +str.replace(",", "");
+		WorkerActivities.init();
 	}
 
-	function number_format(x)
-	{
-		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-	}
 
 	/**
 	 * Create a pie chart from a set of data
@@ -1427,3 +1595,207 @@
 			initChart();
 		});
 	}
+
+$(".workers-list, #working-area").on("click", ".stop-worker", function(event){
+	event.preventDefault();
+
+	var workerId = $(this).data("workerId");
+	var workerName = $(this).data("workerName");
+
+	$.ajax({
+		url: "/api/workers/stop/" + workerId,
+		statusCode: {
+			404: function() {
+				alert("page not found");
+			}
+		}
+	}).done(function(data){
+		if (data.status === true) {
+			stopWorkerEvent(workerName);
+		}
+
+	});
+
+});
+
+
+
+$(".get-worker-info").on("click", function(event){
+	event.preventDefault();
+
+	var workerId = $(this).data("workerId");
+
+	$.ajax({
+		url: "/api/workers/getinfo/" + workerId,
+		statusCode: {
+			404: function() {
+				alert("page not found");
+			}
+		}
+	}).done(function(data){
+
+		$("#worker-details .modal-body").html(
+			$("#workers-tpl").render(data)
+		);
+
+		$("#worker-details").modal("show");
+	});
+
+});
+
+
+$(".start-worker").on("click", function(event){
+	event.preventDefault();
+
+	$.ajax({
+		url: "/api/workers/start"
+	}).done(function(data){
+		$("#worker-form").html(data);
+		$("#worker-form").modal("show");
+		$(".pop-over").popover({trigger: "hover"});
+	});
+
+});
+
+
+
+/**
+ * Processed after stopping a worker
+ *
+ * Handle all the DOM manipulation to remove a worker from the page
+ * and refresh all the related counters
+ *
+ * @param  String workerName Clean worker name (processed with cleanWorkerName())
+ * @return void
+ */
+function stopWorkerEvent(workerName) {
+	var workerDom = $("#" + cleanWorkerName(workerName));
+	if (workerDom.length === 1) {
+		workerDom.fadeOut(400, function(){
+
+			workerDom.remove();
+
+			if ($(".workers-count").length > 0) {
+				var counter = $(".workers-count");
+				var count = counter.html();
+				counter.html(parseInt(count, 10) - 1);
+				fireEffect(counter, "highlight");
+			}
+
+			var workerQueues = workerDom.find(".queue-name");
+			workerQueues.each(function(i) {
+				QueuesList.substract($(workerQueues[i]).text());
+			});
+
+			if (Job.isInit()) {
+				Job.removeJobChart(cleanWorkerName(workerName));
+			}
+
+			if (WorkerActivities.isInit()) {
+				WorkerActivities.redraw(workerDom.find("#worker-activities").length === 1);
+			}
+
+		});
+	}
+
+
+
+}
+
+
+/**
+ * Processed after starting a worker
+ *
+ * Do all the works to add worker details in the DOM
+ *
+ * @param  String workerName Worker ID
+ * @return void
+ */
+function startWorkerEvent(workerId, layout) {
+	$.ajax({
+		url: "/render/worker/" + layout + "/" + workerId,
+		statusCode: {
+			404: function() {
+				alert("page not found");
+			}
+		}
+	}).done(function(data){
+		switch(layout) {
+			case "list" :
+				$(".workers-list").append(data);
+				break;
+			case "table" :
+				$("#working-area tbody").append(data);
+				break;
+		}
+
+		if ($(".workers-count").length > 0) {
+			var count = $(".workers-count").html();
+			$(".workers-count").html(parseInt(count, 10) + 1);
+			fireEffect($(".workers-count"), "highlight");
+		}
+
+		var workerQueues = $("#" + cleanWorkerName(workerId)).find(".queue-name");
+		workerQueues.each(function(i) {
+			QueuesList.add($(workerQueues[i]).text());
+		});
+
+		if (Job.isInit()) {
+			Job.addJobChart(cleanWorkerName(workerId));
+		}
+
+		if (WorkerActivities.isInit()) {
+			WorkerActivities.redraw();
+		}
+	});
+}
+
+
+/**
+ * Clean a worker name
+ *
+ * Return a worker name, stripped of all special characters
+ *
+ * @param  String name Worker name
+ * @return String A clean worker name
+ */
+function cleanWorkerName(name) {
+	return name.replace(new RegExp("(\\.|:)","gm"), "");
+}
+
+
+/**
+ * Fire an effect only if effect queue is empty
+ *
+ * @param  JqueryObject node	jQuery node
+ * @param  String		effect	effect name
+ * @return void
+ */
+function fireEffect(node, effect) {
+	if (node.queue("fx").length === 0) {
+		node.effect(effect);
+	}
+}
+
+
+/**
+ * Convert a string number to an integer
+ *
+ * @param  String	A string
+ * @return int		an Integer
+ */
+function parseInteger(str) {
+	return +str.replace(",", "");
+}
+
+
+/**
+ *
+ * @param  {[type]} x [description]
+ * @return {[type]}   [description]
+ */
+function number_format(x)
+{
+	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+}

@@ -27,7 +27,13 @@
 <div class="container" id="main">
 	<div class="page-header">
 		<h2>Logs</h2>
+		<div class="btn-group btn-nav">
+            <a class="btn btn-small active" href="/logs">Tail latest</a>
+            <a class="btn btn-small" href="/logs/browse">Browse logs</a>
+        </div>
 	</div>
+
+
 	<div class="row">
 		<div class="span10">
 
@@ -38,7 +44,7 @@
 				<li data-verbosity="{{>levelName}}" data-type="{{>action}}" data-worker="{{>workerClass}}">
 					<div class="label-c"><span class="label {{>levelClass}}">{{>levelName}}</span></div>
 					<a href="/workers#{{>workerClass}}"><em class="worker" style="color:{{>color}}">{{>worker}}</em></a>
-					<b class="type">{{>action}}</b> {{>detail}} <time data-event="tooltip" title="{{>time}}" datetime="{{>time}}">{{>relativeTime}}</time>
+					<b class="type">{{>action}}</b> {{:detail}} <time data-event="tooltip" title="{{>time}}" datetime="{{>time}}">{{>relativeTime}}</time>
 				</li>
 			</script>
 
@@ -55,16 +61,16 @@
 			<form class="" id="log-filter-form">
 				<fieldset><legend>Listen to</legend>
 					<?php
-						foreach ($logLevels as $levelName => $className) {
+						foreach ($logLevels as $code => $info) {
 
 							echo '<label class="checkbox"><input type="checkbox" data-rel="'.
-							$levelName.'"';
+							$info['name'].'"';
 
-							if (!in_array($levelName, $mutedLevels)) {
+							if (!in_array($info['name'], $mutedLevels)) {
 								echo ' checked=""';
 							}
 
-							echo '> '.ucwords($levelName).'</label>';
+							echo '> '.ucwords($info['name']).'</label>';
 
 						}
 					?>
@@ -76,10 +82,10 @@
 					<h4 class="sep">By verbosity</h4>
 					<ul class="unstyled">
 						<?php
-							foreach ($logLevels as $level => $class) {
-								echo '<li><span class="badge '.$class.'" data-rel="'.$level.'">0</span> '.
-								$level.' <button class="btn btn-mini pull-right" data-level="'.
-								$level.'" data-rel="verbosity">Clear</button></li>';
+							foreach ($logLevels as $code => $info) {
+								echo '<li><span class="badge '.$info['class'].'" data-rel="'.$info['name'].'">0</span> '.
+								$info['name'].' <button class="btn btn-mini pull-right" data-level="'.
+								$info['name'].'" data-rel="verbosity">Clear</button></li>';
 							}
 						?>
 					</ul>

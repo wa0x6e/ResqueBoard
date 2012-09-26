@@ -29,7 +29,7 @@ namespace ResqueBoard\View;
  * @since  1.0.0
  * @author Wan Qi Chen <kami@kamisama.me>
  */
-class MyView extends \Slim_View
+class MyView extends \Slim\View
 {
 
     private $headerTemplate = 'header.ctp';
@@ -45,10 +45,15 @@ class MyView extends \Slim_View
     {
         $this->setTemplate($template);
         extract($this->data);
+
         ob_start();
-        require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->headerTemplate;
+        if (!isset($raw) || $raw === false) {
+        	require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->headerTemplate;
+        }
         require $this->templatePath;
-        require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->footerTemplate;
+        if (!isset($raw) || $raw === false) {
+            require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->footerTemplate;
+        }
         return ob_get_clean();
         return $content;
     }

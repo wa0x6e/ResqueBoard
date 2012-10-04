@@ -26,7 +26,7 @@ if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
 
-define('APPLICATION_VERSION', '1.2.0');
+define('APPLICATION_VERSION', '1.3.0');
 
 
 include ROOT . DS . 'Config' . DS . 'Core.php';
@@ -45,7 +45,8 @@ $app->get(
                     'stats' => $resqueStat->getStats(),
                     'workers' => $resqueStat->getWorkers(),
                     'queues' => $resqueStat->getQueues(),
-                    'pageTitle' => APPLICATION_NAME
+                    'pageTitle' => 'Home',
+                    'readOnly' => $settings['readOnly']
                 )
             );
 
@@ -88,7 +89,8 @@ $app->get(
                 'workers.ctp',
                 array(
                     'workers' => $resqueStat->getWorkers(),
-                    'pageTitle' => 'Active workers'
+                    'pageTitle' => 'Active workers',
+                    'readOnly' => $settings['readOnly']
                 )
             );
 
@@ -129,13 +131,13 @@ $app->get(
 );
 
 $app->get(
-    '/jobs/distribution',
+    '/jobs/distribution/class',
     function () use ($app, $settings) {
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
 
             $app->render(
-                'jobs_distribution.ctp',
+                'jobs_class_distribution.ctp',
                 array(
                     'jobsRepartitionStats' => $resqueStat->getJobsRepartionStats(null),
                     'pageTitle' => 'Jobs distribution'
@@ -147,6 +149,40 @@ $app->get(
         }
     }
 );
+
+$app->get(
+    '/jobs/distribution/load(/:year/:month)',
+    function ($year = null, $month = null) use ($app, $settings) {
+        try {
+            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+
+            if ($year === null && $month === null) {
+                $start = new \DateTime();
+                $start->modify('first day of this month');
+            } else {
+                $start = new \DateTime($year . '-' . $month . '-01');
+            }
+
+            $end = clone $start;
+            $end->modify('last day of ' . $end->format('F') . ' ' . $end->format('Y'));
+
+            $firstJob = $resqueStat->getJobs(array('limit' => 1, 'sort' => array('t' => 1), 'format' => false));
+
+            $app->render(
+                'jobs_load_distribution.ctp',
+                array(
+                    'jobsMatrix' => $resqueStat->getJobsMatrix($start, $end, ResqueBoard\Lib\ResqueStat::CUBE_STEP_1DAY),
+                    'pageTitle' => 'Jobs load distribution',
+                    'startDate' => new DateTime(current($firstJob)['time']),
+                    'currentDate' => $start
+                )
+            );
+
+        } catch (\Exception $e) {
+            $app->error($e);
+        }
+    }
+)->conditions(array('year' => '(19|20)\d\d', 'month' => '(0\d|1[0-2])'));
 
 $app->map(
     '/jobs/view',
@@ -379,10 +415,16 @@ $app->get(
     '/api/workers/stop/:workerId',
     function ($workerId) use ($app, $settings) {
 
+        $app->response()->header("Content-Type", "application/json");
+
+        if ($settings['readOnly']) {
+            echo json_encode(array('status' => false, 'message' => 'You don\'t have permission to stop workers'));
+            return;
+        }
+
         $resqueApi = new ResqueBoard\Lib\ResqueApi($settings['resqueConfig']);
         $stop = $resqueApi->stop($workerId);
 
-        $app->response()->header("Content-Type", "application/json");
         echo json_encode(array('status' => true));
     }
 );
@@ -426,6 +468,11 @@ $app->error(
 $app->map(
     '/api/workers/start',
     function () use ($app, $settings) {
+
+        if ($settings['readOnly']) {
+            echo json_encode(array('status' => false));
+            return;
+        }
 
         $resqueApi = new ResqueBoard\Lib\ResqueApi($settings['resqueConfig']);
 

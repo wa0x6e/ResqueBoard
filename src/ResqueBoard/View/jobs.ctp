@@ -33,7 +33,7 @@
 	<div class="row">
 
 		<div class="span6">
-			<h2><a href="/jobs/distribution">Distribution by classes</a></h2>
+			<h2><a href="/jobs/distribution/class">Distribution by classes</a></h2>
 
 			<div id="jobRepartition">
 				<?php

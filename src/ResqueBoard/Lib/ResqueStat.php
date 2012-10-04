@@ -41,6 +41,12 @@ class ResqueStat
     const JOB_STATUS_FAILED = 3;
     const JOB_STATUS_COMPLETE = 4;
 
+    const CUBE_STEP_10SEC = '1e4';
+    const CUBE_STEP_1MIN = '6e4';
+    const CUBE_STEP_5MIN = '3e5';
+    const CUBE_STEP_1HOUR = '36e5';
+    const CUBE_STEP_1DAY = '864e5';
+
     private $settings;
     private $redis;
     private $mongo;
@@ -53,6 +59,7 @@ class ResqueStat
         $this->settings = array(
                 'mongo' => array('host' => 'localhost', 'port' => 27017, 'database' => 'cube_development'),
                 'redis' => array('host' => '127.0.0.1', 'port' => 6379, 'database' => 0),
+                'cube'  => array('host' => 'localhost', 'port' => 1081),
                 'resquePrefix' => 'resque'
         );
 
@@ -450,6 +457,46 @@ class ResqueStat
         );
 
         return $results;
+    }
+
+    /**
+     * Get the number of jobs processed for a period of time
+     *
+     * Get the number of jobs processed between a $start and an $end date,
+     * divided into $step interval
+     *
+     * @since  1.3.0
+     * @param  DateTime $start Start date
+     * @param  DateTime $end   End date
+     * @param  const    $step  Cube constant for step
+     * @return array
+     */
+    public function getJobsMatrix($start, $end, $step)
+    {
+        if (!extension_loaded('curl')) {
+            throw new \Exception('The curl extension is needed to use http URLs with the CubeHandler');
+        }
+
+        $this->httpConnection = curl_init(
+            'http://'.$this->settings['cube']['host'] . ':' .
+            $this->settings['cube']['port'].'/1.0/metric?expression=sum(got)&start=' . $start->format('Y-m-d') .
+            '&stop=' . $end->format('Y-m-d') . 'Z23:59:59&step=36e5'
+        );
+
+        if (!$this->httpConnection) {
+            throw new \Exception('Unable to connect to ' . $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']);
+        }
+
+        curl_setopt($this->httpConnection, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt(
+            $this->httpConnection,
+            CURLOPT_HTTPHEADER,
+            array(  'Content-Type: application/json')
+        );
+
+        $response = json_decode(curl_exec($this->httpConnection), true);
+
+        return $response;
     }
 
     /**

@@ -471,13 +471,7 @@ table .queues-list
 			}
 		}				
 		
-		.padd-fixer
-		{
-			position: relative;
-			vertical-align: bottom;
-			padding: 8px;
-			height: 37px;
-		}
+		
 				
 		h4
 		{
@@ -491,6 +485,14 @@ table .queues-list
 		}
 	}
 	padding-bottom: 20px;
+}
+
+.padd-fixer
+{
+	position: relative;
+	vertical-align: bottom;
+	padding: 8px;
+	height: 37px;
 }
 
 span.chart-bar
@@ -837,4 +839,129 @@ form label .icon-info-sign
 		display: block;
 	}
 	
+}
+
+.jobs-matrix {
+	border: 1px solid #000;
+	@cellsize: 25px;
+	margin: 20px 0;
+	
+	td {
+		border: 1px solid #eee;
+		text-align: center;
+		height: @cellsize;
+		width: @cellsize;
+		vertical-align: middle;
+		font-size: 11px;
+	}
+	
+	tr:first-child, tr:last-child {
+		background-color: lighten(steelblue, 48);
+	}
+	
+	.new-week {
+		border-top: 2px solid #ddd;
+	}
+	
+	.weekend {
+		background: lighten(#eee, 4);	
+	}
+	
+	.today .head-day, .today .daily-total {
+		background-color: lighten(#cedb9c, 23);		
+	}
+	
+	.head-day {
+		color: #999;
+		white-space: nowrap;
+		text-align: right;
+		font-size: 10px;
+		padding: 0 8px;
+		width: @cellsize * 3;
+		
+		b {
+			font-size: 12px;
+		
+		}		
+	}
+	
+	i {
+		display: none;
+	}
+	
+	.head-weekday {
+		color: #999;
+		text-align: right;
+		
+	}
+	
+	.daily-total {
+		text-align: right;
+		font-size: 12px;
+		
+	}
+	
+	b {
+		padding: 0 5px;
+		text-shadow: 0 1px 0 #fff;
+	}
+	
+	.padd-fixer {
+		height: @cellsize;
+		padding: 0;
+		width: @cellsize * 7;
+	}
+	
+	.chart-bar {
+		background-color: #e377c2;
+	}
+	
+	.head-hour {
+		color: #999;
+	}
+	
+		
+	.day-quarter {
+		border-left-width: 2px;
+	}
+}
+
+.q0 {
+	background-color: #fff;
+}
+
+.q1 {
+	background-color: lighten(#c7e9c0, 3);
+}
+
+.q2 {
+	background-color: #cedb9c;
+}
+
+.q3 {
+	background-color: #b5cf6b;
+}
+
+.q4 {
+	background-color: #8ca252;
+}
+
+.q5 {
+	background-color: #637939;
+}
+
+
+.table-legend{
+	
+	border: 1px solid #eee;
+	width: 90px;
+	float: left;
+	margin-right: 10px;
+	
+	li {
+		display: block;
+		float: left;
+		width: 15px;
+		height: 15px;
+	}
 }

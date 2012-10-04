@@ -29,7 +29,7 @@ namespace ResqueBoard\Lib;
  */
 class WorkerHelper
 {
-    public static function renderList($totalStats, $workers = array())
+    public static function renderList($totalStats, $workers = array(), $readOnly = true)
     {
         if (!empty($workers)) {
             foreach ($workers as $worker) {
@@ -37,6 +37,7 @@ class WorkerHelper
                 ?>
                 <div class="span4" id="<?php echo $workerId ?>">
                         <div class="workers-list-item">
+                            <?php if (!$readOnly) : ?>
                             <div class="btn-group pull-right">
                                 <a class="btn btn-small dropdown-toggle btn-discret" data-toggle="dropdown" href="#">
                                     <i class="icon-cog"></i>
@@ -46,6 +47,7 @@ class WorkerHelper
                                 <!-- <li><a href="#" class="get-worker-info" data-worker-id="<?php echo $worker['fullname'] ?>">View properties</a></li> -->
                                 </ul>
                             </div>
+                            <?php endif; ?>
 
                             <h3><?php echo $worker['host']?>:<?php echo $worker['process']; ?></h3>
 
@@ -96,13 +98,11 @@ class WorkerHelper
                     </div>
                 </div>
                 <?php
-
-
             }
         }
     }
 
-    public static function renderTable($workers = array())
+    public static function renderTable($workers = array(), $readOnly = true)
     {
         $totalJobs = 0;
         $i = 0;
@@ -120,18 +120,21 @@ class WorkerHelper
             $workerId = str_replace('.', '', $worker['host']) . $worker['process'];
             echo '<tr class="worker-stats" id="'.$workerId.'">';
             echo '<td>';
-            ?>
-            <div class="btn-group pull-right">
-                            <a class="btn btn-small dropdown-toggle btn-discret" data-toggle="dropdown" href="#">
-                                <i class="icon-cog"></i>
-                                </a>
-                            <ul class="dropdown-menu">
-                            <li><a href="#" class="stop-worker" data-worker-id="<?php echo $worker['fullname'] ?>" data-worker-name="<?php echo $workerId ?>">
-                            <i class="icon-off"></i> Stop worker</a></li>
 
-                            </ul>
-                        </div>
-                    <?php
+            if (!$readOnly) : ?>
+            <div class="btn-group pull-right">
+                <a class="btn btn-small dropdown-toggle btn-discret" data-toggle="dropdown" href="#">
+                    <i class="icon-cog"></i>
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="#" class="stop-worker" data-worker-id="<?php echo $worker['fullname'] ?>" data-worker-name="<?php echo $workerId ?>">
+                        <i class="icon-off"></i> Stop worker</a>
+                    </li>
+                </ul>
+            </div>
+            <?php
+            endif;
             echo'<h4>' . $worker['host'] . ':' . $worker['process']. '</h4>';
             echo '<small class="queues-list"><strong><i class="icon-list-alt"></i> Queues : </strong>';
             array_walk(

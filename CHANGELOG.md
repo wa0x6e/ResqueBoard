@@ -1,5 +1,18 @@
 ##Changelog
 
+###v1.3.0 (2011-10-04)
+
+* [new] Job load distribution page
+* [new] `ReadOnly` mode to disable worker stopping
+* [new] `BASE_URL` constant for website url
+* [change] Rename Job distribution to Job class distribution
+* [change] Update code to use Slim 2
+
+> **Upgrade notes**  
+> Set the `BASE_URL` constant to your website url in Core.php  
+> Update your composer dependencies with `composer.phar update` for the latest Slim 2
+
+
 ###v1.2.0 (2011-09-26)
 
 * [fix] Fix getting jobs by date where date was already a timestamp

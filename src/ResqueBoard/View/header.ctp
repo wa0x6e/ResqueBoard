@@ -22,6 +22,7 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
+		<base href="<?php echo BASE_URL ?>" />
 		<title><?php echo $pageTitle . TITLE_SEP . APPLICATION_NAME?></title>
 		<link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 		<link href="/css/main-<?php echo APPLICATION_VERSION ?>.css" rel="stylesheet" type="text/css">
@@ -45,8 +46,9 @@
                                                     'submenu' => array(
                                                         '<i class="icon-dashboard"></i> Dashboard' => '/jobs',
                                                     	false,
-                                                        '<i class="icon-bar-chart"></i> Jobs distribution' => 'jobs/distribution',
-                                                        '<i class="icon-eye-open"></i> Jobs browser' => '/jobs/view'
+                                                    	'<i class="icon-eye-open"></i> Jobs browser' => '/jobs/view',
+                                                        '<i class="icon-bar-chart"></i> Jobs class distribution' => 'jobs/distribution/class',
+                                                        '<i class="icon-table"></i> Jobs load distribution' => '/jobs/distribution/load'
                                                     )
                                              )
 										);

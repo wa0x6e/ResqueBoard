@@ -47,7 +47,7 @@ $(document).ready(function() {
 					</tr>
 				</thead>
 				<tbody>
-				<?php ResqueBoard\Lib\WorkerHelper::renderTable($workers); ?>
+				<?php ResqueBoard\Lib\WorkerHelper::renderTable($workers, $readOnly); ?>
 				</tbody>
 				</table>
 			</div>

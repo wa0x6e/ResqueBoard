@@ -1612,6 +1612,13 @@ $(".workers-list, #working-area").on("click", ".stop-worker", function(event){
 	}).done(function(data){
 		if (data.status === true) {
 			stopWorkerEvent(workerName);
+		} else {
+			if (data.message) {
+				alert(data.message);
+			} else {
+				alert("An unknown error has occured while stopping the worker");
+			}
+
 		}
 
 	});
@@ -1749,6 +1756,13 @@ function startWorkerEvent(workerId, layout) {
 		}
 	});
 }
+
+/**
+ * Use a form select's options as navigation
+ */
+$(".navigator").on("change", "select", function () {
+	window.location = $("option", this).filter(":selected").val();
+});
 
 
 /**

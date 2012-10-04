@@ -1,8 +1,8 @@
 <?php
 /**
- * Job distribution template
+ * Job class distribution template
  *
- * Website jobs distribution page
+ * Website jobs class distribution page
  *
  * PHP version 5
  *
@@ -19,7 +19,7 @@
  */
 ?><div class="container" id="main">
 	<div class="page-header">
-		<h1>Jobs Distribution</h1>
+		<h1>Jobs class distribution</h1>
 	</div>
 	<div class="row">
 		<div class="span12">

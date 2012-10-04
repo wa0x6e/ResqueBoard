@@ -44,7 +44,6 @@
             'resqueConfig' => __DIR__ . DIRECTORY_SEPARATOR . './resque.ini'
     );
 
-
     /**
      * Datas used for instanciating a Slim object
      *
@@ -95,6 +94,14 @@
      * @var string
      */
     define('APPLICATION_NAME', 'ResqueBoard');
+
+    /**
+     * Website url
+     *
+     * @since  1.3.0
+     * @var string
+     */
+    define('BASE_URL', 'http://localhost/');
 
 
     /**

@@ -124,7 +124,7 @@
 				</div>
 
                 <div class="row workers-list">
-				<?php ResqueBoard\Lib\WorkerHelper::renderList($stats, $workers); ?>
+				<?php ResqueBoard\Lib\WorkerHelper::renderList($stats, $workers, $readOnly); ?>
 				</div>
 
 				</div>

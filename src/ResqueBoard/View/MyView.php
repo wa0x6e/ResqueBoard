@@ -55,7 +55,6 @@ class MyView extends \Slim\View
             require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->footerTemplate;
         }
         return ob_get_clean();
-        return $content;
     }
 }
 

@@ -554,6 +554,10 @@
 			start   : {expression: "start", format: function(data){
 				return "worker #" + data.worker;}},
 			stop    : {expression: "shutdown", format: function(data){
+				return "worker #" + data.worker;}},
+			pause    : {expression: "pause", format: function(data){
+				return "worker #" + data.worker;}},
+			resume    : {expression: "resume", format: function(data){
 				return "worker #" + data.worker;}}
 		};
 

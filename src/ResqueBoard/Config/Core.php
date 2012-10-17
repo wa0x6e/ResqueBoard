@@ -76,7 +76,7 @@
      *
      * @var array
      */
-    $logTypes = array('start', 'got', 'process', 'fork', 'done', 'fail', 'sleep', 'prune', 'stop');
+    $logTypes = array('start', 'got', 'process', 'fork', 'done', 'fail', 'sleep', 'prune', 'stop', 'pause', 'resume');
 
 
     /**
@@ -101,7 +101,7 @@
      * @since  1.3.0
      * @var string
      */
-    define('BASE_URL', 'http://localhost/');
+    define('BASE_URL', 'http://resque.neetcafe.lc/');
 
 
     /**

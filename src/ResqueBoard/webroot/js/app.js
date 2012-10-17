@@ -558,6 +558,8 @@
 			pause    : {expression: "pause", format: function(data){
 				return "worker #" + data.worker;}},
 			resume    : {expression: "resume", format: function(data){
+				return "worker #" + data.worker;}},
+			prune    : {expression: "prune", format: function(data){
 				return "worker #" + data.worker;}}
 		};
 

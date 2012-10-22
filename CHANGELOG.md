@@ -1,5 +1,11 @@
 ##Changelog
 
+###v1.3.1 (2011-10-21)
+
+* [fix] Always use the server timezone
+* [fix] Searching a job by time was not working 
+* [new] Add links to jobs browser from jobs load distribution matrix
+
 ###v1.3.0 (2011-10-04)
 
 * [new] Job load distribution page

@@ -479,8 +479,8 @@ class ResqueStat
 
         $this->httpConnection = curl_init(
             'http://'.$this->settings['cube']['host'] . ':' .
-            $this->settings['cube']['port'].'/1.0/metric?expression=sum(got)&start=' . $start->format('Y-m-d') .
-            '&stop=' . $end->format('Y-m-d') . 'Z23:59:59&step=36e5'
+            $this->settings['cube']['port'].'/1.0/metric?expression=sum(got)&start=' . $start->format('Y-m-d\TH:i:sO') .
+            '&stop=' . $end->format('Y-m-d\TH:i:sO') . '&step=36e5'
         );
 
         if (!$this->httpConnection) {

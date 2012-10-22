@@ -26,7 +26,7 @@ if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
 
-define('APPLICATION_VERSION', '1.3.0');
+define('APPLICATION_VERSION', '1.3.1');
 
 
 include ROOT . DS . 'Config' . DS . 'Core.php';
@@ -248,15 +248,12 @@ $app->map(
                 }
 
                 // Validate search datas
-                $dateTimePattern = '/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])(\s+?(0[1-9]|1[0-9]|2[0-4]):([0-5][0-9])(:([0-5][0-9]))*?)*?$/';
+                $dateTimePattern = '/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])?(\s+([0-1][0-9]|2[0-4]):[0-5]\d(:[0-5]\d)?)?$/';
                 if (!empty($conditions['date_after']) && preg_match($dateTimePattern, $conditions['date_after']) == 0) {
                     $errors['date_after'] = 'Date is not valid';
                 }
                 if (!empty($conditions['date_before']) && preg_match($dateTimePattern, $conditions['date_before']) == 0) {
                     $errors['date_before'] = 'Date is not valid';
-                }
-                if ($conditions['worker']) {
-
                 }
 
                 if (empty($errors)) {

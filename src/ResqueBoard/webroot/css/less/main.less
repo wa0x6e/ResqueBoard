@@ -12,6 +12,10 @@ body
 	background-color: @grayLighter;
 }
 
+* {
+	.transition(all .2s);
+}
+
 #main
 {
 	background-color: @white;
@@ -841,8 +845,12 @@ form label .icon-info-sign
 	
 }
 
+/*
+	=======================
+	Jobs class distribution
+	=======================
+*/
 .jobs-matrix {
-	border: 1px solid #000;
 	@cellsize: 25px;
 	margin: 20px 0;
 	
@@ -853,6 +861,16 @@ form label .icon-info-sign
 		width: @cellsize;
 		vertical-align: middle;
 		font-size: 11px;
+	}
+	
+	a {
+		display: block;
+		height: @cellsize;
+		width: @cellsize;
+		
+		&:hover {
+			background: #000;
+		}
 	}
 	
 	tr:first-child, tr:last-child {
@@ -914,6 +932,26 @@ form label .icon-info-sign
 	
 	.chart-bar {
 		background-color: #e377c2;
+	}
+	
+	// Percentage label for last column
+	.perc {
+		position: absolute;
+		padding: 2px;
+		font-size: 10px;
+		line-height: 10px;
+		font-weight: bold;
+		background-color: #fff;
+		.border-radius(2px);
+		left: 5px;
+		top: 5px;
+		visibility: hidden;
+		opacity: 0;
+	}
+	
+	.daily-total:hover .perc {
+		visibility: visible;
+		opacity: 1;
 	}
 	
 	.head-hour {

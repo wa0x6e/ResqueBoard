@@ -570,16 +570,28 @@ class ResqueStat
      *
      * @since 1.1.0
      */
-    public function getJobsStats()
+    public function getJobsStats($options = array())
     {
         $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
 
+        $filter = array();
+
+        if (isset($options['start'])) {
+            $filter['t']['$gte'] = new \MongoDate(strtotime($options['start']));
+        }
+
+        if (isset($options['end'])) {
+            $filter['t']['$lt'] = new \MongoDate(strtotime($options['end']));
+        }
+
         $stats = new \stdClass();
-        $stats->total = $cube->selectCollection('got_events')->find()->count();
-        $stats->count[self::JOB_STATUS_COMPLETE] = $cube->selectCollection('done_events')->find()->count();
-        $stats->count[self::JOB_STATUS_FAILED] = $cube->selectCollection('fail_events')->find()->count();
+        $stats->total = $cube->selectCollection('got_events')->find($filter)->count();
+        $stats->count[self::JOB_STATUS_COMPLETE] = $cube->selectCollection('done_events')->find($filter)->count();
+        $stats->count[self::JOB_STATUS_FAILED] = $cube->selectCollection('fail_events')->find($filter)->count();
         $stats->perc[self::JOB_STATUS_FAILED] =
-            round($stats->count[self::JOB_STATUS_FAILED] / $stats->count[self::JOB_STATUS_COMPLETE] * 100, 2);
+            ($stats->total == 0)
+                ? 0
+                : round($stats->count[self::JOB_STATUS_FAILED] / $stats->total * 100, 2);
         $stats->count[self::JOB_STATUS_WAITING] = 0;
 
         $queues = $this->getQueues();
@@ -685,6 +697,37 @@ class ResqueStat
         }
 
         return array_values($jobs);
+    }
+
+    public function getCubeMetric($options)
+    {
+        if (!extension_loaded('curl')) {
+            throw new \Exception('The curl extension is needed to use http URLs with the CubeHandler');
+        }
+
+        $this->httpConnection = curl_init(
+            'http://'.$this->settings['cube']['host'] . ':' .
+            $this->settings['cube']['port'].'/1.0/metric?expression=' . $options['expression'] .
+            '&start=' . $options['start']->format('Y-m-d\TH:i:s') .
+            (isset($options['stop']) ? ('&stop=' . $options['end']->format('Y-m-d\TH:i:s')) : '') .
+            (isset($options['step']) ? ('&step=' . $options['step']) : '') .
+            (isset($options['limit']) ? ('&limit=' . $options['limit']) : '')
+        );
+
+        if (!$this->httpConnection) {
+            throw new \Exception('Unable to connect to ' . $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']);
+        }
+
+        curl_setopt($this->httpConnection, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt(
+            $this->httpConnection,
+            CURLOPT_HTTPHEADER,
+            array(  'Content-Type: application/json')
+        );
+
+        $response = json_decode(curl_exec($this->httpConnection), true);
+
+        return $response;
     }
 
     /**

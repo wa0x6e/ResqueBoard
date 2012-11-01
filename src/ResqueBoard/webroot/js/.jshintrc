@@ -1,11 +1,4 @@
 {
-	"globals":	 {
-		"hljs":	true,
-		"d3":	true,
-		"serverIp":	true,
-		"moment":	true,
-		"cubism":	true
-	},
 	"curly":	 true,
 	"eqeqeq":	 true,
 	"noarg":	 true,
@@ -19,5 +12,13 @@
 	"wsh":	 true,
 	"trailing":	 true,
 	"jquery":	 true,
-	"loopfunc":	 true
+	"loopfunc":	 true,
+
+	"predef" : [
+		"hljs",
+		"d3",
+		"serverIp",
+		"moment",
+		"cubism"
+	]
 }

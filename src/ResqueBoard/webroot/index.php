@@ -289,6 +289,76 @@ $app->map(
     }
 )->via('GET', 'POST');
 
+$app->get(
+    '/jobs/overview/:range(/:start)',
+    function ($range, $start = 'now') use ($app, $settings) {
+        try {
+
+            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+
+            $rangeWhitelist = array(
+                'hour' => array('step' => ResqueBoard\Lib\ResqueStat::CUBE_STEP_10SEC),
+                'day' => array('step' => ResqueBoard\Lib\ResqueStat::CUBE_STEP_5MIN),
+                'week' => array('step' => ResqueBoard\Lib\ResqueStat::CUBE_STEP_1HOUR),
+                'month' => array('step' => ResqueBoard\Lib\ResqueStat::CUBE_STEP_1HOUR)
+                );
+
+
+            $start = new DateTime($start);
+            $uriDate = clone $start;
+            $end = clone $start;
+
+            if (!array_key_exists($range, $rangeWhitelist)) {
+                throw new Exception('Invalid URL');
+            }
+
+
+            $rangeWhitelist = array_merge_recursive($rangeWhitelist, array(
+                'hour' => array(
+                    'start' => clone $start->setTime($start->format('H'), 0, 0),
+                    'end' => clone $end->setTime($end->format('H'), 59, 59)
+                ),
+                'day' => array(
+                    'start' => clone $start->modify('today'),
+                    'end' => clone  $end->setTime(23, 59, 59)
+                ),
+                'week' => array(
+                    'start' => clone $start->modify('monday this week'),
+                    'end' =>  clone $end->modify('sunday this week')->setTime(23, 59, 59)
+                ),
+                'month' => array(
+                    'start' => clone $start->modify('first day of this month')->setTime(0, 0, 0),
+                    'end' => clone $end->modify('last day of this month')->setTime(23, 59, 59)
+                )
+            ));
+
+            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+           // $jobsNumber = $resqueStat->getCubeMetric(array('start' => $start, 'end' => $end, 'step' => $step, 'expression' => 'sum(got)'));
+
+            $app->render(
+                'jobs_overview.ctp',
+                array(
+                    'pageTitle' => 'Jobs overview',
+                    'ranges' => $rangeWhitelist,
+                    'currentRange' => $range,
+                    'currentStep' => $rangeWhitelist[$range],
+                    'uriDate' => $uriDate,
+                    'startDate' => $start,
+                    'endDate' => $end,
+                    'jobsStats' => $resqueStat->getJobsStats(
+                        array(
+                            'start' => $rangeWhitelist[$range]['start']->format('c'),
+                            'end' => $rangeWhitelist[$range]['end']->format('c')
+                            )
+                        ),
+                )
+            );
+        } catch (\Exception $e) {
+            $app->error($e);
+        }
+    }
+);
+
 $app->map(
     '/logs/browse',
     function () use ($app, $settings, $logLevels, $logTypes) {
@@ -511,3 +581,5 @@ $app->map(
 )->via('GET', 'POST');
 
 $app->run();
+
+

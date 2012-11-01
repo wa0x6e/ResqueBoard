@@ -13,6 +13,8 @@
  * @license		MIT License (http://www.opensource.org/licenses/mit-license.ctp)
  */
 
+
+
 	$("[data-event~=tooltip]").tooltip();
 	$("[data-event~=collapse-all]").on("click", function(e){ e.preventDefault(); $(".collapse.in").collapse("hide"); });
 	$("[data-event~=expand-all]").on("click", function(e){ e.preventDefault(); $(".collapse").not(".in").collapse("show"); });
@@ -128,7 +130,7 @@
 
 	/**
 	 * Convert a date to ISO 8601 format
-	 * @param  Date date A date object
+	 * @param	Date date A date object
 	 * @return string An ISO 8601 formatted date
 	 */
 	var formatISO = function(date) {
@@ -194,7 +196,7 @@
 					return new Date(date.setSeconds(date.getSeconds() + step[0].second));
 				};
 
-				data = data.map(function(d){return {time:new Date(d.time), value:  d.value};}).slice(0, limit);
+				data = data.map(function(d){return {time:new Date(d.time), value:	d.value};}).slice(0, limit);
 
 				var x = d3.time.scale()
 					.domain([data[0].time, getNextTick(data[data.length-1].time)])
@@ -212,7 +214,7 @@
 					.attr("width", width + margin.left + margin.right)
 					.attr("height", height + margin.top + margin.bottom)
 					.append("g")
-					.attr("transform", "translate(" + margin.left  + "," + margin.top + ")")
+					.attr("transform", "translate(" + margin.left	+ "," + margin.top + ")")
 				;
 
 				chart.append("svg:clipPath")
@@ -263,7 +265,7 @@
 					.attr("x", function(d) { return x(d.time) + barGutter; })
 					.attr("y", function(d) { return y(d.value); })
 					.attr("width", barWidth)
-					.attr("height", function(d) { return height - y(d.value);  })
+					.attr("height", function(d) { return height - y(d.value);	})
 					;
 				};
 
@@ -446,7 +448,7 @@
 	 * End time is automatically computed from the
 	 * start time, and step.second
 	 *
-	 * @param  string startTime start time in ISO 8601 format
+	 * @param	string startTime start time in ISO 8601 format
 	 * @return void
 	 */
 	function displayJobsModal(startTime)
@@ -539,27 +541,27 @@
 		};
 
 		var events = {
-			sleep   : {expression: "sleep", format: function(data){
+			sleep	 : {expression: "sleep", format: function(data){
 				return "for " + data.second + " seconds";}},
-			got     : {expression: "got", format: function(data){
+			got	 : {expression: "got", format: function(data){
 				return "job <a href=\"/jobs/view?job_id="+data.args.payload.id+"\" rel=\"contents\" title=\"View job details\">#" + data.args.payload.id + "</a>";}},
 			process : {expression: "process", format: function(data){
 				return "job <a href=\"/jobs/view?job_id="+data.job_id+"\" rel=\"contents\" title=\"View job details\">#" + data.job_id + "</a>";}},
-			fork    : {expression: "fork", format: function(data){
+			fork	: {expression: "fork", format: function(data){
 				return "job <a href=\"/jobs/view?job_id="+data.job_id+"\" rel=\"contents\" title=\"View job details\">#" + data.job_id + "</a>";}},
-			done    : {expression: "done", format: function(data){
+			done	: {expression: "done", format: function(data){
 				return "job <a href=\"/jobs/view?job_id="+data.job_id+"\" rel=\"contents\" title=\"View job details\">#" + data.job_id + "</a>";}},
-			fail    : {expression: "fail", format: function(data){
+			fail	: {expression: "fail", format: function(data){
 				return "job <a href=\"/jobs/view?job_id="+data.job_id+"\" rel=\"contents\" title=\"View job details\">#" + data.job_id + "</a>";}},
-			start   : {expression: "start", format: function(data){
+			start	 : {expression: "start", format: function(data){
 				return "worker #" + data.worker;}},
-			stop    : {expression: "shutdown", format: function(data){
+			stop	: {expression: "shutdown", format: function(data){
 				return "worker #" + data.worker;}},
-			pause    : {expression: "pause", format: function(data){
+			pause	: {expression: "pause", format: function(data){
 				return "worker #" + data.worker;}},
-			resume    : {expression: "resume", format: function(data){
+			resume	: {expression: "resume", format: function(data){
 				return "worker #" + data.worker;}},
-			prune    : {expression: "prune", format: function(data){
+			prune	: {expression: "prune", format: function(data){
 				return "worker #" + data.worker;}}
 		};
 
@@ -795,7 +797,7 @@
 			/**
 			 * Remove a worker from the set
 			 *
-			 * @param  String	workerId	Worker ID classname
+			 * @param	String	workerId	Worker ID classname
 			 * @return void
 			 */
 			removeJobChart : function(workerId) {
@@ -930,11 +932,11 @@
 		// Start Listening to events
 		// *************************
 		var events = {
-			//got   : {expression: "got", format: function(data){return "job #" + data.job_id;}},
-			//fork  : {expression: "fork", format: function(data){return "job #" + data.job_id;}},
-			done  : {expression: "done", format: function(data){return "job #" + data.job_id;}},
-			fail  : {expression: "fail", format: function(data){return "job #" + data.job_id;}},
-			stop  : {expression: "shutdown", format: function(data){return "worker #" + data.worker;}},
+			//got	 : {expression: "got", format: function(data){return "job #" + data.job_id;}},
+			//fork	: {expression: "fork", format: function(data){return "job #" + data.job_id;}},
+			done	: {expression: "done", format: function(data){return "job #" + data.job_id;}},
+			fail	: {expression: "fail", format: function(data){return "job #" + data.job_id;}},
+			stop	: {expression: "shutdown", format: function(data){return "worker #" + data.worker;}},
 			start : {expression: "start", format: function(data){return "worker #" + data.worker;}}
 		};
 
@@ -1047,7 +1049,7 @@
 							.enter().append("svg:path")
 							.attr("d", arc)
 							.attr("fill", function(d) { return d.data.color; })
-							.attr("title", function(d){return d.data.count + " " +  d.data.name + " jobs"; })
+							.attr("title", function(d){return d.data.count + " " +	d.data.name + " jobs"; })
 							.each(function(d) { this._current = d; })
 						;
 					}
@@ -1085,7 +1087,7 @@
 					.enter().append("svg:path")
 					.attr("d", arc)
 					.attr("fill", function(d) { return d.data.color; })
-					.attr("title", function(d){return d.data.count + " " +  d.data.name + " jobs"; })
+					.attr("title", function(d){return d.data.count + " " +	d.data.name + " jobs"; })
 					.each(function(d) { this._current = d; })
 				;
 			},
@@ -1191,11 +1193,11 @@
 	/**
 	 * Create a pie chart from a set of data
 	 *
-	 * @param  {[type]} id      [description]
-	 * @param  {[type]} total   [description]
-	 * @param  {[type]} data    [description]
-	 * @param  {[type]} average [description]
-	 * @return {[type]}         [description]
+	 * @param	{[type]} id		[description]
+	 * @param	{[type]} total	 [description]
+	 * @param	{[type]} data	[description]
+	 * @param	{[type]} average [description]
+	 * @return {[type]}		 [description]
 	 */
 	function pieChart(id, total, data, average)
 	{
@@ -1457,7 +1459,7 @@
 	/**
 	 * Create a line graph of monthly jobs load
 	 *
-	 * @param  int average	Total average number of jobs by day
+	 * @param	int average	Total average number of jobs by day
 	 * @return void
 	 */
 	function monthlyJobsLoad(average)
@@ -1471,7 +1473,7 @@
 				"&step=" + step[4].code,
 				function(data)
 				{
-					data = data.map(function(d){return {time:new Date(d.time), value:  d.value};});
+					data = data.map(function(d){return {time:new Date(d.time), value:	d.value};});
 
 					var w = $("#jobs-load-monthly").width();
 					var h = $("#jobs-load-monthly").height();
@@ -1670,6 +1672,280 @@ $(".start-worker").on("click", function(event){
 
 });
 
+/**
+ *
+ */
+function initJobsOverview() {
+
+	var page = function() {
+
+
+
+		var margin_top = 20;
+		var margin_right = 5;
+		var margin_bottom = 35;
+		var margin_left = 35;
+		var w = $("#chart").width();
+		var h = 300;
+		var title = '';
+
+		var graphItems = {};
+		var maxYAxis = [];
+
+		var emptyData = [];
+
+
+		var svg = d3.select("#chart").append("svg")
+			.attr("width", w)
+			.attr("height", h)
+		;
+
+		var placeholder = svg.append("text")
+			.attr("x", w/2)
+			.attr("y", h/2)
+			.attr("text-anchor", "center")
+			.text("Loading ...")
+		;
+
+		var xAxisParent = svg.append("g")
+			.attr("class", "x-axis")
+			.attr("transform", "translate(" + margin_left + "," + (h - margin_bottom) + ")")
+		;
+
+		var yAxisParent = svg.append("g")
+			.attr("class", "y-axis")
+			.attr("transform", "translate(" + (margin_left-1) + "," + margin_top + ")")
+		;
+
+		var xAxis = d3.svg.axis()
+			.orient("bottom")
+		;
+
+		var yAxis = d3.svg.axis()
+			.tickSize(-w + margin_left + margin_right)
+			.orient("left")
+			.tickFormat(d3.format("s"))
+			.tickPadding(7)
+		;
+
+
+		var graph_group = svg.append("g")
+			.attr("width", w - margin_left + margin_right)
+			.attr("height", h - margin_top + margin_bottom)
+			.attr("transform", "translate(" + margin_left + "," + margin_top + ")")
+		;
+
+		svg.append("text")
+			.attr("x", -90)
+			.attr("y", margin_left + 10)
+			.attr("transform", "rotate(-90)")
+			.style("text-anchor", "left")
+			.text("Jobs number")
+			.attr("class", "graph-legend")
+		;
+
+		var init = function(dom) {
+
+			var startDate = dom.data('startDate');
+			var endDate = dom.data('endDate');
+			var dataStep = dom.data('step');
+
+			d3.json("http://"+serverIp+":1081/1.0/metric/get"+
+			"?expression=sum(got)" +
+			"&start="+ startDate +
+			"&stop=" + endDate +
+			"&step=" + dataStep, function(data)
+			{
+
+				placeholder.remove();
+
+				emptyData = data.map(function(d){return {time: new Date(d.time), value: 0};});
+				data = data.map(function(d){return {time: new Date(d.time), value: d.value};});
+
+				maxYAxis.got = {
+					"value": d3.max(data.map(function(d){return d.value;})),
+					"status": 1
+				};
+
+				var graphLine = graph_group.append("path")
+					.datum(data)
+					.attr("class", "graph-line")
+					.attr("id", "g-line-got")
+				;
+
+				var graphArea = graph_group.append("path")
+					.datum(data)
+					.attr("class", "graph-area")
+					.attr("id", "g-area-got")
+				;
+
+				graphItems.got = {
+					'line': graphLine,
+					'area': graphArea,
+					'data': data
+				};
+
+				redraw(graphItems.got);
+
+
+				svg.append("text")
+					.attr("x", w/2)
+					.attr("y", h - 3)
+					.attr("text-anchor", "middle")
+					.text(title)
+					.attr("class", "graph-title")
+				;
+
+			});
+		};
+		jsdfhjsdds
+		sdsd
+
+		var displayLine = function(start, end, dataStep, type, id) {
+
+			if (graphItems.hasOwnProperty(id)) {
+
+				maxYAxis[id].status = 1;
+				graphItems[id].line.datum(graphItems[id].data);
+				graphItems[id].area.datum(graphItems[id].data);
+				graphItems[id].line.transition().duration(500).style("opacity", 1);
+				redraw(graphItems[id]);
+				return;
+			}
+
+			d3.json("http://"+serverIp+":1081/1.0/metric/get"+
+			"?expression=sum(" + type + ")" +
+			"&start="+ start +
+			"&stop=" + end +
+			"&step=" + dataStep, function(data)
+			{
+				data = data.map(function(d){return {time:new Date(d.time), value:	d.value};});
+
+
+				maxYAxis[id] = {
+					"value": d3.max(data.map(function(d){ return d.value;})),
+					"status": 1
+				};
+
+				var graphLine = graph_group.append("path")
+					.datum(data)
+					.attr("class", "graph-line")
+					.attr("id", "g-line-" + id)
+				;
+
+				var graphArea = graph_group.append("path")
+					.datum(data)
+					.attr("class", "graph-area")
+					.attr("id", "g-area-" + id)
+				;
+
+				graphItems[id] = {
+					'line': graphLine,
+					'area': graphArea,
+					'data': data
+				};
+
+				redraw(graphItems[id]);
+
+			});
+		};
+
+		var hideLine = function(type) {
+			if (graphItems.hasOwnProperty(type)) {
+
+				graphItems[type].line.datum(emptyData);
+				graphItems[type].area.datum(emptyData);
+
+				maxYAxis[type].status = 0;
+				redraw(graphItems[type]);
+			}
+		};
+
+		var redraw = function(graphItem) {
+
+			// Redraw Y axis
+			var yScale = d3.scale.linear()
+				.domain([0, d3.max(d3.values(maxYAxis).map(function(d){ return d.status === 1 ? d.value : 0;}))*1.25])
+				.range([h - margin_top - margin_bottom, 0]);
+
+			var xScale = d3.time.scale()
+				.domain([graphItem.data[0].time, graphItem.data[graphItem.data.length-1].time])
+				.range([0, w - margin_left - margin_right]);
+
+			var yAxis = d3.svg.axis()
+				.scale(yScale)
+				.tickSize(-w + margin_left + margin_right)
+				.orient("left")
+				.tickFormat(d3.format("s"))
+			;
+
+			var area = d3.svg.area()
+				.x(function(d) { return xScale(d.time); })
+				.y0(function(d) { return h - margin_bottom - margin_top; })
+				.y1(function(d) { return yScale(d.value); })
+			;
+
+			var line = d3.svg.line()
+				.x(function(d) {return xScale(d.time);})
+				.y(function(d) {return yScale(d.value);})
+			;
+
+			for (var item in graphItems) {
+				if (graphItems.hasOwnProperty(item)) {
+
+					function redrawLine(selection) {
+						selection.transition().duration(500).attr("d", line);
+					}
+
+					graphItems[item].area.transition().duration(500).attr("d", area);
+
+					if (maxYAxis[item].status === 0) {
+						graphItems[item].line.call(redrawLine);
+						graphItems[item].line.transition().delay(500).duration(100).style("opacity", 0);
+
+					} else {
+						graphItems[item].line.style("opacity", 1);
+						graphItems[item].line.call(redrawLine);
+					}
+				}
+			}
+
+			xAxis.scale(xScale);
+			yAxis.scale(yScale);
+
+			yAxisParent.transition().duration(300).call(yAxis);
+			xAxisParent.transition().duration(300).call(xAxis);
+		}
+
+		init($('#date-range .active'));
+
+		/*$("#date-range").on("click", "a", function(e) {
+			e.preventDefault();
+
+			$("#date-range").find(".active").removeClass("active");
+			$(this).addClass("active");
+
+			update($(this).data('startDate'), $(this).data('endDate'), $(this).data('step'));
+		});*/
+
+		$("#type-range").on("click", "a", function(e) {
+			e.preventDefault();
+
+			if ($(this).hasClass("active")) {
+				hideLine($(this).data('type'));
+				$(this).removeClass("active");
+			} else {
+				$(this).addClass("active");
+				displayLine($(this).data('startDate'), $(this).data('endDate'), $(this).data('step'), $(this).data('type'), $(this).data('type'));
+			}
+
+
+		});
+
+	}();
+
+}
+
 
 
 /**
@@ -1678,7 +1954,7 @@ $(".start-worker").on("click", function(event){
  * Handle all the DOM manipulation to remove a worker from the page
  * and refresh all the related counters
  *
- * @param  String workerName Clean worker name (processed with cleanWorkerName())
+ * @param	String workerName Clean worker name (processed with cleanWorkerName())
  * @return void
  */
 function stopWorkerEvent(workerName) {
@@ -1721,7 +1997,7 @@ function stopWorkerEvent(workerName) {
  *
  * Do all the works to add worker details in the DOM
  *
- * @param  String workerName Worker ID
+ * @param	String workerName Worker ID
  * @return void
  */
 function startWorkerEvent(workerId, layout) {
@@ -1776,7 +2052,7 @@ $(".navigator").on("change", "select", function () {
  *
  * Return a worker name, stripped of all special characters
  *
- * @param  String name Worker name
+ * @param	String name Worker name
  * @return String A clean worker name
  */
 function cleanWorkerName(name) {
@@ -1787,8 +2063,8 @@ function cleanWorkerName(name) {
 /**
  * Fire an effect only if effect queue is empty
  *
- * @param  JqueryObject node	jQuery node
- * @param  String		effect	effect name
+ * @param	JqueryObject node	jQuery node
+ * @param	String		effect	effect name
  * @return void
  */
 function fireEffect(node, effect) {
@@ -1801,7 +2077,7 @@ function fireEffect(node, effect) {
 /**
  * Convert a string number to an integer
  *
- * @param  String	A string
+ * @param	String	A string
  * @return int		an Integer
  */
 function parseInteger(str) {
@@ -1811,8 +2087,8 @@ function parseInteger(str) {
 
 /**
  *
- * @param  {[type]} x [description]
- * @return {[type]}   [description]
+ * @param	{[type]} x [description]
+ * @return {[type]}	 [description]
  */
 function number_format(x)
 {

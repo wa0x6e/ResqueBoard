@@ -862,7 +862,7 @@ form label .icon-info-sign
 		vertical-align: middle;
 		font-size: 11px;
 	}
-	
+
 	a {
 		display: block;
 		height: @cellsize;
@@ -1002,4 +1002,88 @@ form label .icon-info-sign
 		width: 15px;
 		height: 15px;
 	}
+}
+
+#chart {
+	.graph-legend
+	{
+		fill: @grayLight;
+		font-size: 11px;
+	}
+	
+	.graph-line
+	{
+		fill: none;
+	  	stroke: steelblue;
+	  	stroke-width: 1.5px;
+	}
+	
+	.graph-area
+	{
+		fill: steelblue;
+		opacity: 0.15;
+	}
+	
+	#g-line-fail {
+		stroke: red;
+	}
+	
+	#g-area-fail {
+		fill: red;
+		opacity: 0.5;
+	}
+
+}
+
+#clip {
+	outline: 1px solid #000;
+}
+
+#chart .y-axis {
+	
+	.tick {
+		stroke: #ddd;
+		stroke-dasharray: 4, 2;
+	}
+	
+	path {
+		display: none;	
+	}
+	
+	g:first-child {
+	
+		display: none;
+	}
+	
+	text {
+		background-color: #fff;
+	}
+}
+
+#type-range {
+	
+	li > div {
+		padding: 0;
+	}
+	
+	a {
+		padding: 10px;
+		display: block;
+		outline: 0;
+		
+		&:hover {
+			text-decoration: none;
+		}
+	}
+	
+	.active {
+		background-color: rgba(0,0,0,0.05);
+		.box-shadow(0 0 5px rgba(0,0,0,0.2) inset);
+		
+		&:hover {
+			background-color: rgba(0,0,0,0.08);
+		}
+		
+	}
+	
 }

@@ -13,8 +13,6 @@
  * @license		MIT License (http://www.opensource.org/licenses/mit-license.ctp)
  */
 
-
-
 	$("[data-event~=tooltip]").tooltip();
 	$("[data-event~=collapse-all]").on("click", function(e){ e.preventDefault(); $(".collapse.in").collapse("hide"); });
 	$("[data-event~=expand-all]").on("click", function(e){ e.preventDefault(); $(".collapse").not(".in").collapse("show"); });
@@ -38,8 +36,6 @@
 		},
 		bufferPx: 5000
 	});
-
-
 
 	// Init syntax highlighter
 	hljs.initHighlightingOnLoad();
@@ -541,9 +537,9 @@
 		};
 
 		var events = {
-			sleep	 : {expression: "sleep", format: function(data){
+			sleep	: {expression: "sleep", format: function(data){
 				return "for " + data.second + " seconds";}},
-			got	 : {expression: "got", format: function(data){
+			got		: {expression: "got", format: function(data){
 				return "job <a href=\"/jobs/view?job_id="+data.args.payload.id+"\" rel=\"contents\" title=\"View job details\">#" + data.args.payload.id + "</a>";}},
 			process : {expression: "process", format: function(data){
 				return "job <a href=\"/jobs/view?job_id="+data.job_id+"\" rel=\"contents\" title=\"View job details\">#" + data.job_id + "</a>";}},
@@ -553,7 +549,7 @@
 				return "job <a href=\"/jobs/view?job_id="+data.job_id+"\" rel=\"contents\" title=\"View job details\">#" + data.job_id + "</a>";}},
 			fail	: {expression: "fail", format: function(data){
 				return "job <a href=\"/jobs/view?job_id="+data.job_id+"\" rel=\"contents\" title=\"View job details\">#" + data.job_id + "</a>";}},
-			start	 : {expression: "start", format: function(data){
+			start	: {expression: "start", format: function(data){
 				return "worker #" + data.worker;}},
 			stop	: {expression: "shutdown", format: function(data){
 				return "worker #" + data.worker;}},
@@ -932,7 +928,7 @@
 		// Start Listening to events
 		// *************************
 		var events = {
-			//got	 : {expression: "got", format: function(data){return "job #" + data.job_id;}},
+			//got	: {expression: "got", format: function(data){return "job #" + data.job_id;}},
 			//fork	: {expression: "fork", format: function(data){return "job #" + data.job_id;}},
 			done	: {expression: "done", format: function(data){return "job #" + data.job_id;}},
 			fail	: {expression: "fail", format: function(data){return "job #" + data.job_id;}},
@@ -1194,10 +1190,9 @@
 	 * Create a pie chart from a set of data
 	 *
 	 * @param	{[type]} id		[description]
-	 * @param	{[type]} total	 [description]
+	 * @param	{[type]} total	[description]
 	 * @param	{[type]} data	[description]
 	 * @param	{[type]} average [description]
-	 * @return {[type]}		 [description]
 	 */
 	function pieChart(id, total, data, average)
 	{
@@ -1677,6 +1672,8 @@ $(".start-worker").on("click", function(event){
  */
 function initJobsOverview() {
 
+	var animationDuration = 500; // in ms
+
 	var page = function() {
 
 
@@ -1687,7 +1684,7 @@ function initJobsOverview() {
 		var margin_left = 35;
 		var w = $("#chart").width();
 		var h = 300;
-		var title = '';
+		var title = "";
 
 		var graphItems = {};
 		var maxYAxis = [];
@@ -1746,9 +1743,9 @@ function initJobsOverview() {
 
 		var init = function(dom) {
 
-			var startDate = dom.data('startDate');
-			var endDate = dom.data('endDate');
-			var dataStep = dom.data('step');
+			var startDate = dom.data("startDate");
+			var endDate = dom.data("endDate");
+			var dataStep = dom.data("step");
 
 			d3.json("http://"+serverIp+":1081/1.0/metric/get"+
 			"?expression=sum(got)" +
@@ -1780,9 +1777,9 @@ function initJobsOverview() {
 				;
 
 				graphItems.got = {
-					'line': graphLine,
-					'area': graphArea,
-					'data': data
+					"line": graphLine,
+					"area": graphArea,
+					"data": data
 				};
 
 				redraw(graphItems.got);
@@ -1798,8 +1795,8 @@ function initJobsOverview() {
 
 			});
 		};
-		jsdfhjsdds
-		sdsd
+
+
 
 		var displayLine = function(start, end, dataStep, type, id) {
 
@@ -1808,7 +1805,7 @@ function initJobsOverview() {
 				maxYAxis[id].status = 1;
 				graphItems[id].line.datum(graphItems[id].data);
 				graphItems[id].area.datum(graphItems[id].data);
-				graphItems[id].line.transition().duration(500).style("opacity", 1);
+				graphItems[id].line.transition().duration(animationDuration).style("opacity", 1);
 				redraw(graphItems[id]);
 				return;
 			}
@@ -1840,9 +1837,9 @@ function initJobsOverview() {
 				;
 
 				graphItems[id] = {
-					'line': graphLine,
-					'area': graphArea,
-					'data': data
+					"line": graphLine,
+					"area": graphArea,
+					"data": data
 				};
 
 				redraw(graphItems[id]);
@@ -1890,18 +1887,18 @@ function initJobsOverview() {
 				.y(function(d) {return yScale(d.value);})
 			;
 
+			function redrawLine(selection) {
+				selection.transition().duration(animationDuration).attr("d", line);
+			}
+
 			for (var item in graphItems) {
 				if (graphItems.hasOwnProperty(item)) {
 
-					function redrawLine(selection) {
-						selection.transition().duration(500).attr("d", line);
-					}
-
-					graphItems[item].area.transition().duration(500).attr("d", area);
+					graphItems[item].area.transition().duration(animationDuration).attr("d", area);
 
 					if (maxYAxis[item].status === 0) {
 						graphItems[item].line.call(redrawLine);
-						graphItems[item].line.transition().delay(500).duration(100).style("opacity", 0);
+						graphItems[item].line.transition().delay(animationDuration).duration(100).style("opacity", 0);
 
 					} else {
 						graphItems[item].line.style("opacity", 1);
@@ -1913,11 +1910,11 @@ function initJobsOverview() {
 			xAxis.scale(xScale);
 			yAxis.scale(yScale);
 
-			yAxisParent.transition().duration(300).call(yAxis);
-			xAxisParent.transition().duration(300).call(xAxis);
-		}
+			yAxisParent.transition().duration(animationDuration).call(yAxis);
+			xAxisParent.transition().duration(animationDuration).call(xAxis);
+		};
 
-		init($('#date-range .active'));
+		init($("#date-range .active"));
 
 		/*$("#date-range").on("click", "a", function(e) {
 			e.preventDefault();
@@ -1932,11 +1929,11 @@ function initJobsOverview() {
 			e.preventDefault();
 
 			if ($(this).hasClass("active")) {
-				hideLine($(this).data('type'));
+				hideLine($(this).data("type"));
 				$(this).removeClass("active");
 			} else {
 				$(this).addClass("active");
-				displayLine($(this).data('startDate'), $(this).data('endDate'), $(this).data('step'), $(this).data('type'), $(this).data('type'));
+				displayLine($(this).data("startDate"), $(this).data("endDate"), $(this).data("step"), $(this).data("type"), $(this).data("type"));
 			}
 
 
@@ -2087,8 +2084,8 @@ function parseInteger(str) {
 
 /**
  *
- * @param	{[type]} x [description]
- * @return {[type]}	 [description]
+ * @param	int x A number
+ * @return	string
  */
 function number_format(x)
 {

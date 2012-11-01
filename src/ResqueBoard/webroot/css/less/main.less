@@ -1005,6 +1005,9 @@ form label .icon-info-sign
 }
 
 #chart {
+	
+	height: 350px;
+	
 	.graph-legend
 	{
 		fill: @grayLight;
@@ -1032,6 +1035,11 @@ form label .icon-info-sign
 		fill: red;
 		opacity: 0.5;
 	}
+	
+	#g-line-total-process-time {
+		stroke: orange;
+	}
+
 
 }
 
@@ -1047,7 +1055,8 @@ form label .icon-info-sign
 	}
 	
 	path {
-		display: none;	
+		stroke: #aaa;
+	
 	}
 	
 	g:first-child {
@@ -1058,16 +1067,49 @@ form label .icon-info-sign
 	text {
 		background-color: #fff;
 	}
+	
+	&.right .tick {
+		stroke: #aaa;
+		stroke-dasharray: 4, 2;
+	}
+	
+
+}
+
+#chart .x-axis {
+	
+	path {
+		display: none;
+	}
+	
+	line {
+		stroke: lighten(#eee, 2);
+	}
 }
 
 #type-range {
 	
+	@borderColor : lighten(@grayLight, 25);
+	
 	li > div {
 		padding: 0;
+		border-right:  1px solid @borderColor;
+	}
+	
+	li:last-child > div {
+		border-right: 0;
+	}
+	
+	.static, a {
+		padding: 10px;
+	}
+	
+	li {
+		width: 25%;
+		border: 0;
 	}
 	
 	a {
-		padding: 10px;
 		display: block;
 		outline: 0;
 		

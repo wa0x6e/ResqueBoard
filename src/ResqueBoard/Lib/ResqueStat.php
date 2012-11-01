@@ -705,14 +705,14 @@ class ResqueStat
             throw new \Exception('The curl extension is needed to use http URLs with the CubeHandler');
         }
 
-        $this->httpConnection = curl_init(
-            'http://'.$this->settings['cube']['host'] . ':' .
+        $string = 'http://'.$this->settings['cube']['host'] . ':' .
             $this->settings['cube']['port'].'/1.0/metric?expression=' . $options['expression'] .
             '&start=' . $options['start']->format('Y-m-d\TH:i:s') .
-            (isset($options['stop']) ? ('&stop=' . $options['end']->format('Y-m-d\TH:i:s')) : '') .
+            (isset($options['end']) ? ('&stop=' . $options['end']->format('Y-m-d\TH:i:s')) : '') .
             (isset($options['step']) ? ('&step=' . $options['step']) : '') .
-            (isset($options['limit']) ? ('&limit=' . $options['limit']) : '')
-        );
+            (isset($options['limit']) ? ('&limit=' . $options['limit']) : '');
+
+        $this->httpConnection = curl_init($string);
 
         if (!$this->httpConnection) {
             throw new \Exception('Unable to connect to ' . $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']);

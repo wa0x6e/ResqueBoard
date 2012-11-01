@@ -1676,21 +1676,15 @@ function initJobsOverview() {
 
 	var page = function() {
 
-
-
 		var margin_top = 20;
-		var margin_right = 5;
+		var margin_right = 45;
 		var margin_bottom = 35;
 		var margin_left = 35;
 		var w = $("#chart").width();
-		var h = 300;
-		var title = "";
+		var h = $("#chart").height();
 
 		var graphItems = {};
-		var maxYAxis = [];
-
 		var emptyData = [];
-
 
 		var svg = d3.select("#chart").append("svg")
 			.attr("width", w)
@@ -1701,29 +1695,54 @@ function initJobsOverview() {
 			.attr("x", w/2)
 			.attr("y", h/2)
 			.attr("text-anchor", "center")
-			.text("Loading ...")
+			.text("Loading …")
 		;
 
 		var xAxisParent = svg.append("g")
 			.attr("class", "x-axis")
 			.attr("transform", "translate(" + margin_left + "," + (h - margin_bottom) + ")")
+
 		;
 
-		var yAxisParent = svg.append("g")
+		var yAxisParentLeft = svg.append("g")
 			.attr("class", "y-axis")
-			.attr("transform", "translate(" + (margin_left-1) + "," + margin_top + ")")
+			.attr("transform", "translate(" + (margin_left-5) + "," + margin_top + ")")
+		;
+
+		var yAxisParentRight = svg.append("g")
+			.attr("class", "y-axis right")
+			.attr("transform", "translate(" + (w-margin_right + 5) + "," + margin_top + ")")
 		;
 
 		var xAxis = d3.svg.axis()
 			.orient("bottom")
+			.tickSize(-h + margin_top - 5 + margin_bottom, 3, 0)
+			.tickPadding(7)
 		;
 
-		var yAxis = d3.svg.axis()
-			.tickSize(-w + margin_left + margin_right)
+		var yAxisLeft = d3.svg.axis()
+			.tickSize(-w + margin_left + margin_right - 5, 3, 0)
 			.orient("left")
 			.tickFormat(d3.format("s"))
 			.tickPadding(7)
 		;
+
+		var yAxisRight = d3.svg.axis()
+			.orient("right")
+			.tickPadding(7)
+		;
+
+		var axisGroup = {
+			"axis" : {
+				"left" : yAxisLeft,
+				"right" : yAxisRight,
+				"bottom" : xAxis
+			},
+			"max" : {
+				"left": {},
+				"right": {}
+			}
+		};
 
 
 		var graph_group = svg.append("g")
@@ -1738,6 +1757,15 @@ function initJobsOverview() {
 			.attr("transform", "rotate(-90)")
 			.style("text-anchor", "left")
 			.text("Jobs number")
+			.attr("class", "graph-legend")
+		;
+
+		svg.append("text")
+			.attr("x", -margin_top)
+			.attr("y", w - margin_left - 10)
+			.attr("transform", "rotate(-90)")
+			.style("text-anchor", "end")
+			.text("Processing time in ms")
 			.attr("class", "graph-legend")
 		;
 
@@ -1759,7 +1787,7 @@ function initJobsOverview() {
 				emptyData = data.map(function(d){return {time: new Date(d.time), value: 0};});
 				data = data.map(function(d){return {time: new Date(d.time), value: d.value};});
 
-				maxYAxis.got = {
+				axisGroup.max.left.processed = {
 					"value": d3.max(data.map(function(d){return d.value;})),
 					"status": 1
 				};
@@ -1767,7 +1795,7 @@ function initJobsOverview() {
 				var graphLine = graph_group.append("path")
 					.datum(data)
 					.attr("class", "graph-line")
-					.attr("id", "g-line-got")
+					.attr("id", "g-line-processed")
 				;
 
 				var graphArea = graph_group.append("path")
@@ -1776,33 +1804,26 @@ function initJobsOverview() {
 					.attr("id", "g-area-got")
 				;
 
-				graphItems.got = {
+				graphItems.processed = {
 					"line": graphLine,
 					"area": graphArea,
-					"data": data
+					"data": data,
+					"yAxis": "left"
 				};
 
-				redraw(graphItems.got);
+				redraw(graphItems.processed);
 
-
-				svg.append("text")
-					.attr("x", w/2)
-					.attr("y", h - 3)
-					.attr("text-anchor", "middle")
-					.text(title)
-					.attr("class", "graph-title")
-				;
 
 			});
 		};
 
 
 
-		var displayLine = function(start, end, dataStep, type, id) {
+		var displayLine = function(start, end, dataStep, expression, id, axis) {
 
 			if (graphItems.hasOwnProperty(id)) {
 
-				maxYAxis[id].status = 1;
+				axisGroup.max[axis][id].status = 1;
 				graphItems[id].line.datum(graphItems[id].data);
 				graphItems[id].area.datum(graphItems[id].data);
 				graphItems[id].line.transition().duration(animationDuration).style("opacity", 1);
@@ -1811,7 +1832,7 @@ function initJobsOverview() {
 			}
 
 			d3.json("http://"+serverIp+":1081/1.0/metric/get"+
-			"?expression=sum(" + type + ")" +
+			"?expression=" + expression +
 			"&start="+ start +
 			"&stop=" + end +
 			"&step=" + dataStep, function(data)
@@ -1819,7 +1840,7 @@ function initJobsOverview() {
 				data = data.map(function(d){return {time:new Date(d.time), value:	d.value};});
 
 
-				maxYAxis[id] = {
+				axisGroup.max[axis][id] = {
 					"value": d3.max(data.map(function(d){ return d.value;})),
 					"status": 1
 				};
@@ -1831,15 +1852,21 @@ function initJobsOverview() {
 				;
 
 				var graphArea = graph_group.append("path")
-					.datum(data)
 					.attr("class", "graph-area")
 					.attr("id", "g-area-" + id)
 				;
 
+				if (axis !== "right") {
+					graphArea.datum(data);
+				} else {
+					graphArea.datum(emptyData);
+				}
+
 				graphItems[id] = {
 					"line": graphLine,
 					"area": graphArea,
-					"data": data
+					"data": data,
+					"yAxis": axis
 				};
 
 				redraw(graphItems[id]);
@@ -1847,14 +1874,14 @@ function initJobsOverview() {
 			});
 		};
 
-		var hideLine = function(type) {
-			if (graphItems.hasOwnProperty(type)) {
+		var hideLine = function(id) {
+			if (graphItems.hasOwnProperty(id)) {
 
-				graphItems[type].line.datum(emptyData);
-				graphItems[type].area.datum(emptyData);
+				graphItems[id].line.datum(emptyData);
+				graphItems[id].area.datum(emptyData);
 
-				maxYAxis[type].status = 0;
-				redraw(graphItems[type]);
+				axisGroup.max[graphItems[id].yAxis][id].status = 0;
+				redraw(graphItems[id]);
 			}
 		};
 
@@ -1862,19 +1889,13 @@ function initJobsOverview() {
 
 			// Redraw Y axis
 			var yScale = d3.scale.linear()
-				.domain([0, d3.max(d3.values(maxYAxis).map(function(d){ return d.status === 1 ? d.value : 0;}))*1.25])
+				.domain([0, d3.max(d3.values(axisGroup.max[graphItem.yAxis]).map(function(d){ return d.status === 1 ? d.value : 0;}))*1.25])
 				.range([h - margin_top - margin_bottom, 0]);
 
 			var xScale = d3.time.scale()
 				.domain([graphItem.data[0].time, graphItem.data[graphItem.data.length-1].time])
 				.range([0, w - margin_left - margin_right]);
 
-			var yAxis = d3.svg.axis()
-				.scale(yScale)
-				.tickSize(-w + margin_left + margin_right)
-				.orient("left")
-				.tickFormat(d3.format("s"))
-			;
 
 			var area = d3.svg.area()
 				.x(function(d) { return xScale(d.time); })
@@ -1891,26 +1912,38 @@ function initJobsOverview() {
 				selection.transition().duration(animationDuration).attr("d", line);
 			}
 
-			for (var item in graphItems) {
-				if (graphItems.hasOwnProperty(item)) {
+			function redrawGraph(itemIndex) {
 
-					graphItems[item].area.transition().duration(animationDuration).attr("d", area);
+				if (graphItems[itemIndex].yAxis !== graphItem.yAxis) {
+					return;
+				}
 
-					if (maxYAxis[item].status === 0) {
-						graphItems[item].line.call(redrawLine);
-						graphItems[item].line.transition().delay(animationDuration).duration(100).style("opacity", 0);
+				graphItems[itemIndex].area.transition().duration(animationDuration).attr("d", area);
+
+					if (axisGroup.max[graphItems[itemIndex].yAxis][itemIndex].status === 0) {
+						graphItems[itemIndex].line.call(redrawLine);
+						graphItems[itemIndex].line.transition().delay(animationDuration).duration(100).style("opacity", 0);
 
 					} else {
-						graphItems[item].line.style("opacity", 1);
-						graphItems[item].line.call(redrawLine);
+						graphItems[itemIndex].line.style("opacity", 1);
+						graphItems[itemIndex].line.call(redrawLine);
 					}
+			}
+
+			for (var item in graphItems) {
+				if (graphItems.hasOwnProperty(item)) {
+					redrawGraph(item);
 				}
 			}
 
 			xAxis.scale(xScale);
-			yAxis.scale(yScale);
+			axisGroup.axis[graphItem.yAxis].scale(yScale);
 
-			yAxisParent.transition().duration(animationDuration).call(yAxis);
+			if (graphItem.yAxis === "left") {
+				yAxisParentLeft.transition().duration(animationDuration).call(axisGroup.axis[graphItem.yAxis]);
+			} else {
+				yAxisParentRight.transition().duration(animationDuration).call(axisGroup.axis[graphItem.yAxis]);
+			}
 			xAxisParent.transition().duration(animationDuration).call(xAxis);
 		};
 
@@ -1933,7 +1966,14 @@ function initJobsOverview() {
 				$(this).removeClass("active");
 			} else {
 				$(this).addClass("active");
-				displayLine($(this).data("startDate"), $(this).data("endDate"), $(this).data("step"), $(this).data("type"), $(this).data("type"));
+				displayLine(
+					$(this).data("startDate"),
+					$(this).data("endDate"),
+					$(this).data("step"),
+					$(this).data("expression"),
+					$(this).data("type"),
+					$(this).data("axis")
+				);
 			}
 
 

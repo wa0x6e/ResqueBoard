@@ -335,6 +335,28 @@ $app->get(
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
            // $jobsNumber = $resqueStat->getCubeMetric(array('start' => $start, 'end' => $end, 'step' => $step, 'expression' => 'sum(got)'));
 
+            $processTime = $resqueStat->getCubeMetric(
+                array(
+                    'start' => $rangeWhitelist[$range]['start'],
+                    'end' => $rangeWhitelist[$range]['end'],
+                    'expression' => 'sum(done(time))',
+                    'step' => ResqueBoard\Lib\ResqueStat::CUBE_STEP_1HOUR
+                )
+            );
+            $totalProcessTime = 0;
+            foreach ($processTime as $t) {
+                $totalProcessTime += $t['value'];
+            }
+
+            $jobStats = $resqueStat->getJobsStats(
+                        array(
+                            'start' => $rangeWhitelist[$range]['start']->format('c'),
+                            'end' => $rangeWhitelist[$range]['end']->format('c')
+                        )
+                    );
+
+
+
             $app->render(
                 'jobs_overview.ctp',
                 array(
@@ -345,12 +367,9 @@ $app->get(
                     'uriDate' => $uriDate,
                     'startDate' => $start,
                     'endDate' => $end,
-                    'jobsStats' => $resqueStat->getJobsStats(
-                        array(
-                            'start' => $rangeWhitelist[$range]['start']->format('c'),
-                            'end' => $rangeWhitelist[$range]['end']->format('c')
-                            )
-                        ),
+                    'jobsStats' => $jobStats,
+                    'totalProcessTime' => $totalProcessTime,
+                    'averageProcessTime' => ($jobStats->total !== 0) ? $totalProcessTime / $jobStats->total : 0
                 )
             );
         } catch (\Exception $e) {

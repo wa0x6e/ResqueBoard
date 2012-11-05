@@ -66,4 +66,108 @@ class DateHelper
         }
         return self::pluralize($interval->s, 'second') . $suffix;
     }
+
+
+    public static function getStartHour($date, $offset = null)
+    {
+        $d = clone $date;
+        $d->setTime($d->format('H'), 0, 0);
+
+        if ($offset !== null) {
+            $d->modify($offset . ' hour');
+        }
+
+        return $d;
+    }
+
+
+    public static function getEndHour($date, $offset = null)
+    {
+        $d = clone $date;
+        $d->setTime($d->format('H'), 59, 59);
+
+        if ($offset !== null) {
+            $d->modify($offset . ' hour');
+        }
+
+        return $d;
+    }
+
+
+    public static function getStartDay($date, $offset = null)
+    {
+        $d = clone $date;
+        $d->setTime(0, 0, 0);
+
+        if ($offset !== null) {
+            $d->modify($offset . ' day');
+        }
+
+        return $d;
+    }
+
+
+    public static function getEndDay($date, $offset = null)
+    {
+        $d = clone $date;
+        $d->setTime(23, 59, 59);
+
+        if ($offset !== null) {
+            $d->modify($offset . ' day');
+        }
+
+        return $d;
+    }
+
+
+    public static function getStartWeek($date, $offset = null)
+    {
+        $d = clone $date;
+        $d->modify('monday this week')->setTime(0, 0, 0);
+
+        if ($offset !== null) {
+            $d->modify($offset . ' week');
+        }
+
+        return $d;
+    }
+
+
+    public static function getEndWeek($date, $offset = null)
+    {
+        $d = clone $date;
+        $d->modify('sunday this week')->setTime(23, 59, 59);
+
+        if ($offset !== null) {
+            $d->modify($offset . ' week');
+        }
+
+        return $d;
+    }
+
+
+    public static function getStartMonth($date, $offset = null)
+    {
+        $d = clone $date;
+        $d->modify('first day of this month')->setTime(0, 0, 0);
+
+        if ($offset !== null) {
+            $d->modify($offset . ' month');
+        }
+
+        return $d;
+    }
+
+
+    public static function getEndMonth($date, $offset = null)
+    {
+        $d = clone $date;
+        $d->modify('last day of this month')->setTime(23, 59, 59);
+
+        if ($offset !== null) {
+            $d->modify($offset . ' month');
+        }
+
+        return $d;
+    }
 }

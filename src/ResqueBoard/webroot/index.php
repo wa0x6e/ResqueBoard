@@ -305,8 +305,6 @@ $app->get(
 
 
             $start = new DateTime($start);
-            $uriDate = clone $start;
-            $end = clone $start;
 
             if (!array_key_exists($range, $rangeWhitelist)) {
                 throw new Exception('Invalid URL');
@@ -315,20 +313,20 @@ $app->get(
 
             $rangeWhitelist = array_merge_recursive($rangeWhitelist, array(
                 'hour' => array(
-                    'start' => clone $start->setTime($start->format('H'), 0, 0),
-                    'end' => clone $end->setTime($end->format('H'), 59, 59)
+                    'start' => ResqueBoard\Lib\DateHelper::getStartHour($start),
+                    'end' => ResqueBoard\Lib\DateHelper::getEndHour($start)
                 ),
                 'day' => array(
-                    'start' => clone $start->modify('today'),
-                    'end' => clone  $end->setTime(23, 59, 59)
+                    'start' => ResqueBoard\Lib\DateHelper::getStartDay($start),
+                    'end' => ResqueBoard\Lib\DateHelper::getEndDay($start)
                 ),
                 'week' => array(
-                    'start' => clone $start->modify('monday this week'),
-                    'end' =>  clone $end->modify('sunday this week')->setTime(23, 59, 59)
+                    'start' => ResqueBoard\Lib\DateHelper::getStartWeek($start),
+                    'end' =>  ResqueBoard\Lib\DateHelper::getEndWeek($start),
                 ),
                 'month' => array(
-                    'start' => clone $start->modify('first day of this month')->setTime(0, 0, 0),
-                    'end' => clone $end->modify('last day of this month')->setTime(23, 59, 59)
+                    'start' => ResqueBoard\Lib\DateHelper::getStartMonth($start),
+                    'end' => ResqueBoard\Lib\DateHelper::getEndMonth($start),
                 )
             ));
 
@@ -364,9 +362,9 @@ $app->get(
                     'ranges' => $rangeWhitelist,
                     'currentRange' => $range,
                     'currentStep' => $rangeWhitelist[$range],
-                    'uriDate' => $uriDate,
-                    'startDate' => $start,
-                    'endDate' => $end,
+                    'uriDate' => $start,
+                    'startDate' => $rangeWhitelist[$range]['start'],
+                    'endDate' => $rangeWhitelist[$range]['end'],
                     'jobsStats' => $jobStats,
                     'totalProcessTime' => $totalProcessTime,
                     'averageProcessTime' => ($jobStats->total !== 0) ? $totalProcessTime / $jobStats->total : 0

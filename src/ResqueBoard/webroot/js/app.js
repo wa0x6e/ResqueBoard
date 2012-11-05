@@ -1971,10 +1971,13 @@ function initJobsOverview() {
 			e.preventDefault();
 
 			var dom = $(this);
+			var icon = $(this).parent().find("i");
 
 			if (dom.hasClass("active")) {
 				hideLine(dom.data("type"));
 				dom.removeClass("active");
+				icon.removeClass("icon-check");
+				icon.addClass("icon-check-empty");
 			} else {
 				dom.addClass("active");
 				displayLine(
@@ -1985,6 +1988,8 @@ function initJobsOverview() {
 					dom.data("type"),
 					dom.data("axis")
 				);
+				icon.removeClass("icon-check-empty");
+				icon.addClass("icon-check");
 			}
 		});
 

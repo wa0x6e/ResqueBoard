@@ -244,13 +244,18 @@ $headers = array(
 
 			<ul class="jobs-stats unstyled clearfix" id="type-range">
 				<li><div>
+					<i class="pull-right icon-check"></i>
 					<a class="active" href="" data-type="processed" data-expression="sum(got)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('Y-m-d\TH:i:s'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('Y-m-d\TH:i:s'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><strong><?php echo number_format($jobsStats->total) ?></strong>Processed Jobs</a>
 
 
 				</div></li>
-				<li><div><a href="" data-type="fail" data-expression="sum(fail)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('Y-m-d\TH:i:s'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('Y-m-d\TH:i:s'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><strong><?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?> %</strong> <?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]) ?> failed Jobs</a></div></li>
+				<li><div>
+					<i class="pull-right icon-check-empty"></i>
+					<a href="" data-type="fail" data-expression="sum(fail)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('Y-m-d\TH:i:s'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('Y-m-d\TH:i:s'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><strong><?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?> %</strong> <?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]) ?> failed Jobs</a></div></li>
 
-				<li><div><a href="" data-type="total-process-time" data-expression="sum(done(time))" data-axis="right" data-start-date="<?php echo $ranges[$currentRange]['start']->format('Y-m-d\TH:i:s'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('Y-m-d\TH:i:s'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><strong><?php
+				<li><div>
+					<i class="pull-right icon-check-empty"></i>
+					<a href="" data-type="total-process-time" data-expression="sum(done(time))" data-axis="right" data-start-date="<?php echo $ranges[$currentRange]['start']->format('Y-m-d\TH:i:s'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('Y-m-d\TH:i:s'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><strong><?php
 				echo number_format($totalProcessTime);
 
 				?> ms</strong> Total processing time</a></div></li>

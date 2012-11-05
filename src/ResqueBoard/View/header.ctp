@@ -47,8 +47,9 @@
                                                         '<i class="icon-dashboard"></i> Dashboard' => '/jobs',
                                                     	false,
                                                     	'<i class="icon-eye-open"></i> Jobs browser' => '/jobs/view',
-                                                        '<i class="icon-bar-chart"></i> Jobs class distribution' => 'jobs/distribution/class',
-                                                        '<i class="icon-table"></i> Jobs load distribution' => '/jobs/distribution/load'
+                                                        '<i class="icon-tasks"></i> Jobs class distribution' => 'jobs/distribution/class',
+                                                        '<i class="icon-table"></i> Jobs load distribution' => '/jobs/distribution/load',
+                                                        '<i class="icon-bar-chart"></i> Jobs load overview' => '/jobs/overview/hour'
                                                     )
                                              )
 										);

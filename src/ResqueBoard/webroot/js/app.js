@@ -1947,35 +1947,67 @@ function initJobsOverview() {
 			xAxisParent.transition().duration(animationDuration).call(xAxis);
 		};
 
-		init($("#date-range .active"));
-
-		/*$("#date-range").on("click", "a", function(e) {
-			e.preventDefault();
-
-			$("#date-range").find(".active").removeClass("active");
-			$(this).addClass("active");
-
-			update($(this).data('startDate'), $(this).data('endDate'), $(this).data('step'));
-		});*/
+		init($("#date-range .active a"));
 
 		$("#type-range").on("click", "a", function(e) {
 			e.preventDefault();
 
-			if ($(this).hasClass("active")) {
-				hideLine($(this).data("type"));
-				$(this).removeClass("active");
+			var dom = $(this);
+
+			if (dom.hasClass("active")) {
+				hideLine(dom.data("type"));
+				dom.removeClass("active");
 			} else {
-				$(this).addClass("active");
+				dom.addClass("active");
 				displayLine(
-					$(this).data("startDate"),
-					$(this).data("endDate"),
-					$(this).data("step"),
-					$(this).data("expression"),
-					$(this).data("type"),
-					$(this).data("axis")
+					dom.data("startDate"),
+					dom.data("endDate"),
+					dom.data("step"),
+					dom.data("expression"),
+					dom.data("type"),
+					dom.data("axis")
 				);
 			}
+		});
 
+		// Change date-range form
+		$(".date-range-form").on("click", "button", function(e) {
+			e.preventDefault();
+
+			var form = $(this).parents("form");
+
+			console.log(form);
+
+			var dateToken = {
+				hour: "0",
+				day: "1",
+				month: "1",
+				year: ""
+			};
+
+			var date = "";
+
+			if ($(this).data("range") === "week") {
+				date = form.find("select option:selected").val();
+			} else {
+				// fetch date from token
+				if (form.find("select[name=range-hour]").length > 0) {
+					dateToken.hour = form.find("select[name=range-hour] option:selected").val();
+				}
+
+				if (form.find("select[name=range-day]").length > 0) {
+					dateToken.day = form.find("select[name=range-day] option:selected").val();
+				}
+
+				dateToken.month = form.find("select[name=range-month] option:selected").val();
+				dateToken.year = form.find("input[name=range-year]").val();
+
+				// Build date from tokens
+				date = dateToken.year + "-" + dateToken.month + "-" + dateToken.day + "T" + dateToken.hour + ":00:00";
+
+			}
+
+			window.location = form.attr("action") + $(this).data("range") + "/" + date;
 
 		});
 

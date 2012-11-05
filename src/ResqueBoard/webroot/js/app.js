@@ -172,6 +172,10 @@
 			"&limit=" + limit +
 			"&step=" + step[0].code, function(data)
 			{
+				if (data === null) {
+					return displayCubeNoFoundError();
+				}
+
 				var
 					margin = {top:25, right:35, bottom: 35, left: 20},
 					width = 620 - margin.right - margin.left,
@@ -1468,6 +1472,10 @@
 				"&step=" + step[4].code,
 				function(data)
 				{
+					if (data === null) {
+						return displayCubeNoFoundError();
+					}
+
 					data = data.map(function(d){return {time:new Date(d.time), value:	d.value};});
 
 					var w = $("#jobs-load-monthly").width();
@@ -1674,14 +1682,16 @@ function initJobsOverview() {
 
 	var animationDuration = 500; // in ms
 
+	var containerDom = $("#chart");
+
 	var page = function() {
 
 		var margin_top = 20;
 		var margin_right = 45;
 		var margin_bottom = 35;
 		var margin_left = 35;
-		var w = $("#chart").width();
-		var h = $("#chart").height();
+		var w = containerDom.width();
+		var h = containerDom.height();
 
 		var graphItems = {};
 		var emptyData = [];
@@ -1784,6 +1794,10 @@ function initJobsOverview() {
 
 				placeholder.remove();
 
+				if (data === null) {
+					return displayCubeNoFoundError();
+				}
+
 				emptyData = data.map(function(d){return {time: new Date(d.time), value: 0};});
 				data = data.map(function(d){return {time: new Date(d.time), value: d.value};});
 
@@ -1837,6 +1851,10 @@ function initJobsOverview() {
 			"&stop=" + end +
 			"&step=" + dataStep, function(data)
 			{
+				if (data === null) {
+					return displayCubeNoFoundError();
+				}
+
 				data = data.map(function(d){return {time:new Date(d.time), value:	d.value};});
 
 
@@ -2162,5 +2180,11 @@ function parseInteger(str) {
 function number_format(x)
 {
 	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
+function displayCubeNoFoundError()
+{
+	var alert = $("<div class=\"alert alert-error page-alert\"><h4>Error</h4>Unable to connect to Cube server</div>").hide();
+	$("#main").prepend(alert);
+	alert.slideDown("slow").delay(2000).slideUp("slow", function(){alert.remove();});
 }

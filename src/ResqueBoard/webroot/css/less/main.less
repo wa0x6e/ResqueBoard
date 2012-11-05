@@ -21,6 +21,7 @@ body
 	background-color: @white;
 	padding: 0 @gridGutterWidth;
 	border: 1px solid darken(@grayLighter, 5);
+	position: relative;
 }
 
 .navbar a.brand
@@ -31,6 +32,14 @@ body
 	{
 		vertical-align: text-bottom;
 	}
+}
+
+.page-alert {
+	position: absolute;	
+	z-index: 200;
+	.makeColumn(11);
+	top: -22px;
+	.border-radius(0 0 3px 3px);
 }
 
 h4.sep

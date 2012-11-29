@@ -190,7 +190,7 @@ $headers = array(
 		    				echo '<li>';
 
 
-		    					echo '<a href="/jobs/overview/' . $range . '/' . ResqueBoard\Lib\DateHelper::{'getStart'.$range}(new DateTime())->format('c') . '">';
+		    					echo '<a href="/jobs/overview/' . $range . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart'.$range}(new DateTime())->format('c')) . '">';
 
 		    					echo '<small class="pull-right">'. formatDate($range, new DateTime()) .'</small>';
 
@@ -224,9 +224,9 @@ $headers = array(
 
 		    <div class="btn-group pull-right">
 		    	<?php
-		    		echo '<a href="/jobs/overview/' . $currentRange . '/' . ResqueBoard\Lib\DateHelper::{'getStart' . $currentRange}($uriDate, '-1')->format('c') . '" data-event="tooltip" rel="prev" class="btn" title="Previous '.$currentRange.'"><i class="icon-chevron-left"></i></a>';
+		    		echo '<a href="/jobs/overview/' . $currentRange . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart' . $currentRange}($uriDate, '-1')->format('c')) . '" data-event="tooltip" rel="prev" class="btn" title="Previous '.$currentRange.'"><i class="icon-chevron-left"></i></a>';
 
-		    		echo '<a href="/jobs/overview/' . $currentRange . '/' . ResqueBoard\Lib\DateHelper::{'getStart' . $currentRange}($uriDate, '+1')->format('c') . '" data-event="tooltip" rel="next" class="btn" title="Next '.$currentRange.'"><i class="icon-chevron-right"></i></a>';
+		    		echo '<a href="/jobs/overview/' . $currentRange . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart' . $currentRange}($uriDate, '+1')->format('c')) . '" data-event="tooltip" rel="next" class="btn" title="Next '.$currentRange.'"><i class="icon-chevron-right"></i></a>';
 
 		    	?>
 		    </div>

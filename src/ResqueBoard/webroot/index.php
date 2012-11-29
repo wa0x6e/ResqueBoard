@@ -159,6 +159,7 @@ $app->get(
             if ($year === null && $month === null) {
                 $start = new \DateTime();
                 $start->modify('first day of this month');
+                $start->setTime(0, 0, 0);
             } else {
                 $start = new \DateTime($year . '-' . $month . '-01');
             }

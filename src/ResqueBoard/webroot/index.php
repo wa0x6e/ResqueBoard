@@ -165,6 +165,7 @@ $app->get(
 
             $end = clone $start;
             $end->modify('last day of ' . $end->format('F') . ' ' . $end->format('Y'));
+            $end->setTime(23, 59, 59);
 
             $firstJob = $resqueStat->getJobs(array('limit' => 1, 'sort' => array('t' => 1), 'format' => false));
 

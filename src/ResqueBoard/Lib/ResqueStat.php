@@ -481,8 +481,6 @@ class ResqueStat
             $this->settings['cube']['port'].'/1.0/metric?expression=sum(got)&start=' . urlencode($start->format('Y-m-d\TH:i:sO')) .
             '&stop=' . urlencode($end->format('Y-m-d\TH:i:sO')) . '&step=36e5';
 
-        echo $link;
-
         $this->httpConnection = curl_init($link);
 
         if (!$this->httpConnection) {

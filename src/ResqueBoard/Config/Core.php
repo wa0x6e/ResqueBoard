@@ -20,7 +20,7 @@
 
 
     /**
-     * Database connection settings
+     * General settings
      *
      * Uncomment to override the default settings.
      *
@@ -41,7 +41,8 @@
             ),*/
             /*'resquePrefix' => 'resque',*/
             'readOnly' => true,
-            'resqueConfig' => __DIR__ . DIRECTORY_SEPARATOR . './resque.ini'
+            'resqueConfig' => __DIR__ . DIRECTORY_SEPARATOR . './resque.ini',
+            /*'timezone' => 'America/Montreal'*/
     );
 
     /**
@@ -78,6 +79,7 @@
      */
     $logTypes = array('start', 'got', 'process', 'fork', 'done', 'fail', 'sleep', 'prune', 'stop', 'pause', 'resume');
 
+    date_default_timezone_set(isset($settings['timezone']) ? $settings['timezone'] : date_default_timezone_get());
 
     /**
      * Default number of items to display for pagination

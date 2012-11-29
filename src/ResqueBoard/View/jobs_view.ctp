@@ -73,7 +73,7 @@
 				echo 'Page ' . $pagination->current .' of ' . number_format($pagination->totalPage) . ', found ' . number_format($pagination->totalResult) . ' jobs';
 				} ?>
 			</div>
-			<p>All time are UTC <?php echo date('P', strtotime($jobs[0]['time'])); ?>, current server time is <?php echo date('r'); ?></p>
+			<p>Current server time is <?php echo date('r'); ?></p>
 			<?php
 			echo '<ul class="unstyled infinite-scroll" id="job-details">';
 
@@ -86,7 +86,9 @@
 							<img src="/img/job_<?php echo $jobStatus[$job['status']] ?>.png" title="Job <?php echo $jobStatus[$job['status']] ?>" height=24 width=24 /></span>
 							<span class="label label-info pull-right"><?php echo $job['worker']?></span>
 							<h4>#<?php echo $job['job_id']?></h4>
-							<time datetime="<?php echo date('c', strtotime($job['time']))?>"><i class="icon-time"></i> <?php echo date('H:i:s', strtotime($job['time'])); ?></time>
+							<time datetime="<?php echo date('c', strtotime($job['time']))?>" title="<?php echo date('c', strtotime($job['time']))?>">
+								<i class="icon-time"></i> <?php echo date('H:i:s', strtotime($job['time'])); ?>
+							</time>
 							<small>Performing <code><?php echo $job['class']?></code> in
 							<span class="label label-success"><?php echo $job['queue']?></span></small>
 

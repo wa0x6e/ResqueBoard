@@ -18,8 +18,15 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 ?>
-		<footer class="container"><p><img src="/img/resqueboard.png" alt="ResqueBoard" width=16 height=16 />
-		Powered by <a href="http://resqueboard.kamisama.me" title="ResqueBoard website">ResqueBoard <?php echo APPLICATION_VERSION ?></a></p></footer>
+		<footer class="container">
+			<p class="pull-right">
+				Current server time : <?php echo date('r'); ?>
+			</p>
+			<p>
+				<img src="/img/resqueboard.png" alt="ResqueBoard" width=16 height=16 />
+				Powered by <a href="http://resqueboard.kamisama.me" title="ResqueBoard website">ResqueBoard <?php echo APPLICATION_VERSION ?></a>
+			</p>
+		</footer>
 
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="/js/jquery.jsrender-1.0.min.js"></script>

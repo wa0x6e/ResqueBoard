@@ -313,27 +313,29 @@ $app->get(
             }
 
 
-            $rangeWhitelist = array_merge_recursive($rangeWhitelist, array(
-                'hour' => array(
-                    'start' => ResqueBoard\Lib\DateHelper::getStartHour($start),
-                    'end' => ResqueBoard\Lib\DateHelper::getEndHour($start)
-                ),
-                'day' => array(
-                    'start' => ResqueBoard\Lib\DateHelper::getStartDay($start),
-                    'end' => ResqueBoard\Lib\DateHelper::getEndDay($start)
-                ),
-                'week' => array(
-                    'start' => ResqueBoard\Lib\DateHelper::getStartWeek($start),
-                    'end' =>  ResqueBoard\Lib\DateHelper::getEndWeek($start),
-                ),
-                'month' => array(
-                    'start' => ResqueBoard\Lib\DateHelper::getStartMonth($start),
-                    'end' => ResqueBoard\Lib\DateHelper::getEndMonth($start),
+            $rangeWhitelist = array_merge_recursive(
+                $rangeWhitelist,
+                array(
+                    'hour' => array(
+                        'start' => ResqueBoard\Lib\DateHelper::getStartHour($start),
+                        'end' => ResqueBoard\Lib\DateHelper::getEndHour($start)
+                    ),
+                    'day' => array(
+                        'start' => ResqueBoard\Lib\DateHelper::getStartDay($start),
+                        'end' => ResqueBoard\Lib\DateHelper::getEndDay($start)
+                    ),
+                    'week' => array(
+                        'start' => ResqueBoard\Lib\DateHelper::getStartWeek($start),
+                        'end' =>  ResqueBoard\Lib\DateHelper::getEndWeek($start),
+                    ),
+                    'month' => array(
+                        'start' => ResqueBoard\Lib\DateHelper::getStartMonth($start),
+                        'end' => ResqueBoard\Lib\DateHelper::getEndMonth($start),
+                    )
                 )
-            ));
+            );
 
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
-           // $jobsNumber = $resqueStat->getCubeMetric(array('start' => $start, 'end' => $end, 'step' => $step, 'expression' => 'sum(got)'));
 
             $processTime = $resqueStat->getCubeMetric(
                 array(
@@ -349,11 +351,11 @@ $app->get(
             }
 
             $jobStats = $resqueStat->getJobsStats(
-                        array(
-                            'start' => $rangeWhitelist[$range]['start']->format('c'),
-                            'end' => $rangeWhitelist[$range]['end']->format('c')
-                        )
-                    );
+                array(
+                    'start' => $rangeWhitelist[$range]['start']->format('c'),
+                    'end' => $rangeWhitelist[$range]['end']->format('c')
+                )
+            );
 
 
 
@@ -600,5 +602,3 @@ $app->map(
 )->via('GET', 'POST');
 
 $app->run();
-
-

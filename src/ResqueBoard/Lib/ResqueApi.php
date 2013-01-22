@@ -244,7 +244,7 @@ class ResqueApi
         if ($this->runtime['Resque']['include'] !== '') {
             if (substr($this->runtime['Resque']['include'], 0, 1) !== '/') {
                 $this->errors['include'] = 'Autoloader path must be an absolute path';
-            } else if (!file_exists($this->runtime['Resque']['include'])) {
+            } elseif (!file_exists($this->runtime['Resque']['include'])) {
                 $this->errors['include'] = 'Autoloader file does not exists';
             }
         }
@@ -261,7 +261,7 @@ class ResqueApi
             $path = pathinfo($this->runtime['Log']['filename'], PATHINFO_DIRNAME);
             if (!file_exists($path)) {
                 $this->errors['log'] = 'Directory for log file does not exists';
-            } else if (!is_writable($path)) {
+            } elseif (!is_writable($path)) {
                 $this->errors['log'] = 'Directory for log file is not writeable';
             }
 

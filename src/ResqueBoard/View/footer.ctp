@@ -32,7 +32,7 @@
 		<script type="text/javascript" src="/js/jquery.jsrender-1.0.min.js"></script>
 		<script type="text/javascript" src="/js/moment-1.7.2.min.js"></script>
 		<script type="text/javascript" src="/js/jquery.cookie-1.1.min.js"></script>
-		<script type="text/javascript" src="/js/d3.v2.10.3.min.js"></script>
+		<script type="text/javascript" src="/js/d3.v3.0.4.min.js"></script>
 		<script type="text/javascript" src="/js/cubism.v1.2.2.min.js"></script>
 		<script type="text/javascript" src="/js/bootstrap-2.1.0.min.js"></script>
 		<script type="text/javascript" src="/js/infinite-scroll-2.0.min.js"></script>

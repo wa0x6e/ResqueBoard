@@ -2173,7 +2173,7 @@ function fireEffect(node, effect) {
  * @return int		an Integer
  */
 function parseInteger(str) {
-	return +str.replace(",", "");
+	return +str.replace(/,/g, "");
 }
 
 

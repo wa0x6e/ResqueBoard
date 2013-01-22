@@ -28,15 +28,15 @@
 			</p>
 		</footer>
 
-		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="/js/jquery.jsrender-1.0.min.js"></script>
-		<script type="text/javascript" src="/js/moment-1.7.0.min.js"></script>
+		<script type="text/javascript" src="/js/moment-1.7.2.min.js"></script>
 		<script type="text/javascript" src="/js/jquery.cookie-1.1.min.js"></script>
-		<script type="text/javascript" src="/js/d3.v2.10.1.min.js"></script>
+		<script type="text/javascript" src="/js/d3.v2.10.3.min.js"></script>
 		<script type="text/javascript" src="/js/cubism.v1.2.2.min.js"></script>
 		<script type="text/javascript" src="/js/bootstrap-2.1.0.min.js"></script>
 		<script type="text/javascript" src="/js/infinite-scroll-2.0.min.js"></script>
-		<script src="http://yandex.st/highlightjs/7.2/highlight.min.js"></script>
+		<script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
 		<script type="text/javascript" src="/js/app.js"></script>
 	</body>
 </html>

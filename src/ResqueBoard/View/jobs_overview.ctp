@@ -180,11 +180,11 @@ $headers = array(
 		    		foreach ($ranges as $range => $info) {
 		    			echo '<li class="dropdown ' . ($currentRange !== $range ? '' : ' active') . '">';
 		    			echo '<a
-		    			href="/jobs/overview/' . $range . '/' . $uriDate->format('Y-m-d\TH:i:s\Z') . '"
+		    			href="/jobs/overview/' . $range . '/' . $uriDate->format('c') . '"
 		    			data-target="#"
 		    			class="dropdown-toggle" data-toggle="dropdown"
-		    			data-start-date="' . $info['start']->format('Y-m-d\TH:i:s') . '"
-		    			data-end-date="' . $info['end']->format('Y-m-d\TH:i:s') . '"
+		    			data-start-date="' . $info['start']->format('c') . '"
+		    			data-end-date="' . $info['end']->format('c') . '"
 		    			data-step="' . $info['step'] . '">' . $range . ' <b class="caret"></b></a>';
 		    			echo '<ul class="dropdown-menu span5 styled">';
 		    				echo '<li>';
@@ -245,22 +245,22 @@ $headers = array(
 			<ul class="jobs-stats unstyled clearfix" id="type-range">
 				<li><div>
 					<i class="pull-right icon-check"></i>
-					<a class="active" href="" data-type="processed" data-expression="sum(got)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('Y-m-d\TH:i:s'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('Y-m-d\TH:i:s'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><strong><?php echo number_format($jobsStats->total) ?></strong>Processed Jobs</a>
+					<a class="active" href="" data-type="processed" data-expression="sum(got)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><strong><?php echo number_format($jobsStats->total) ?></strong>Processed Jobs</a>
 
 
 				</div></li>
 				<li><div>
 					<i class="pull-right icon-check-empty"></i>
-					<a href="" data-type="fail" data-expression="sum(fail)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('Y-m-d\TH:i:s'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('Y-m-d\TH:i:s'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><strong><?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?> %</strong> <?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]) ?> failed Jobs</a></div></li>
+					<a href="" data-type="fail" data-expression="sum(fail)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><strong><?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?> %</strong> <?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]) ?> failed Jobs</a></div></li>
 
 				<li><div>
 					<i class="pull-right icon-check-empty"></i>
-					<a href="" data-type="total-process-time" data-expression="sum(done(time))" data-axis="right" data-start-date="<?php echo $ranges[$currentRange]['start']->format('Y-m-d\TH:i:s'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('Y-m-d\TH:i:s'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><strong><?php
+					<a href="" data-type="total-process-time" data-expression="sum(done(time))" data-axis="right" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><strong><?php
 				echo number_format($totalProcessTime);
 
 				?> ms</strong> Total processing time</a></div></li>
 
-				<li><div class="static"><!--<a href="" data-type="average-process-time" data-expression="avg(done(time))" data-axis="right" data-start-date="<?php echo $ranges[$currentRange]['start']->format('Y-m-d\TH:i:s'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('Y-m-d\TH:i:s'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>">--><strong><?php
+				<li><div class="static"><!--<a href="" data-type="average-process-time" data-expression="avg(done(time))" data-axis="right" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>">--><strong><?php
 				echo round($averageProcessTime);
 
 				?> ms</strong> Average processing time<!--</a>--></div></li>

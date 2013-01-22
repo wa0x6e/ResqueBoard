@@ -636,7 +636,12 @@ class ResqueStat
                             'class' => $doc['d']['args']['payload']['class'],
                             'args' => var_export($doc['d']['args']['payload']['args'][0], true),
                             'job_id' => $doc['d']['args']['payload']['id']
+
             );
+
+
+            $jobs[$doc['d']['args']['payload']['id']]['took'] = isset($doc['d']['time']) ? $doc['d']['time'] : null;
+
         }
 
         return $jobs;
@@ -660,6 +665,7 @@ class ResqueStat
         $jobsCursor = $cube->selectCollection('done_events')->find(array('d.job_id' => array('$in' => $jobIds)));
         foreach ($jobsCursor as $successJob) {
             $jobs[$successJob['d']['job_id']]['status'] = self::JOB_STATUS_COMPLETE;
+            $jobs[$successJob['d']['job_id']]['took'] = $successJob['d']['time'];
             unset($jobIds[array_search($successJob['d']['job_id'], $jobIds)]);
         }
 
@@ -670,6 +676,7 @@ class ResqueStat
             foreach ($jobsCursor as $failedJob) {
                 $jobs[$failedJob['d']['job_id']]['status'] = self::JOB_STATUS_FAILED;
                 $jobs[$failedJob['d']['job_id']]['log'] = $failedJob['d']['log'];
+                $jobs[$failedJob['d']['job_id']]['took'] = $failedJob['d']['time'];
                 $redisPipeline->get($this->settings['resquePrefix'] . 'failed:' . $failedJob['d']['job_id']);
                 unset($jobIds[array_search($failedJob['d']['job_id'], $jobIds)]);
             }

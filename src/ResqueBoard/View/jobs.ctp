@@ -212,7 +212,9 @@
 					</div>
 					<div class="collapse<?php if (count($jobs) == 1) echo ' in'; ?> accordion-body" id="<?php echo $job['job_id']?>">
 						<div class="accordion-inner">
-							<p><i class="icon-time<?php if ($job['status'] == ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED) echo ' icon-white' ?>"></i> <b>Added on </b><?php echo $job['time']; ?></p>
+							<p>
+								<span class="pull-right">Took <?php echo $job['took']; ?> ms</span>
+								<i class="icon-time<?php if ($job['status'] == ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED) echo ' icon-white' ?>"></i> <b>Added on </b><?php echo $job['time']; ?></p>
 
 							<?php if (isset($job['log'])) {
 								echo '<div class="alert alert-error">' . $job['log'] . '</div>';
@@ -277,7 +279,9 @@
 					</div>
 					<div class="collapse<?php if (count($jobs) == 1) echo ' in'; ?> accordion-body" id="<?php echo $job['job_id']?>">
 						<div class="accordion-inner">
-							<p><i class="icon-time<?php if ($job['status'] == ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED) echo ' icon-white' ?>"></i> <b>Added on </b><?php echo $job['time']; ?></p>
+							<p>
+								<span class="pull-right">Took <?php echo $job['took']; ?> ms</span>
+								<i class="icon-time<?php if ($job['status'] == ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED) echo ' icon-white' ?>"></i> <b>Added on </b><?php echo $job['time']; ?></p>
 
 							<?php if (isset($job['log'])) {
 								echo '<div class="alert alert-error">' . $job['log'] . '</div>';

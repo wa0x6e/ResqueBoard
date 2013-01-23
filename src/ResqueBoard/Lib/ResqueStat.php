@@ -362,6 +362,12 @@ class ResqueStat
         return $results;
     }
 
+    /**
+     * Return a list of pending jobs
+     *
+     * @since 1.4.0
+     * @return Array an Array of jobs
+     */
     protected function getPendingJobs()
     {
 
@@ -622,6 +628,7 @@ class ResqueStat
      * Get general jobs statistics, by status
      *
      * @since 1.1.0
+     * @return array An array of jobs count, by status
      */
     public function getJobsStats($options = array())
     {

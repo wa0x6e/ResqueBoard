@@ -116,6 +116,7 @@ $app->get(
                             'limit' => 10
                         )
                     ),
+                    'pendingJobs' => $resqueStat->getJobs(array('status' => ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING)),
                     'jobsStats' => $resqueStat->getJobsStats(),
                     'jobsRepartitionStats' => $resqueStat->getJobsRepartionStats(),
                     'workers' => $resqueStat->getWorkers(),

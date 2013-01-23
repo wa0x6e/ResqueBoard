@@ -310,6 +310,55 @@
 		?>
 			</div>
 
+			<div class="">
+				<h2>Pending jobs <span class="badge badge-info"><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING]) ?></span></h2>
+				<?php
+			if (!empty($pendingJobs)) {
+
+
+			echo '<ul class="unstyled" id="job-details">';
+
+			foreach ($pendingJobs as $job) {
+				?>
+				<li class="accordion-group">
+					<div class="accordion-heading" data-toggle="collapse" data-target="#<?php echo $job['job_id']?>">
+						<div class="accordion-toggle">
+							<span title="Job <?php echo $jobStatus[$job['status']] ?>" class="job-status-icon" data-event="tooltip">
+							<img src="/img/job_<?php echo $jobStatus[$job['status']] ?>.png" title="Job <?php echo $jobStatus[$job['status']] ?>" height=24 width=24 /></span>
+							<h4>#<?php echo $job['job_id']?></h4>
+							<small>Performing <code><?php echo $job['class']?></code> in
+							<span class="label label-success"><?php echo $job['queue']?></span></small>
+
+						</div>
+					</div>
+					<div class="collapse<?php if (count($jobs) == 1) echo ' in'; ?> accordion-body" id="<?php echo $job['job_id']?>">
+						<div class="accordion-inner">
+							<p>
+							<?php
+
+							if (isset($job['trace'])) {
+								echo '<pre class="job-trace"><code class="language-php">'. $job['trace'] . '</code></pre>';
+							}
+							?>
+
+							<pre class="job-args"><code class="language-php"><?php echo $job['args'] ?></code></pre>
+						</div>
+					</div>
+				</li>
+				<?php
+			}
+			echo '</ul>';
+
+		} else {
+			?>
+				<div class="alert alert-info">
+					No pending jobs
+				</div>
+			<?php
+		}
+		?>
+			</div>
+
 
 		</div>
 	</div>

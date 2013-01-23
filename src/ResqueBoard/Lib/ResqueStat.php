@@ -224,11 +224,21 @@ class ResqueStat
 
 
     /**
-     * Return list of queues
+     * Return list of all known queues
      *
-     * @since 1.0.0
+     * @since 1.4.0
      */
-    public function getQueues()
+    public function getAllQueues()
+    {
+        return $this->getRedis()->smembers($this->settings['resquePrefix'] . 'queues');
+    }
+
+    /**
+     * Return list of all active queues
+     *
+     * @since 1.4.0
+     */
+    public function getActiveQueues()
     {
         return $this->queues;
     }
@@ -241,6 +251,10 @@ class ResqueStat
      */
     public function getJobs($options = array())
     {
+        if (isset($options['status']) && $options['status'] === self::JOB_STATUS_WAITING) {
+            return $this->getPendingJobs();
+        }
+
         $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
         $jobsCollection = $cube->selectCollection('got_events');
 
@@ -346,6 +360,37 @@ class ResqueStat
         }
 
         return $results;
+    }
+
+    protected function getPendingJobs()
+    {
+
+        $queuesList = $this->getAllQueues();
+        $jobs = array();
+        foreach ($queuesList as $queueName) {
+            $keyName = $this->settings['resquePrefix'] . 'queue:' . $queueName;
+            $queues[$queueName] = $this->getRedis()->lrange($keyName, 0, $this->getRedis()->llen($keyName)-1);
+        }
+
+
+        foreach ($queues as $queue => $jobs) {
+            for ($i = count($jobs)-1; $i >= 0; $i--) {
+                $jobs[$i] = json_decode($jobs[$i], true);
+                $jobs[$i] = array('d' => array(
+                    'args' => array(
+                        'queue' => $queue,
+                        'payload' => array(
+                            'class' => $jobs[$i]['class'],
+                            'id' => $jobs[$i]['id'],
+                            'args' => $jobs[$i]['args']
+                            )
+                        )
+                    )
+                );
+            }
+        }
+
+        return $this->formatJobs($jobs);
     }
 
     /**
@@ -594,11 +639,12 @@ class ResqueStat
                 : round($stats->count[self::JOB_STATUS_FAILED] / $stats->total * 100, 2);
         $stats->count[self::JOB_STATUS_WAITING] = 0;
 
-        $queues = $this->getQueues();
-        foreach ($queues as $queue => $val) {
-            $stats->count[self::JOB_STATUS_WAITING] +=
-                $this->getRedis()->llen($this->settings['resquePrefix'] . 'queue:' . $queue);
+        $queues = $this->getAllQueues();
+        $redisPipeline = $this->getRedis()->multi(\Redis::PIPELINE);
+        foreach ($queues as $queueName) {
+            $redisPipeline->llen($this->settings['resquePrefix'] . 'queue:' . $queueName);
         }
+        $stats->count[self::JOB_STATUS_WAITING] = array_sum($redisPipeline->exec());
 
         $stats->count[self::JOB_STATUS_RUNNING] = 0; // TODO
         $stats->total_active = $this->stats['active']['processed'];
@@ -619,20 +665,20 @@ class ResqueStat
 
 
     /**
-     * Convert jobs document from MongoDB to a formatted array
+     * Convert jobs document from MongoDB or Redis entry to a formatted array
      *
-     * @param $MongoCursor A MongoCursor from a find() action
-     * @return a array of jobs
+     * @param A traversable object
+     * @return an array of jobs
      */
     private function formatJobs($cursor)
     {
         $jobs = array();
         foreach ($cursor as $doc) {
             $jobs[$doc['d']['args']['payload']['id']] = array(
-                            'time' => date('c', $doc['t']->sec),
+                            'time' => isset($doc['t']) ? date('c', $doc['t']->sec) : null,
                             'queue' => $doc['d']['args']['queue'],
-                            'worker' => $doc['d']['worker'],
-                            'level' => $doc['d']['level'],
+                            'worker' => isset($doc['d']['worker']) ? $doc['d']['worker'] : null,
+                            'level' => isset($doc['d']['level']) ? $doc['d']['level'] : null,
                             'class' => $doc['d']['args']['payload']['class'],
                             'args' => var_export($doc['d']['args']['payload']['args'][0], true),
                             'job_id' => $doc['d']['args']['payload']['id']

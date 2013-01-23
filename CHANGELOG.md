@@ -1,12 +1,27 @@
 ##Changelog
 
-###v1.3.1 (2011-10-21)
+###v1.4.0 (2013-01-23)
+
+* [fix] Manipulation of number greater than 1 million return NaN
+* [new] Display processing time in job details
+* [new] Display Waiting Jobs in Jobs Dashboard
+* [new] Jobs Overview page : graph to compare number of processed/failed jobs, and processing time over various time interval
+* [change] Waiting Jobs counter in Job Dashboard now takes into account jobs from inactive queues
+* [change] All time set to server timezone
+* [other] Update JS libraries
+
+> **Upgrade notes**  
+> Job processing time requires php-resque-ex v1.0.15  
+> Only newer jobs processed with this version of php-resque-ex will have a processing time
+
+
+###v1.3.1 (2012-10-21)
 
 * [fix] Always use the server timezone
-* [fix] Searching a job by time was not working 
+* [fix] Searching a job by time was not working
 * [new] Add links to jobs browser from jobs load distribution matrix
 
-###v1.3.0 (2011-10-04)
+###v1.3.0 (2012-10-04)
 
 * [new] Job load distribution page
 * [new] `ReadOnly` mode to disable worker stopping
@@ -14,12 +29,12 @@
 * [change] Rename Job distribution to Job class distribution
 * [change] Update code to use Slim 2
 
-> **Upgrade notes**  
-> Set the `BASE_URL` constant to your website url in Core.php  
+> **Upgrade notes**
+> Set the `BASE_URL` constant to your website url in Core.php
 > Update your composer dependencies with `composer.phar update` for the latest Slim 2
 
 
-###v1.2.0 (2011-09-26)
+###v1.2.0 (2012-09-26)
 
 * [fix] Fix getting jobs by date where date was already a timestamp
 * [fix] Validate JS with JSLint

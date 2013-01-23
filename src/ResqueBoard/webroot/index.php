@@ -44,7 +44,7 @@ $app->get(
                 array(
                     'stats' => $resqueStat->getStats(),
                     'workers' => $resqueStat->getWorkers(),
-                    'queues' => $resqueStat->getQueues(),
+                    'queues' => $resqueStat->getActiveQueues(),
                     'pageTitle' => 'Home',
                     'readOnly' => $settings['readOnly']
                 )

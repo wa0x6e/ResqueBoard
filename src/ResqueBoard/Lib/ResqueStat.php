@@ -376,21 +376,29 @@ class ResqueStat
         foreach ($queues as $queue => $jobs) {
             for ($i = count($jobs)-1; $i >= 0; $i--) {
                 $jobs[$i] = json_decode($jobs[$i], true);
-                $jobs[$i] = array('d' => array(
-                    'args' => array(
-                        'queue' => $queue,
-                        'payload' => array(
-                            'class' => $jobs[$i]['class'],
-                            'id' => $jobs[$i]['id'],
-                            'args' => $jobs[$i]['args']
+                $jobs[$i] = array(
+                    'd' => array(
+                        'args' => array(
+                            'queue' => $queue,
+                            'payload' => array(
+                                'class' => $jobs[$i]['class'],
+                                'id' => $jobs[$i]['id'],
+                                'args' => $jobs[$i]['args']
+                                )
                             )
                         )
-                    )
-                );
+                    );
             }
         }
 
-        return $this->formatJobs($jobs);
+        $jobs = $this->formatJobs($jobs);
+        array_walk(
+            $jobs,
+            function (&$j) {
+                $j['status'] = self::JOB_STATUS_WAITING;
+            }
+        );
+        return $jobs;
     }
 
     /**

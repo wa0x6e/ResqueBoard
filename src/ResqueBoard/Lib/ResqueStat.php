@@ -110,6 +110,15 @@ class ResqueStat
 
         unset($result);
 
+        // Getting Scheduler Worker Stats
+        for ($j = count($this->workers)-1; $j >=0; --$j) {
+            if (implode('', $this->workers[$j]['queues']) === \ResqueScheduler\ResqueScheduler::QUEUE_NAME) {
+                $this->workers[$j]['scheduled'] = \ResqueScheduler\ResqueScheduler::getDelayedQueueScheduleSize();
+                $this->schedulerWorkers[] = $this->workers[$j];
+                unset($this->workers[$j]);
+                break;
+            }
+        }
 
         $this->stats['total'] = array_combine(
             array('processed', 'failed'),
@@ -123,6 +132,7 @@ class ResqueStat
                     ->exec()
             )
         );
+        $this->stats['total']['scheduled'] = \ResqueScheduler\Stat::get();
 
         $this->stats['total']['processed'] = max($this->stats['total']['processed'], $cube->selectCollection('got_events')->find()->count());
         $this->stats['total']['failed'] = max($this->stats['total']['failed'], $cube->selectCollection('fail_events')->find()->count());
@@ -194,6 +204,17 @@ class ResqueStat
     public function getWorkers()
     {
         return $this->workers;
+    }
+
+    /**
+     * Return active workers stats
+     *
+     * @since 1.0.0
+     * @return multitype:
+     */
+    public function getSchedulerWorkers()
+    {
+        return $this->schedulerWorkers;
     }
 
 

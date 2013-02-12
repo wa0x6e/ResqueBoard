@@ -29,6 +29,7 @@ if (!defined('DS')) {
 define('APPLICATION_VERSION', '1.4.0');
 
 
+
 include ROOT . DS . 'Config' . DS . 'Core.php';
 
 $app = new Slim\Slim($config);
@@ -44,6 +45,7 @@ $app->get(
                 array(
                     'stats' => $resqueStat->getStats(),
                     'workers' => $resqueStat->getWorkers(),
+                    'schedulerWorkers' => $resqueStat->getSchedulerWorkers(),
                     'queues' => $resqueStat->getActiveQueues(),
                     'pageTitle' => 'Home',
                     'readOnly' => $settings['readOnly']

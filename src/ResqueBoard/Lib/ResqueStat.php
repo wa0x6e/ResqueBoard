@@ -111,6 +111,7 @@ class ResqueStat
         unset($result);
 
         // Getting Scheduler Worker Stats
+        $this->schedulerWorkers = array();
         for ($j = count($this->workers)-1; $j >=0; --$j) {
             if (implode('', $this->workers[$j]['queues']) === \ResqueScheduler\ResqueScheduler::QUEUE_NAME) {
                 $this->workers[$j]['scheduled'] = \ResqueScheduler\ResqueScheduler::getDelayedQueueScheduleSize();

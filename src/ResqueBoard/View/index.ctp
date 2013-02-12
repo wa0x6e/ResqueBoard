@@ -124,7 +124,7 @@
 				</div>
 
                 <div class="row workers-list">
-				<?php ResqueBoard\Lib\WorkerHelper::renderList($stats, $workers, $readOnly); ?>
+				<?php  ResqueBoard\Lib\WorkerHelper::renderList($stats, $workers, $readOnly); ?>
 				</div>
 
 				</div>
@@ -137,17 +137,42 @@
 					    echo '<table class="table table-condensed"><thead>'.
 						    '<tr><th>Name</th><th>Worker count</th></tr></thead><tbody>';
 
-					if (!empty($queues)) {
-						foreach ($queues as $queue => $count) { ?>
-						<tr>
-							<td class="queues-list-name"><?php echo $queue?></td>
-							<td class="queues-list-count"><?php echo $count?></td>
-						</tr>
-					<?php
-					    }
-					}
-					echo '</tbody></table>';
-				 ?>
+						if (!empty($queues)) {
+							foreach ($queues as $queue => $count) {
+								if ($queue === ResqueScheduler\ResqueScheduler::QUEUE_NAME) {
+									continue;
+								} ?>
+							<tr>
+								<td class="queues-list-name"><?php echo $queue?></td>
+								<td class="queues-list-count"><?php echo $count?></td>
+							</tr>
+						<?php
+						    }
+						}
+						echo '</tbody></table>';
+					 ?>
+
+
+					<div class="page-header">
+						<h2>Scheduler Worker</h2>
+						</div>
+
+						<div id="worker-form" class="modal hide"></div>
+						<div id="worker-details" class="modal hide">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">×</button>
+								<h3>Worker properties</h3>
+							</div>
+							<ul class="modal-body unstyled">
+							</ul>
+						</div>
+
+		                <div class="row workers-list">
+						<?php ResqueBoard\Lib\SchedulerWorkerHelper::renderList($stats, $schedulerWorkers, $readOnly); ?>
+						</div>
+
+					</div>
+
 				</div>
 
 			</div>

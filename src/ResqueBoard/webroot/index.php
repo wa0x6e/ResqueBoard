@@ -383,6 +383,26 @@ $app->get(
     }
 );
 
+$app->get(
+    '/scheduled-jobs',
+    function () use ($app, $settings) {
+        try {
+
+            $app->render(
+                'scheduled_jobs.ctp',
+                array(
+
+                    'pageTitle' => 'Scheduled Jobs'
+
+                )
+            );
+
+        } catch (\Exception $e) {
+            $app->error($e);
+        }
+    }
+);
+
 $app->map(
     '/logs/browse',
     function () use ($app, $settings, $logLevels, $logTypes) {

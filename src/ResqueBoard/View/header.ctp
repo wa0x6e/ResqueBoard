@@ -51,7 +51,8 @@
                                                         '<i class="icon-table"></i> Jobs load distribution' => '/jobs/distribution/load',
                                                         '<i class="icon-bar-chart"></i> Jobs load overview' => '/jobs/overview/hour'
                                                     )
-                                             )
+                                             ),
+											'/scheduled-jobs' => array('title' => 'Scheduled Jobs'),
 										);
 
 								foreach ($navs as $link => $nav) {

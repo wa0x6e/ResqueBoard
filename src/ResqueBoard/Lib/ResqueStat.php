@@ -549,12 +549,15 @@ class ResqueStat
      * @param  DateTime $start Start date
      * @param  DateTime $end   End date
      * @param  const    $step  Cube constant for step
+     * @throws Exception       If curl extension is not installed
+     * @throws Exception       If unable to init the curl session
+     * @throws Exception       If cube does not return a valid response
      * @return array
      */
     public function getJobsMatrix($start, $end, $step)
     {
         if (!extension_loaded('curl')) {
-            throw new \Exception('The curl extension is needed to use http URLs with the CubeHandler');
+            throw new \Exception('The curl extension is needed');
         }
 
         $link = 'http://'.$this->settings['cube']['host'] . ':' .
@@ -574,9 +577,12 @@ class ResqueStat
             array(  'Content-Type: application/json')
         );
 
-        $response = json_decode(curl_exec($this->httpConnection), true);
+        $response = curl_exec($this->httpConnection);
+        if (!$response) {
+            throw new \Exception('Unable to connect to Cube server');
+        }
 
-        return $response;
+        return json_decode($response, true);
     }
 
     /**

@@ -2148,7 +2148,11 @@ $(".navigator").on("change", "select", function () {
  * @return String A clean worker name
  */
 function cleanWorkerName(name) {
-	return name.replace(new RegExp("(\\.|:)","gm"), "");
+	if (typeof name === "string") {
+		return name.replace(new RegExp("(\\.|:)","gm"), "");
+	}
+	return;
+
 }
 
 
@@ -2173,7 +2177,10 @@ function fireEffect(node, effect) {
  * @return int		an Integer
  */
 function parseInteger(str) {
-	return +str.replace(/,/g, "");
+	if (typeof str === "string") {
+		return +str.replace(/,/g, "");
+	}
+	return;
 }
 
 
@@ -2184,7 +2191,10 @@ function parseInteger(str) {
  */
 function number_format(x)
 {
-	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	if (typeof x === "integer") {
+		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	}
+	return;
 }
 
 function displayCubeNoFoundError()

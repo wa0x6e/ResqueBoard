@@ -26,7 +26,7 @@ if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
 
-define('APPLICATION_VERSION', '1.4.0');
+define('APPLICATION_VERSION', '1.5.0');
 
 
 
@@ -118,7 +118,7 @@ $app->get(
                             'limit' => 10
                         )
                     ),
-                    'pendingJobs' => $resqueStat->getJobs(array('status' => ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING)),
+                    'pendingJobs' => $resqueStat->getJobs(array('status' => ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING, 'limit' => 15)),
                     'jobsStats' => $resqueStat->getJobsStats(),
                     'jobsRepartitionStats' => $resqueStat->getJobsRepartionStats(),
                     'workers' => $resqueStat->getWorkers(),
@@ -293,6 +293,53 @@ $app->map(
         }
     }
 )->via('GET', 'POST');
+
+$app->get(
+    '/jobs/pending',
+    function () use ($app, $settings) {
+        try {
+            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+
+            $resultLimits = array(15, 50, 100);
+            $args = $app->request()->params();
+
+            $pagination = new stdClass();
+            $pagination->current = isset($args['page']) ? $args['page'] : 1;
+            $pagination->limit = (($app->request()->params('limit') != '') && in_array($app->request()->params('limit'), $resultLimits))
+                ? $app->request()->params('limit')
+                : PAGINATION_LIMIT;
+            $pagination->baseUrl = '/jobs/pending?';
+
+            $options = array(
+                'status' => ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING,
+                'limit' => $pagination->limit,
+                'queue' => null
+                );
+            if (isset($args['queue'])) {
+                $options['queue'] = $args['queue'];
+            }
+
+            $jobsCount = $resqueStat->getPendingJobsCount($options['queue']);
+            $pagination->totalResult = array_pop($jobsCount);
+            $pagination->totalPage = ceil($pagination->totalResult / $pagination->limit);
+            $pagination->uri = $app->request()->params();
+
+            $app->render(
+                'jobs_pending_view.ctp',
+                array(
+                    'jobs' => $resqueStat->getJobs($options),
+                    'pageTitle' => 'Pending Jobs',
+                    'queues' => $resqueStat->getQueues(),
+                    'resultLimits' => $resultLimits,
+                    'pagination' => $pagination
+                )
+            );
+
+        } catch (\Exception $e) {
+            $app->error($e);
+        }
+    }
+);
 
 $app->get(
     '/jobs/overview/:range(/:start)',

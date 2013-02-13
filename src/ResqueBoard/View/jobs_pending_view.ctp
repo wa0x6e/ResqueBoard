@@ -185,7 +185,9 @@
 					$totalWorkers += $stats['workers'];
 				?>
 					<tr<?php if (empty($stats['workers'])) echo ' class="error"'; ?>>
-						<td><?php echo $queueName ?></td>
+						<td><?php echo $queueName; ?> <?php if (empty($stats['workers'])) {
+							echo '<i class="icon-warning-sign" title="This queue is not polled by any worker" data-event="tooltip"></i>';
+						} ?></td>
 						<td><?php echo $stats['jobs'] > 0 ? ('<a href="/jobs/pending?queue='.$queueName.'" title="View all pending jobs from ' . $queueName . '">' . number_format($stats['jobs']) . '</a>') : 0 ?></td>
 						<td><?php echo number_format($stats['workers']) ?></td>
 					</tr>

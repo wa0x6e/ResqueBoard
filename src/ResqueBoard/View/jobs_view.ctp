@@ -32,6 +32,18 @@
 	</div>
 
 	<div class="row">
+
+		<div class="span12">
+		    <ul class="nav nav-tabs">
+		    <li class="active">
+		    	<a href="<?php echo $_SERVER['REQUEST_URI'] ?>" title="View all completed/failed jobs">Completed/Failed Jobs</a>
+		    </li>
+		    <li>
+		    	<a href="/jobs/pending" title="View all pending jobs">Pending Jobs</a>
+		    </li>
+		    </ul>
+		</div>
+
 		<div class="span8">
 
 		<?php

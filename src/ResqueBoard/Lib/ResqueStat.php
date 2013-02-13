@@ -63,6 +63,8 @@ class ResqueStat
                 'resquePrefix' => 'resque'
         );
 
+        $this->queues = array();
+
         $this->settings = array_merge($this->settings, $settings);
         $this->settings['resquePrefix'] = $this->settings['resquePrefix'] .':';
 
@@ -77,9 +79,9 @@ class ResqueStat
                     $q,
                     function ($qu) use (&$thisQueues) {
                         if (isset($thisQueues[$qu])) {
-                            $thisQueues[$qu]++;
+                            $thisQueues[$qu]['workers']++;
                         } else {
-                            $thisQueues[$qu] = 1;
+                            $thisQueues[$qu]['workers'] = 1;
                         }
                     }
                 );
@@ -87,6 +89,30 @@ class ResqueStat
             },
             $this->getRedis()->smembers($this->settings['resquePrefix'] . 'workers')
         );
+
+        // Assign all active queues as active
+        array_walk($this->queues, function(&$queue) { $queue['active'] = true; });
+
+        // Get all queues and compute complete list of active and inactive queues
+        $allQueues = $this->getRedis()->smembers($this->settings['resquePrefix'] . 'queues');
+        foreach ($allQueues as $queue) {
+            if (!isset($this->queues[$queue])) {
+                $this->queues[$queue] = array('workers' => 0, 'active' => false);
+            }
+        }
+
+        // Populate queues pending jobs counter
+        $redisPipeline = $this->getRedis()->multi(\Redis::PIPELINE);
+        foreach ($this->queues as $name => $stats) {
+            $redisPipeline->llen($this->settings['resquePrefix'] . 'queue:' . $name);
+        }
+
+        $result = $redisPipeline->exec();
+        $i = 0;
+        foreach ($this->queues as &$queue) {
+            $queue['jobs'] = $result[$i];
+            $i++;
+        }
 
         $redisPipeline = $this->getRedis()->multi(\Redis::PIPELINE);
         foreach ($this->workers as $worker) {
@@ -256,11 +282,11 @@ class ResqueStat
     }
 
     /**
-     * Return list of all active queues
+     * Return list of all queues
      *
      * @since 1.4.0
      */
-    public function getActiveQueues()
+    public function getQueues()
     {
         return $this->queues;
     }
@@ -273,12 +299,6 @@ class ResqueStat
      */
     public function getJobs($options = array())
     {
-        if (isset($options['status']) && $options['status'] === self::JOB_STATUS_WAITING) {
-            return $this->getPendingJobs();
-        }
-
-        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
-        $jobsCollection = $cube->selectCollection('got_events');
 
         $default = array(
                 'workerId' => null,
@@ -305,6 +325,13 @@ class ResqueStat
         if ($options['date_after'] !== null && !is_int($options['date_after'])) {
             $options['date_after'] = strtotime($options['date_after']);
         }
+
+        if (isset($options['status']) && $options['status'] === self::JOB_STATUS_WAITING) {
+            return $this->getPendingJobs($options);
+        }
+
+        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $jobsCollection = $cube->selectCollection('got_events');
 
         $conditions = array();
 
@@ -390,14 +417,15 @@ class ResqueStat
      * @since 1.4.0
      * @return Array an Array of jobs
      */
-    protected function getPendingJobs()
+    protected function getPendingJobs($options)
     {
 
-        $queuesList = $this->getAllQueues();
+        $queuesList = empty($options['queue']) ? $this->getAllQueues() : array($options['queue']);
         $jobs = array();
         foreach ($queuesList as $queueName) {
             $keyName = $this->settings['resquePrefix'] . 'queue:' . $queueName;
-            $queues[$queueName] = $this->getRedis()->lrange($keyName, 0, $this->getRedis()->llen($keyName)-1);
+            $limit = $options['limit'] === null ? $this->getRedis()->llen($keyName)-1 : $options['limit'];
+            $queues[$queueName] = $this->getRedis()->lrange($keyName, 0, $limit);
         }
 
 
@@ -427,6 +455,21 @@ class ResqueStat
             }
         );
         return $jobs;
+    }
+
+    /**
+     * Return the number of pending jobs in a queue
+     * @param  String $queue    Name of the queue, or null to get the count of pending jobs from all queues
+     * @return array            Queue name indexed array of jobs count
+     */
+    public function getPendingJobsCount($queue = null) {
+        $queuesList = $queue === null ? $this->getAllQueues() : array($queue);
+        $pipeline = $this->getRedis()->multi(\Redis::PIPELINE);
+        foreach ($queuesList as $queueName) {
+            $pipeline->llen($this->settings['resquePrefix'] . 'queue:' . $queueName);
+        }
+
+        return array_combine($queuesList, $pipeline->exec());
     }
 
     /**

@@ -311,7 +311,7 @@
 			</div>
 
 			<div class="">
-				<h2>Pending jobs <span class="badge badge-info"><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING]) ?></span></h2>
+				<h2>Latest Pending jobs</h2>
 				<?php
 			if (!empty($pendingJobs)) {
 
@@ -348,6 +348,7 @@
 				<?php
 			}
 			echo '</ul>';
+			echo '<a href="/jobs/pending" title="View more pending jobs" class="btn btn-block btn-small">More pending jobs</a>';
 
 		} else {
 			?>

@@ -114,6 +114,13 @@ class ResqueStat
             $i++;
         }
 
+        foreach ($this->queues as $queueName => $queueStats) {
+            if ($queueStats['workers'] === $queueStats['jobs'] && $queueStats['jobs'] === 0) {
+                unset($this->queues[$queueName]);
+            }
+        }
+
+
         $redisPipeline = $this->getRedis()->multi(\Redis::PIPELINE);
         foreach ($this->workers as $worker) {
             $redisPipeline

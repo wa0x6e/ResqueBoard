@@ -14,16 +14,16 @@
  * @link          http://resqueboard.kamisama.me
  * @package       resqueboard
  * @subpackage	  resqueboard.template
- * @since         1.0.0
+ * @since         1.5.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
 	$jobStatus = array(
-				ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING => 'waiting',
-				ResqueBoard\Lib\ResqueStat::JOB_STATUS_RUNNING => 'running',
-				ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED => 'failed',
-				ResqueBoard\Lib\ResqueStat::JOB_STATUS_COMPLETE => 'complete'
-			);
+		ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING => 'waiting',
+		ResqueBoard\Lib\ResqueStat::JOB_STATUS_RUNNING => 'running',
+		ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED => 'failed',
+		ResqueBoard\Lib\ResqueStat::JOB_STATUS_COMPLETE => 'complete'
+	);
 
 
 ?><div class="container" id="main">
@@ -39,7 +39,7 @@
 		    	<a href="/jobs/view">Completed/Failed Jobs</a>
 		    </li>
 		    <li class="active">
-		    	<a href="<?php echo $_SERVER['REQUEST_URI'] ?>">Pending Jobs</a>
+		    	<a href="/jobs/pending">Pending Jobs</a>
 		    </li>
 		    </ul>
 		</div>
@@ -161,9 +161,9 @@
 
 		} else {
 			?>
-				<div class="alert alert-info">
-					Nothing to display
-				</div>
+
+				<div class="knight-unit"><i class="icon-search icon"></i><h2>Pending Jobs browser</h2><p class="tagline">Browse pending jobs</p></div>
+
 			<?php
 		}
 		?>

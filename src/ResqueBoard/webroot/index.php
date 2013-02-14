@@ -46,7 +46,7 @@ $app->get(
                     'stats' => $resqueStat->getStats(),
                     'workers' => $resqueStat->getWorkers(),
                     'schedulerWorkers' => $resqueStat->getSchedulerWorkers(),
-                    'queues' => $resqueStat->getActiveQueues(),
+                    'queues' => $resqueStat->getQueues(),
                     'pageTitle' => 'Home',
                     'readOnly' => $settings['readOnly']
                 )
@@ -319,8 +319,7 @@ $app->get(
                 $options['queue'] = $args['queue'];
             }
 
-            $jobsCount = $resqueStat->getPendingJobsCount($options['queue']);
-            $pagination->totalResult = array_pop($jobsCount);
+            $pagination->totalResult = array_sum($resqueStat->getPendingJobsCount($options['queue']));
             $pagination->totalPage = ceil($pagination->totalResult / $pagination->limit);
             $pagination->uri = $app->request()->params();
 

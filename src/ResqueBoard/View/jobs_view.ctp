@@ -19,11 +19,11 @@
  */
 
 	$jobStatus = array(
-				ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING => 'waiting',
-				ResqueBoard\Lib\ResqueStat::JOB_STATUS_RUNNING => 'running',
-				ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED => 'failed',
-				ResqueBoard\Lib\ResqueStat::JOB_STATUS_COMPLETE => 'complete'
-			);
+		ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING => 'waiting',
+		ResqueBoard\Lib\ResqueStat::JOB_STATUS_RUNNING => 'running',
+		ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED => 'failed',
+		ResqueBoard\Lib\ResqueStat::JOB_STATUS_COMPLETE => 'complete'
+	);
 
 
 ?><div class="container" id="main">

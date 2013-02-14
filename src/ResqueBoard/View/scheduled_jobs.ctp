@@ -14,7 +14,7 @@
  * @link          http://resqueboard.kamisama.me
  * @package       resqueboard
  * @subpackage	  resqueboard.template
- * @since         1.4.0
+ * @since         1.5.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 

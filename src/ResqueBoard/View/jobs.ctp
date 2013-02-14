@@ -33,7 +33,7 @@
 	<div class="row">
 
 		<div class="span6">
-			<h2><a href="/jobs/distribution/class">Distribution by classes</a></h2>
+			<h2><a href="/jobs/distribution/class" title="View jobs distribution by classes">Distribution by classes</a></h2>
 
 			<div id="jobRepartition">
 				<?php
@@ -130,7 +130,10 @@
 				</div></li>
 				<li><div><strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]) ?></strong> failed Jobs</div></li>
 				<li><div><strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_RUNNING]) ?></strong> Running jobs</div></li>
-				<li><div><strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING]) ?></strong> Waiting jobs</div></li>
+				<li>
+					<div><a href="/jobs/pending" title="View all pending jobs"><strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING]) ?></strong> Waiting jobs</a></div>
+
+				</li>
 			</ul>
 
 			<h2>Jobs load <small>for the past hour</small></h2>
@@ -311,7 +314,7 @@
 			</div>
 
 			<div class="">
-				<h2>Latest Pending jobs</h2>
+				<h2><a href="/jobs/pending" title="View all pending jobs">Latest Pending jobs</a></h2>
 				<?php
 			if (!empty($pendingJobs)) {
 

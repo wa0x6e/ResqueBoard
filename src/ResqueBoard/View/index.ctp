@@ -138,13 +138,13 @@
 						    '<tr><th>Name</th><th>Worker count</th></tr></thead><tbody>';
 
 						if (!empty($queues)) {
-							foreach ($queues as $queue => $count) {
-								if ($queue === ResqueScheduler\ResqueScheduler::QUEUE_NAME) {
+							foreach ($queues as $queueName => $queueStat) {
+								if ($queueName === ResqueScheduler\ResqueScheduler::QUEUE_NAME) {
 									continue;
 								} ?>
 							<tr>
-								<td class="queues-list-name"><?php echo $queue?></td>
-								<td class="queues-list-count"><?php echo $count?></td>
+								<td class="queues-list-name"><?php echo $queueName?></td>
+								<td class="queues-list-count"><?php echo $queueStat['jobs']?></td>
 							</tr>
 						<?php
 						    }

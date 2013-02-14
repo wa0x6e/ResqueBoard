@@ -218,4 +218,67 @@ class DateHelperTest extends \PHPUnit_Framework_TestCase
         $ms = 425 + (3600*24*8) * 1000;
         $this->assertEquals('8 days', DateHelper::humanize($ms));
     }
+
+    public function testGetStartHour()
+    {
+        $this->markTestIncomplete(
+          'This test has not been implemented yet.'
+        );
+    }
+
+    public function testGetEndHour()
+    {
+        $this->markTestIncomplete(
+          'This test has not been implemented yet.'
+        );
+    }
+
+    public function testGetStartDay()
+    {
+        $this->markTestIncomplete(
+          'This test has not been implemented yet.'
+        );
+    }
+
+    public function testGetEndDay()
+    {
+        $this->markTestIncomplete(
+          'This test has not been implemented yet.'
+        );
+    }
+
+    public function testGetStartWeek()
+    {
+        $this->markTestIncomplete(
+          'This test has not been implemented yet.'
+        );
+    }
+
+    public function testGetEndWeek()
+    {
+        $this->markTestIncomplete(
+          'This test has not been implemented yet.'
+        );
+    }
+
+    public function testGetStartMonth()
+    {
+        $this->markTestIncomplete(
+          'This test has not been implemented yet.'
+        );
+    }
+
+    public function testGetEndMonth()
+    {
+        $this->markTestIncomplete(
+          'This test has not been implemented yet.'
+        );
+    }
+
+    public function testGetAgo()
+    {
+        $this->markTestIncomplete(
+          'This test has not been implemented yet.'
+        );
+    }
 }

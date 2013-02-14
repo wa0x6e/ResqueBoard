@@ -40,6 +40,7 @@ class ResqueStat
     const JOB_STATUS_RUNNING = 2;
     const JOB_STATUS_FAILED = 3;
     const JOB_STATUS_COMPLETE = 4;
+    const JOB_STATUS_SCHEDULED = \ResqueScheduler\Job\Status::STATUS_SCHEDULED;
 
     const CUBE_STEP_10SEC = '1e4';
     const CUBE_STEP_1MIN = '6e4';
@@ -731,6 +732,11 @@ class ResqueStat
                 ? 0
                 : round($stats->count[self::JOB_STATUS_FAILED] / $stats->total * 100, 2);
         $stats->count[self::JOB_STATUS_WAITING] = 0;
+        $stats->count[self::JOB_STATUS_SCHEDULED] = $cube->selectCollection('movescheduled_events')->find($filter)->count();
+        $stats->perc[self::JOB_STATUS_SCHEDULED] =
+            ($stats->total == 0)
+                ? 0
+                : round($stats->count[self::JOB_STATUS_SCHEDULED] / $stats->total * 100, 2);
 
         $queues = $this->getAllQueues();
         $redisPipeline = $this->getRedis()->multi(\Redis::PIPELINE);

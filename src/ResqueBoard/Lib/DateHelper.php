@@ -170,4 +170,80 @@ class DateHelper
 
         return $d;
     }
+
+
+    /**
+     * Convert convert a number of millisecond to a humanly understandable english date
+     * @param  int      $ms Milliseconds
+     * @return string
+     */
+    public static function humanize($ms)
+    {
+        $time = self::explodeMilliseconds($ms);
+        $string = '';
+
+        // Display milliseconds only if total ms is less than 1 min
+        // We don't need milliseconds precision with big values
+
+
+        // Again, if more or equal than one day, don't need seconds precision
+        if (!empty($time['day'])) {
+
+            if (empty($time['hour']) && empty($time['min'])) {
+                return $time['day'] . ' days';
+            }
+
+            if (!empty($time['hour']) && empty($time['min'])) {
+                return $time['day'] . ' days ' . $time['hour'] . ' hours';
+            }
+
+            if (empty($time['hour']) && !empty($time['min'])) {
+                return $time['day'] . ' days ' . $time['min'] . ' min';
+            }
+
+            return $time['day'] . ' days ' . $time['hour'] . 'h' . str_pad($time['min'], 2, '0', STR_PAD_LEFT);
+        }
+
+        if (!empty($time['hour'])) {
+            return $time['hour'] . ':' . str_pad($time['min'], 2, '0', STR_PAD_LEFT) . ' hours';
+        }
+
+        if (!empty($time['min'])) {
+            return $time['min'] . ':' . str_pad($time['sec'], 2, '0', STR_PAD_LEFT) . ' min';
+        }
+
+        return $time['sec'] . ':' . str_pad($time['ms'], 3, '0', STR_PAD_LEFT) . ' sec';
+    }
+
+
+    public static function explodeMilliseconds($ms)
+    {
+        $time = array(
+                'day' => 0,
+                'hour' => 0,
+                'min' => 0,
+                'sec' => 0,
+                'ms' => 0
+            );
+
+        $time['sec'] = (int)($ms/1000);
+        $time['ms'] = (int) (round($ms/1000 - $time['sec'], 3)*1000);
+
+        if ($time['sec'] > 60) {
+            $time['min'] = (int)floor($time['sec'] / 60);
+            $time['sec'] = (int)fmod($time['sec'], 60);
+        }
+
+        if ($time['min'] > 60) {
+            $time['hour'] = (int)floor($time['min'] / 60);
+            $time['min'] = (int)fmod($time['min'], 60);
+        }
+
+        if ($time['hour'] > 24) {
+            $time['day'] = (int)floor($time['hour'] / 24);
+            $time['hour'] = (int)fmod($time['hour'], 24);
+        }
+
+        return $time;
+    }
 }

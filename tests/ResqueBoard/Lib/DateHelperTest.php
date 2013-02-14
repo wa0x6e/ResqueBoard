@@ -1,0 +1,221 @@
+<?php
+/**
+ * DateHelper Test file
+ *
+ * Test the DateHelper class
+ *
+ * PHP version 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @author        Wan Qi Chen <kami@kamisama.me>
+ * @copyright     Copyright 2012, Wan Qi Chen <kami@kamisama.me>
+ * @link          http://resqueboard.kamisama.me
+ * @since         1.5.0
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
+
+namespace ResqueBoard\Lib;
+
+/**
+ * DateHelperTest Class
+ *
+ * Test the DateHelper class
+ *
+ * @author Wan Qi Chen <kami@kamisama.me>
+ */
+class DateHelperTest extends \PHPUnit_Framework_TestCase
+{
+    /**
+     * @covers ResqueBoard\Lib\DateHelper::explodeMilliseconds
+     */
+    public function testExplodeMillisecondsWithOnlyMilliseconds()
+    {
+        $ms = 1;
+
+        $return = DateHelper::explodeMilliseconds($ms);
+
+        $this->assertEquals(1, $return['ms']);
+        $this->assertEquals(0, $return['sec']);
+        $this->assertEquals(0, $return['min']);
+        $this->assertEquals(0, $return['hour']);
+        $this->assertEquals(0, $return['day']);
+        $this->assertCount(5, $return);
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\DateHelper::explodeMilliseconds
+     */
+    public function testExplodeMillisecondsWithEmptyValue()
+    {
+        $ms = 0;
+
+        $return = DateHelper::explodeMilliseconds($ms);
+
+        $this->assertEquals(0, $return['ms']);
+        $this->assertEquals(0, $return['sec']);
+        $this->assertEquals(0, $return['min']);
+        $this->assertEquals(0, $return['hour']);
+        $this->assertEquals(0, $return['day']);
+        $this->assertCount(5, $return);
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\DateHelper::explodeMilliseconds
+     */
+    public function testExplodeMillisecondsWithSeconds()
+    {
+        $ms = 1500; // 1.5 seconds
+
+        $return = DateHelper::explodeMilliseconds($ms);
+
+        $this->assertEquals(500, $return['ms']);
+        $this->assertEquals(1, $return['sec']);
+        $this->assertEquals(0, $return['min']);
+        $this->assertEquals(0, $return['hour']);
+        $this->assertEquals(0, $return['day']);
+        $this->assertCount(5, $return);
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\DateHelper::explodeMilliseconds
+     */
+    public function testExplodeMillisecondsWithMinutes()
+    {
+        $ms = 425 + (60*3.5) * 1000;
+
+        $return = DateHelper::explodeMilliseconds($ms);
+
+        $this->assertEquals(425, $return['ms']);
+        $this->assertEquals(30, $return['sec']);
+        $this->assertEquals(3, $return['min']);
+        $this->assertEquals(0, $return['hour']);
+        $this->assertEquals(0, $return['day']);
+        $this->assertCount(5, $return);
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\DateHelper::explodeMilliseconds
+     */
+    public function testExplodeMillisecondsWithHours()
+    {
+        $ms = 425 + (60*3.5 + 3600*6) * 1000;
+
+        $return = DateHelper::explodeMilliseconds($ms);
+
+        $this->assertEquals(425, $return['ms']);
+        $this->assertEquals(30, $return['sec']);
+        $this->assertEquals(3, $return['min']);
+        $this->assertEquals(6, $return['hour']);
+        $this->assertEquals(0, $return['day']);
+        $this->assertCount(5, $return);
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\DateHelper::explodeMilliseconds
+     */
+    public function testExplodeMillisecondsWithDays()
+    {
+        $ms = 425 + (60*3.5 + 3600*6 + 3600*24*8) * 1000;
+
+        $return = DateHelper::explodeMilliseconds($ms);
+
+        $this->assertEquals(425, $return['ms']);
+        $this->assertEquals(30, $return['sec']);
+        $this->assertEquals(3, $return['min']);
+        $this->assertEquals(6, $return['hour']);
+        $this->assertEquals(8, $return['day']);
+        $this->assertCount(5, $return);
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\DateHelper::humanize
+     */
+    public function testHumanizeWithDays()
+    {
+        $ms = 425 + (60*3.5 + 3600*6 + 3600*24*8) * 1000;
+        $this->assertEquals('8 days 6h03', DateHelper::humanize($ms));
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\DateHelper::humanize
+     */
+    public function testHumanizeWithHours()
+    {
+        $ms = 425 + (60*3.5 + 3600*6) * 1000;
+        $this->assertEquals('6:03 hours', DateHelper::humanize($ms));
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\DateHelper::humanize
+     */
+    public function testHumanizeWithMinutes()
+    {
+        $ms = 425 + (60*3.5) * 1000;
+        $this->assertEquals('3:30 min', DateHelper::humanize($ms));
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\DateHelper::humanize
+     */
+    public function testHumanizeWithSeconds()
+    {
+        $ms = 3425;
+        $this->assertEquals('3:425 sec', DateHelper::humanize($ms));
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\DateHelper::humanize
+     */
+    public function testHumanizeWithSecondsAndNoMilliseconds()
+    {
+        $ms = 3000;
+        $this->assertEquals('3:000 sec', DateHelper::humanize($ms));
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\DateHelper::humanize
+     */
+    public function testHumanizeWithMinutesAndNoSeconds()
+    {
+        $ms = 425 + (60*3) * 1000;
+        $this->assertEquals('3:00 min', DateHelper::humanize($ms));
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\DateHelper::humanize
+     */
+    public function testHumanizeWithHoursAndNoMinutes()
+    {
+        $ms = 425 + (3600*6) * 1000;
+        $this->assertEquals('6:00 hours', DateHelper::humanize($ms));
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\DateHelper::humanize
+     */
+    public function testHumanizeWithDaysAndMinutesButNoHours()
+    {
+        $ms = 425 + (3600*24*8 + 60*3) * 1000;
+        $this->assertEquals('8 days 3 min', DateHelper::humanize($ms));
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\DateHelper::humanize
+     */
+    public function testHumanizeWithDaysAndHoursButNotMinutes()
+    {
+        $ms = 425 + (3600*6 + 3600*24*8) * 1000;
+        $this->assertEquals('8 days 6 hours', DateHelper::humanize($ms));
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\DateHelper::humanize
+     */
+    public function testHumanizeWithDaysButNoHoursNorMinutes()
+    {
+        $ms = 425 + (3600*24*8) * 1000;
+        $this->assertEquals('8 days', DateHelper::humanize($ms));
+    }
+}

@@ -73,7 +73,6 @@
 				});
 
 				init = true;
-
 			},
 			add : function(queueName) {
 				if (init === false) {
@@ -2047,6 +2046,8 @@ function initJobsOverview() {
 if ($("#scheduled-jobs-graph").length > 0) {
 	CalHeatMap.init({
 		id : "scheduled-jobs-graph",
+		scales : [10,20,30,40],
+		itemName : ["job", "jobs"],
 		onClick : function(start, end, itemNb) {
 
 			var formatDate = d3.time.format("%H:%M, %A %B %e %Y");

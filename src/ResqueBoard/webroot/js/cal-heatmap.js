@@ -4,10 +4,10 @@ var CalHeatMap = (function() {
 
 	var options = {
 		// DOM ID of the container to append the graph to
-		id : "scheduled-jobs-graph",
+		id : "cal-heatmap",
 
 		// Threshold for each scale
-		scales : [100,400,500,600],
+		scales : [10,20,30,40],
 
 		// Number of hours to display on the graph
 		range : 12,
@@ -27,7 +27,7 @@ var CalHeatMap = (function() {
 		displayScale : true,
 
 
-		itemName : ["job", "jobs"],
+		itemName : ["item", "items"],
 
 		// Start of the graph
 		start : new Date()

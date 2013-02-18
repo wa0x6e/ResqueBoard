@@ -434,10 +434,15 @@ $app->get(
     function () use ($app, $settings) {
         try {
 
+            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $resqueSchedulerStat = new ResqueBoard\Lib\resqueSchedulerStat($settings);
+
             $app->render(
                 'scheduled_jobs.ctp',
                 array(
-
+                    'stats' => $resqueStat->getStats(),
+                    'futureScheduledJobs' => $resqueSchedulerStat->getScheduledJobsCount(time()),
+                    'pastScheduledJobs' => $resqueSchedulerStat->getScheduledJobsCount(0, time()),
                     'pageTitle' => 'Scheduled Jobs'
 
                 )
@@ -548,6 +553,36 @@ $app->get(
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
             $jobs = array_values($resqueStat->getJobs(array('date_after' => (int)$start, 'date_before' => (int)$end)));
+            $app->response()->header("Content-Type", "application/json");
+            echo json_encode($jobs);
+        } catch (\Exception $e) {
+            $app->error($e);
+        }
+    }
+);
+
+$app->get(
+    '/api/scheduled-jobs/stats/:start/:end',
+    function ($start, $end) use ($app, $settings) {
+        try {
+            $resqueSchedulerStat = new ResqueBoard\Lib\resqueSchedulerStat($settings);
+            $jobs = $resqueSchedulerStat->getScheduledJobsCount((int)$start, (int)$end, true);
+
+            $app->response()->header("Content-Type", "application/json");
+            echo json_encode($jobs);
+        } catch (\Exception $e) {
+            $app->error($e);
+        }
+    }
+);
+
+$app->get(
+    '/api/scheduled-jobs/:start/:end',
+    function ($start, $end) use ($app, $settings) {
+        try {
+            $resqueSchedulerStat = new ResqueBoard\Lib\resqueSchedulerStat($settings);
+            $jobs = $resqueSchedulerStat->getJobs((int)$start, (int)$end, true);
+
             $app->response()->header("Content-Type", "application/json");
             echo json_encode($jobs);
         } catch (\Exception $e) {

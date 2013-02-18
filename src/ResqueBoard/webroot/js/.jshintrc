@@ -19,6 +19,7 @@
 		"d3",
 		"serverIp",
 		"moment",
-		"cubism"
+		"cubism",
+		"CalHeatMap"
 	]
 }

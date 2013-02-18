@@ -37,6 +37,7 @@
 		<script type="text/javascript" src="/js/bootstrap-2.1.0.min.js"></script>
 		<script type="text/javascript" src="/js/infinite-scroll-2.0.min.js"></script>
 		<script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
+		<script type="text/javascript" src="/js/cal-heatmap.js"></script>
 		<script type="text/javascript" src="/js/app.min.js"></script>
 	</body>
 </html>

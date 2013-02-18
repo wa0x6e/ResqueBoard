@@ -48,7 +48,7 @@ class ResqueStat
     const CUBE_STEP_1HOUR = '36e5';
     const CUBE_STEP_1DAY = '864e5';
 
-    private $settings;
+    protected $settings;
     private $redis;
     private $mongo;
 
@@ -181,7 +181,7 @@ class ResqueStat
      *
      * @since 1.0.0
      */
-    private function getMongo()
+    protected function getMongo()
     {
         if ($this->mongo !== null) {
             return $this->mongo;
@@ -201,7 +201,7 @@ class ResqueStat
      *
      * @since 1.0.0
      */
-    private function getRedis()
+    protected function getRedis()
     {
         if ($this->redis !== null) {
             return $this->redis;
@@ -479,6 +479,9 @@ class ResqueStat
 
         return array_combine($queuesList, $pipeline->exec());
     }
+
+
+
 
     /**
      * Return logs filtered by conditions specified in $options

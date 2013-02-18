@@ -2039,6 +2039,53 @@ function initJobsOverview() {
 }
 
 
+/**
+ * Scheduler Worker Page
+ * Future scheduled jobs calendar graph
+ * @since 1.5.0
+ */
+if ($("#scheduled-jobs-graph").length > 0) {
+	CalHeatMap.init({
+		id : "scheduled-jobs-graph",
+		onClick : function(start, end, itemNb) {
+
+			var formatDate = d3.time.format("%H:%M, %A %B %e %Y");
+
+			$("#scheduled-jobs-list").html("<h2>Jobs scheduled for " + formatDate(start) + "</h2>");
+			$("#scheduled-jobs-list").append("<div class=\"alert alert-info\" id=\"scheduled-jobs-loading\">Loading datas ...</div>");
+
+			d3.json("/api/scheduled-jobs/" + start.getTime()/1000 + "/" + end.getTime()/1000, function(data) {
+
+				$("#scheduled-jobs-loading").remove();
+				$("#scheduled-jobs-list").append("<ul class=\"unstyled\" id=\"job-details\"></ul>");
+
+				for (var timestamp in data) {
+
+					for (var job in data[timestamp]) {
+						data[timestamp][job].created = new Date(data[timestamp][job].s_time*1000);
+						data[timestamp][job].args = print_r(data[timestamp][job].args);
+					}
+
+					$("#scheduled-jobs-list ul")
+					.append(
+						$("#scheduled-jobs-list-tpl").render(data[timestamp])
+					);
+				}
+
+				var jobsCount = $("#scheduled-jobs-list ul li").length;
+
+				if (jobsCount === 0) {
+					$("#scheduled-jobs-list").append("<div class=\"alert\">No jobs found for this period</div>");
+				} else {
+					$("#scheduled-jobs-list h2").prepend("<span class=\"badge pull-right\">" + jobsCount + "</span>");
+				}
+
+			});
+
+		}
+	});
+}
+
 
 /**
  * Processed after stopping a worker
@@ -2203,3 +2250,45 @@ function displayCubeNoFoundError()
 	$("#main").prepend(alert);
 	alert.slideDown("slow").delay(2000).slideUp("slow", function(){alert.remove();});
 }
+
+/**
+* PHP-like print_r() & var_dump() equivalent for JavaScript Object
+*
+* @author Faisalman <movedpixel@gmail.com>
+* @license http://www.opensource.org/licenses/mit-license.php
+* @link http://gist.github.com/879208
+*/
+var print_r = function(obj,t){
+
+// define tab spacing
+var tab = t || '';
+// check if it's array
+var isArr = Object.prototype.toString.call(obj) === '[object Array]' ? true : false;
+// use {} for object, [] for array
+var str = isArr ? ('Array\n' + tab + '[\n') : ('Object\n' + tab + '{\n');
+
+// walk through it's properties
+for(var prop in obj){
+if (obj.hasOwnProperty(prop)) {
+var val1 = obj[prop];
+var val2 = '';
+var type = Object.prototype.toString.call(val1);
+switch(type){
+// recursive if object/array
+case '[object Array]':
+case '[object Object]':
+val2 = print_r(val1, (tab + '\t'));
+break;
+case '[object String]':
+val2 = '\'' + val1 + '\'';
+break;
+default:
+val2 = val1;
+}
+str += tab + '\t' + prop + ' => ' + val2 + ',\n';
+}
+}
+// remove extra comma for last property
+str = str.substring(0, str.length-2) + '\n' + tab;
+return isArr ? (str + ']') : (str + '}');
+};

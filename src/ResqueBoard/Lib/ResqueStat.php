@@ -92,7 +92,12 @@ class ResqueStat
         );
 
         // Assign all active queues as active
-        array_walk($this->queues, function(&$queue) { $queue['active'] = true; });
+        array_walk(
+            $this->queues,
+            function (&$queue) {
+                $queue['active'] = true;
+            }
+        );
 
         // Get all queues and compute complete list of active and inactive queues
         $allQueues = $this->getRedis()->smembers($this->settings['resquePrefix'] . 'queues');
@@ -470,7 +475,8 @@ class ResqueStat
      * @param  String $queue    Name of the queue, or null to get the count of pending jobs from all queues
      * @return array            Queue name indexed array of jobs count
      */
-    public function getPendingJobsCount($queue = null) {
+    public function getPendingJobsCount($queue = null)
+    {
         $queuesList = $queue === null ? $this->getAllQueues() : array($queue);
         $pipeline = $this->getRedis()->multi(\Redis::PIPELINE);
         foreach ($queuesList as $queueName) {

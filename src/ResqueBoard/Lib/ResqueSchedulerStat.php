@@ -21,13 +21,14 @@ class ResqueSchedulerStat extends ResqueStat
      * @param  integer $end   Stop timestamp
      * @return integer        Number of scheduled jobs from that date ragne
      */
-    public function getScheduledJobsCount($start = 0, $end = null, $full = false) {
+    public function getScheduledJobsCount($start = 0, $end = null, $full = false)
+    {
         if ($end === null) {
             $end = $this->getRedis()->zRevRange(
                 $this->settings['resquePrefix'] . \ResqueScheduler\ResqueScheduler::QUEUE_NAME,
                 0,
                 0
-                );
+            );
 
             if (!is_array($end) || empty($end)) {
                 return 0;
@@ -93,7 +94,7 @@ class ResqueSchedulerStat extends ResqueStat
         $jobs = $redisPipeline->exec();
 
         foreach ($jobs as &$job) {
-            foreach($job as &$j) {
+            foreach ($job as &$j) {
                 $j = json_decode($j, true);
                 $j['id'] = $j['args'][0]['id'];
                 unset($j['args'][0]['id']);
@@ -103,5 +104,4 @@ class ResqueSchedulerStat extends ResqueStat
 
         return array_combine($timestamps, $jobs);
     }
-
 }

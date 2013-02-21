@@ -1,5 +1,16 @@
 ##Changelog
 
+###v1.5.0 (2013-02-21)
+
+* [new] Scheduled jobs tab :
+  * View global stats about scheduled jobs (total, expired, future jobs)
+  * Calendar heat map to visualize future scheduled jobs
+  * View scheduled jobs details by date
+* [new] Scheduled jobs stats in home page
+* [new] Add scheduled jobs in Job Overview graph
+* [new] Pending jobs page
+* [new] Warn when a queue is not monitored by a worker
+
 ###v1.4.0 (2013-01-23)
 
 * [fix] Manipulation of number greater than 1 million return NaN

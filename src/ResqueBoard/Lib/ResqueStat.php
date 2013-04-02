@@ -435,6 +435,7 @@ class ResqueStat
 
         $queuesList = empty($options['queue']) ? $this->getAllQueues() : array($options['queue']);
         $jobs = array();
+        $queues = array();
         foreach ($queuesList as $queueName) {
             $keyName = $this->settings['resquePrefix'] . 'queue:' . $queueName;
             $limit = $options['limit'] === null ? $this->getRedis()->llen($keyName)-1 : $options['limit'];
@@ -756,6 +757,9 @@ class ResqueStat
 
         $stats->count[self::JOB_STATUS_RUNNING] = 0; // TODO
         $stats->total_active = $this->stats['active']['processed'];
+
+        $stats->oldest = null;
+        $stats->newest = null;
 
         $cursors = $cube->selectCollection('got_events')->find(array(), array('t'))->sort(array('t' => 1))->limit(1);
         foreach ($cursors as $cursor) {

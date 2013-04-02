@@ -49,7 +49,7 @@
 						$pieDatas[] = array('name' => 'Other', 'count' => $total);
 					}
 
-					$diff = date_diff($jobsStats->oldest, new DateTime())->format('%a');
+					$diff = $jobsStats->oldest === null ? 0 : date_diff($jobsStats->oldest, new DateTime())->format('%a');
 					$jobsDailyAverage = empty($diff) ? 0 : round($jobsStats->total / $diff);
 
 					echo "<script type='text/javascript'>";
@@ -143,6 +143,15 @@
 			<h2><form class="pull-right">
 
 					<?php
+
+					if ($jobsStats->oldest === null) {
+						$jobsStats->oldest = new DateTime();
+					}
+
+					if ($jobsStats->newest === null) {
+						$jobsStats->newest = new DateTime();
+					}
+
 					$startDate = $jobsStats->oldest->setDate($jobsStats->oldest->format('Y'), $jobsStats->oldest->format('m'), 1);
 					$endDate = $jobsStats->newest->setDate($jobsStats->newest->format('Y'), $jobsStats->newest->format('m'), 1);
 
@@ -236,13 +245,6 @@
 			}
 			echo '</ul>';
 
-		}
-		elseif ($searchToken !== null) {
-			?>
-				<div class="alert alert-info">
-					No jobs found matching <mark><?php echo $searchToken?></mark>
-				</div>
-			<?php
 		} else {
 			?>
 				<div class="alert alert-info">
@@ -252,7 +254,6 @@
 		}
 		?>
 		<a href="/jobs/view" class="btn btn-block btn-small">More jobs</a>
-		<p><small>All time are UTC <?php echo date('P', strtotime($jobs[0]['time'])); ?>, current server time is <?php echo date('r'); ?></small></p>
 		</div>
 
 		<div class="span5">

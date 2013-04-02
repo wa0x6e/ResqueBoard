@@ -164,7 +164,7 @@
 		 */
 		var limit = 25;
 
-		d3.json("http://"+serverIp+":1081/1.0/metric/get"+
+		d3.json("http://"+CUBE_URL+"/1.0/metric/get"+
 			"?expression=sum(got)"+
 			"&start=2012-07-07T16:00:00Z"+
 			"&stop=" + formatISO(stop)+
@@ -400,7 +400,7 @@
 
 				}
 
-				var metricSocket = new WebSocket("ws://"+serverIp+":1081/1.0/metric/get");
+				var metricSocket = new WebSocket("ws://"+CUBE_URL+"/1.0/metric/get");
 
 				metricSocket.onopen = function() {
 					var nextDate = getNextTick(data[data.length-1].time);
@@ -642,7 +642,7 @@
 
 		function init(e)
 		{
-			var socket = new WebSocket("ws://"+serverIp+":1081/1.0/event/get");
+			var socket = new WebSocket("ws://"+CUBE_URL+"/1.0/event/get");
 
 			socket.onopen = function() {
 				socket.send(JSON.stringify({
@@ -946,7 +946,7 @@
 		Job.initJobsChart(chartType);
 
 		function init(e) {
-			var socket = new WebSocket("ws://"+serverIp+":1081/1.0/event/get");
+			var socket = new WebSocket("ws://"+CUBE_URL+"/1.0/event/get");
 			socket.onopen = function() {
 				socket.send(JSON.stringify({
 					"expression": events[e].expression,
@@ -1124,7 +1124,7 @@
 
 		var
 			context = cubism.context().size(466),
-			cube = context.cube("http://"+serverIp+":1081"),
+			cube = context.cube("http://"+CUBE_URL),
 			horizon = context.horizon().metric(cube.metric).height(53),
 			rule = context.rule();
 
@@ -1427,7 +1427,7 @@
 	{
 		var
 			context = cubism.context().size($("#jobs-load").width()),
-			cube = context.cube("http://"+serverIp+":1081"),
+			cube = context.cube("http://"+CUBE_URL+""),
 			horizon = context.horizon().metric(cube.metric).height(100),
 			rule = context.rule();
 
@@ -1464,7 +1464,7 @@
 	{
 		var loadChart = function(start, end, title)
 		{
-			d3.json("http://"+serverIp+":1081/1.0/metric/get"+
+			d3.json("http://"+CUBE_URL+"/1.0/metric/get"+
 				"?expression=sum(got)"+
 				"&start="+ start +
 				"&stop=" + end +
@@ -1784,7 +1784,7 @@ function initJobsOverview() {
 			var endDate = dom.data("endDate");
 			var dataStep = dom.data("step");
 
-			d3.json("http://"+serverIp+":1081/1.0/metric/get"+
+			d3.json("http://"+CUBE_URL+"/1.0/metric/get"+
 			"?expression=sum(got)" +
 			"&start="+ startDate +
 			"&stop=" + endDate +
@@ -1844,7 +1844,7 @@ function initJobsOverview() {
 				return;
 			}
 
-			d3.json("http://"+serverIp+":1081/1.0/metric/get"+
+			d3.json("http://"+CUBE_URL+"/1.0/metric/get"+
 			"?expression=" + expression +
 			"&start="+ start +
 			"&stop=" + end +

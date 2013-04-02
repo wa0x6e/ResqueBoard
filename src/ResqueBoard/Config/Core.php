@@ -97,14 +97,6 @@
      */
     define('APPLICATION_NAME', 'ResqueBoard');
 
-    /**
-     * Website url
-     *
-     * @since  1.3.0
-     * @var string
-     */
-    define('BASE_URL', 'http://resque.neetcafe.lc/');
-
 
     /**
      * Separator between the website name and other text, in the page title

@@ -39,6 +39,10 @@
              	'port' => 6379,
              	'database' => 0
             ),*/
+            'cube' => array(
+                'host' => '127.0.0.1',
+                'port' => 1081
+            ),
             /*'resquePrefix' => 'resque',*/
             'readOnly' => true,
             'resqueConfig' => __DIR__ . DIRECTORY_SEPARATOR . './resque.ini',
@@ -97,6 +101,14 @@
      */
     define('APPLICATION_NAME', 'ResqueBoard');
 
+
+    /**
+     * Cube server address without the scheme (http, https, ws, ...)
+     *
+     * @since  1.5.1
+     * @var string
+     */
+    define('CUBE_URL', $settings['cube']['host'] . ':' . $settings['cube']['port']);
 
     /**
      * Separator between the website name and other text, in the page title

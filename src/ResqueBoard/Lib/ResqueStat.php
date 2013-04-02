@@ -590,7 +590,10 @@ class ResqueStat
 
         usort(
             $results,
-            function ($a, $b) {
+            function (
+                $a,
+                $b
+            ) {
                 if ($a['date'] == $b['date']) {
                     return 0;
                 }

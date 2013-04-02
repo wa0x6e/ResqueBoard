@@ -2044,7 +2044,8 @@ function initJobsOverview() {
  * @since 1.5.0
  */
 if ($("#scheduled-jobs-graph").length > 0) {
-	CalHeatMap.init({
+	var cal = new CalHeatMap();
+	cal.init({
 		id : "scheduled-jobs-graph",
 		scales : [10,20,30,40],
 		itemName : ["job", "jobs"],

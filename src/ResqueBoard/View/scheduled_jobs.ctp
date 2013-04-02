@@ -52,9 +52,7 @@
 
 			<h2>Future scheduled jobs activites</h2>
 
-			<div id="scheduled-jobs-graph">
-				<div class="graph"></div>
-			</div>
+			<div id="scheduled-jobs-graph"></div>
 
 			<hr/>
 

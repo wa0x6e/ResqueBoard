@@ -22,10 +22,10 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<base href="<?php echo BASE_URL ?>" />
+		<base href="//<?php echo $_SERVER['HTTP_HOST'] ?>" />
 		<title><?php echo $pageTitle . TITLE_SEP . APPLICATION_NAME?></title>
 		<link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-		<link href="/css/main-<?php echo APPLICATION_VERSION ?>.css" rel="stylesheet" type="text/css">
+		<link href="/css/main.css?v=<?php echo APPLICATION_VERSION ?>" rel="stylesheet" type="text/css">
 		<link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/default.min.css">
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	</head>

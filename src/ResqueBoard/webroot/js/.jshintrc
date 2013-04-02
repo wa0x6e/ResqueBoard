@@ -17,7 +17,7 @@
 	"predef" : [
 		"hljs",
 		"d3",
-		"serverIp",
+		"CUBE_URL",
 		"moment",
 		"cubism",
 		"CalHeatMap"

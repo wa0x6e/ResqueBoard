@@ -48,7 +48,7 @@ $timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
 				echo '<select class="span2">';
 				$i = 0;
 				foreach ($dateRange as $date) {
-					echo '<option value="'. BASE_URL . 'jobs/distribution/load/' . $date->format('Y/m').'"'. ($date->format('Y/m') == $currentDate->format('Y/m') ? ' selected="selected"' : '') .'>'. $date->format('F Y') .'</option>';
+					echo '<option value="//'. $_SERVER['HTTP_HOST'] . '/jobs/distribution/load/' . $date->format('Y/m').'"'. ($date->format('Y/m') == $currentDate->format('Y/m') ? ' selected="selected"' : '') .'>'. $date->format('F Y') .'</option>';
 				}
 				echo '</select>';
 

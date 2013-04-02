@@ -433,7 +433,7 @@ $app->get(
         try {
 
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
-            $resqueSchedulerStat = new ResqueBoard\Lib\resqueSchedulerStat($settings);
+            $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat($settings);
 
             $app->render(
                 'scheduled_jobs.ctp',

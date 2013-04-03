@@ -382,7 +382,6 @@ $app->get(
                 )
             );
 
-            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
 
             $processTime = $resqueStat->getCubeMetric(
                 array(
@@ -392,6 +391,8 @@ $app->get(
                     'step' => ResqueBoard\Lib\ResqueStat::CUBE_STEP_1HOUR
                 )
             );
+
+
             $totalProcessTime = 0;
             foreach ($processTime as $t) {
                 $totalProcessTime += $t['value'];

@@ -886,6 +886,7 @@ class ResqueStat
             throw new \Exception('Unable to connect to ' . $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']);
         }
 
+        curl_setopt($this->httpConnection, CURLOPT_TIMEOUT, 5);
         curl_setopt($this->httpConnection, CURLOPT_RETURNTRANSFER, true);
         curl_setopt(
             $this->httpConnection,
@@ -894,6 +895,10 @@ class ResqueStat
         );
 
         $response = json_decode(curl_exec($this->httpConnection), true);
+
+        if (curl_getinfo($this->httpConnection, CURLINFO_HTTP_CODE) !== 200) {
+            throw new \Exception('Unable to connect to ' . $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']);
+        }
 
         return $response;
     }

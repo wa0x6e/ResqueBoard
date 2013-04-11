@@ -875,8 +875,8 @@ class ResqueStat
 
         $string = 'http://'.$this->settings['cube']['host'] . ':' .
             $this->settings['cube']['port'].'/1.0/metric?expression=' . $options['expression'] .
-            '&start=' . $options['start']->format('c') .
-            (isset($options['end']) ? ('&stop=' . $options['end']->format('c')) : '') .
+            '&start=' . urlencode($options['start']->format('c')) .
+            (isset($options['end']) ? ('&stop=' . urlencode($options['end']->format('c'))) : '') .
             (isset($options['step']) ? ('&step=' . $options['step']) : '') .
             (isset($options['limit']) ? ('&limit=' . $options['limit']) : '');
 

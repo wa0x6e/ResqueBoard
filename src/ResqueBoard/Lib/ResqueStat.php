@@ -896,8 +896,12 @@ class ResqueStat
 
         $response = json_decode(curl_exec($this->httpConnection), true);
 
-        if (curl_getinfo($this->httpConnection, CURLINFO_HTTP_CODE) !== 200) {
+        $responseCode = curl_getinfo($this->httpConnection, CURLINFO_HTTP_CODE);
+
+        if ($responseCode === 404) {
             throw new \Exception('Unable to connect to ' . $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']);
+        } else if ($responseCode !== 200) {
+            throw new \Exception('Cube server return an error : ' . $response['error']);
         }
 
         return $response;

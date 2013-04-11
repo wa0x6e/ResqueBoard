@@ -166,8 +166,8 @@
 
 		d3.json("http://"+CUBE_URL+"/1.0/metric/get"+
 			"?expression=sum(got)"+
-			"&start=2012-07-07T16:00:00Z"+
-			"&stop=" + formatISO(stop)+
+			"&start="+encodeURIComponent("2012-07-07T16:00:00Z")+
+			"&stop=" + encodeURIComponent(formatISO(stop))+
 			"&limit=" + limit +
 			"&step=" + step[0].code, function(data)
 			{
@@ -407,8 +407,8 @@
 
 					metricSocket.send(JSON.stringify({
 						"expression": "sum(got)",
-						"start" : nextDate.toISOString(),
-						"stop": getNextTick(nextDate).toISOString(),
+						"start" : encodeURIComponent(nextDate.toISOString()),
+						"stop": encodeURIComponent(getNextTick(nextDate).toISOString()),
 						"limit": 1,
 						"step" : step[0].code
 					}));
@@ -427,8 +427,8 @@
 							var nextDate = getNextTick(data[data.length-1].time);
 							metricSocket.send(JSON.stringify({
 								"expression": "sum(got)",
-								"start" : nextDate.toISOString(),
-								"stop": getNextTick(nextDate).toISOString(),
+								"start" : encodeURIComponent(nextDate.toISOString()),
+								"stop": encodeURIComponent(getNextTick(nextDate).toISOString()),
 								"limit": 1,
 								"step" : step[0].code
 							}));
@@ -458,7 +458,7 @@
 		if (modalTimestamp !== startTimeStamp)
 		{
 			$.ajax({
-				url : "/api/jobs/" + startTimeStamp + "/" + (startTimeStamp + step[0].second),
+				url : "/api/jobs/" + encodeURIComponent(startTimeStamp) + "/" + encodeURIComponent(startTimeStamp + step[0].second),
 				success : function(message){
 					$("#job-details .modal-body").html(
 						$("#jobs-tpl").render(message)
@@ -950,7 +950,7 @@
 			socket.onopen = function() {
 				socket.send(JSON.stringify({
 					"expression": events[e].expression,
-					"start": formatISO(stop)
+					"start": encodeURIComponent(formatISO(stop))
 				}));
 			};
 
@@ -1466,8 +1466,8 @@
 		{
 			d3.json("http://"+CUBE_URL+"/1.0/metric/get"+
 				"?expression=sum(got)"+
-				"&start="+ start +
-				"&stop=" + end +
+				"&start="+ encodeURIComponent(start) +
+				"&stop=" + encodeURIComponent(end) +
 				"&step=" + step[4].code,
 				function(data)
 				{
@@ -1786,8 +1786,8 @@ function initJobsOverview() {
 
 			d3.json("http://"+CUBE_URL+"/1.0/metric/get"+
 			"?expression=sum(got)" +
-			"&start="+ startDate +
-			"&stop=" + endDate +
+			"&start="+ encodeURIComponent(startDate) +
+			"&stop=" + encodeURIComponent(endDate) +
 			"&step=" + dataStep, function(data)
 			{
 
@@ -1846,8 +1846,8 @@ function initJobsOverview() {
 
 			d3.json("http://"+CUBE_URL+"/1.0/metric/get"+
 			"?expression=" + expression +
-			"&start="+ start +
-			"&stop=" + end +
+			"&start="+ encodeURIComponent(start) +
+			"&stop=" + encodeURIComponent(end) +
 			"&step=" + dataStep, function(data)
 			{
 				if (data === null) {
@@ -2263,34 +2263,34 @@ function displayCubeNoFoundError()
 var print_r = function(obj,t){
 
 // define tab spacing
-var tab = t || '';
+var tab = t || "";
 // check if it's array
-var isArr = Object.prototype.toString.call(obj) === '[object Array]' ? true : false;
+var isArr = Object.prototype.toString.call(obj) === "[object Array]" ? true : false;
 // use {} for object, [] for array
-var str = isArr ? ('Array\n' + tab + '[\n') : ('Object\n' + tab + '{\n');
+var str = isArr ? ("Array\n" + tab + "[\n") : ("Object\n" + tab + "{\n");
 
-// walk through it's properties
+// walk through it"s properties
 for(var prop in obj){
 if (obj.hasOwnProperty(prop)) {
 var val1 = obj[prop];
-var val2 = '';
+var val2 = "";
 var type = Object.prototype.toString.call(val1);
 switch(type){
 // recursive if object/array
-case '[object Array]':
-case '[object Object]':
-val2 = print_r(val1, (tab + '\t'));
+case "[object Array]":
+case "[object Object]":
+val2 = print_r(val1, (tab + "\t"));
 break;
-case '[object String]':
-val2 = '\'' + val1 + '\'';
+case "[object String]":
+val2 = "\"" + val1 + "\"";
 break;
 default:
 val2 = val1;
 }
-str += tab + '\t' + prop + ' => ' + val2 + ',\n';
+str += tab + "\t" + prop + " => " + val2 + ",\n";
 }
 }
 // remove extra comma for last property
-str = str.substring(0, str.length-2) + '\n' + tab;
-return isArr ? (str + ']') : (str + '}');
+str = str.substring(0, str.length-2) + "\n" + tab;
+return isArr ? (str + "]") : (str + "}");
 };

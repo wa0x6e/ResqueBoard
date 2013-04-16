@@ -108,7 +108,7 @@
      * @since  1.5.1
      * @var string
      */
-    define('CUBE_URL', $settings['cube']['host'] . ':' . $settings['cube']['port']);
+    define('CUBE_URL', substr($_SERVER['HTTP_HOST'], 0, strpos($_SERVER['HTTP_HOST'], ':')) . ':' . $settings['cube']['port']);
 
     /**
      * Separator between the website name and other text, in the page title

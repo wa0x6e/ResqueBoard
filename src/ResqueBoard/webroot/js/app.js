@@ -2047,16 +2047,17 @@ if ($("#scheduled-jobs-graph").length > 0) {
 	var cal = new CalHeatMap();
 	cal.init({
 		id : "scheduled-jobs-graph",
-		scales : [10,20,30,40],
+		scale : [1,4,8,12],
 		itemName : ["job", "jobs"],
-		onClick : function(start, end, itemNb) {
+		data: "/api/scheduled-jobs/stats/{{t:start}}/{{t:end}}",
+		onClick : function(start, itemNb) {
 
 			var formatDate = d3.time.format("%H:%M, %A %B %e %Y");
 
 			$("#scheduled-jobs-list").html("<h2>Jobs scheduled for " + formatDate(start) + "</h2>");
 			$("#scheduled-jobs-list").append("<div class=\"alert alert-info\" id=\"scheduled-jobs-loading\">Loading datas ...</div>");
 
-			d3.json("/api/scheduled-jobs/" + start.getTime()/1000 + "/" + end.getTime()/1000, function(data) {
+			d3.json("/api/scheduled-jobs/" + (+start)/1000 + "/" + ((+start)/1000+60), function(data) {
 
 				$("#scheduled-jobs-loading").remove();
 				$("#scheduled-jobs-list").append("<ul class=\"unstyled\" id=\"job-details\"></ul>");

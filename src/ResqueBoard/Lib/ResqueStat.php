@@ -845,7 +845,7 @@ class ResqueStat
             $failedTrace = array_filter($redisPipeline->exec());
 
             foreach ($failedTrace as $trace) {
-                $trace = function_exists('igbinary_unserialize') ? igbinary_unserialize($trace) : unserialize($trace);
+                $trace = unserialize($trace);
                 $jobs[$trace['payload']['id']]['trace'] = var_export($trace, true);
             }
 

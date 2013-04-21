@@ -21,7 +21,7 @@
 <div id="main">
     <ul class="menu">
     <li>
-        <a class="brand" href="/"><?php echo APPLICATION_NAME ?></a>
+        <a class="brand" href="/"><em><?php echo APPLICATION_NAME ?></em>Analytics for Resque PHP</a>
     </li>
 
         <?php

@@ -17,15 +17,6 @@
  * @since         1.5.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-
-	$jobStatus = array(
-		ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING => 'waiting',
-		ResqueBoard\Lib\ResqueStat::JOB_STATUS_RUNNING => 'running',
-		ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED => 'failed',
-		ResqueBoard\Lib\ResqueStat::JOB_STATUS_COMPLETE => 'complete'
-	);
-
-
 ?>
 	<div class="page-header">
 		<h1>Jobs Browser</h1>
@@ -36,7 +27,7 @@
 
 		    <ul class="nav nav-tabs page-nav-tab">
 			    <li>
-			    	<a href="/jobs/view">Completed/Failed Jobs</a>
+			    	<a href="/jobs/view">Processed Jobs</a>
 			    </li>
 			    <li class="active">
 			    	<a href="/jobs/pending">Pending Jobs</a>
@@ -52,6 +43,10 @@
 
 		if (isset($pagination->uri['queue'])) {
 			echo ' from <mark>' .  $pagination->uri['queue'] . '</mark>';
+		}
+
+		if (!empty($pagination->totalResult)) {
+			echo '<span class="badge pull-right">' . number_format($pagination->totalResult) . ' results</span>';
 		}
 
 		echo'</h2>';
@@ -89,43 +84,8 @@
 			</div>
 
 			<?php
-			echo '<ul class="unstyled infinite-scroll" id="job-details">';
 
-			foreach ($jobs as $job) {
-				?>
-				<li class="accordion-group">
-					<div class="accordion-heading" data-toggle="collapse" data-target="#<?php echo $job['job_id']?>">
-						<div class="accordion-toggle">
-							<span title="Job <?php echo $jobStatus[$job['status']] ?>" class="job-status-icon" data-event="tooltip">
-							<img src="/img/job_<?php echo $jobStatus[$job['status']] ?>.png" title="Job <?php echo $jobStatus[$job['status']] ?>" height=24 width=24 /></span>
-
-							<h4>#<?php echo $job['job_id']?></h4>
-
-							<small>Performing <code><?php echo $job['class']?></code> in
-							<span class="label label-success"><?php echo $job['queue']?></span></small>
-
-						</div>
-					</div>
-					<div class="collapse<?php if (count($jobs) == 1) echo ' in'; ?> accordion-body" id="<?php echo $job['job_id']?>">
-						<div class="accordion-inner">
-
-
-							<?php if (isset($job['log'])) {
-								echo '<div class="alert alert-error">' . $job['log'] . '</div>';
-							}
-
-							if (isset($job['trace'])) {
-								echo '<pre class="job-trace"><code class="language-php">'. $job['trace'] . '</code></pre>';
-							}
-							?>
-
-							<pre class="job-args"><code class="language-php"><?php echo $job['args'] ?></code></pre>
-						</div>
-					</div>
-				</li>
-				<?php
-			}
-			echo '</ul>';
+			\ResqueBoard\Lib\JobHelper::renderJobs($jobs, 'No pending jobs');
 
 			if (isset($pagination)) {
 				?>
@@ -162,7 +122,7 @@
 		} else {
 			?>
 
-				<div class="knight-unit"><i class="icon-search icon"></i><h2>Pending Jobs browser</h2><p class="tagline">Browse pending jobs</p></div>
+				<div class="alert">No pending jobs found</div>
 
 			<?php
 		}

@@ -224,11 +224,11 @@ $headers = array(
 
 		    <div class="ftr-bloc">
 
-		    <div class="btn-group pull-right">
+		    <div class="domain-nav pull-right">
 		    	<?php
-		    		echo '<a href="/jobs/overview/' . $currentRange . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart' . $currentRange}($uriDate, '-1')->format('c')) . '" data-event="tooltip" rel="prev" class="btn" title="Previous '.$currentRange.'"><i class="icon-chevron-left"></i></a>';
+		    		echo '<a href="/jobs/overview/' . $currentRange . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart' . $currentRange}($uriDate, '-1')->format('c')) . '" data-event="tooltip" rel="prev" title="Previous '.$currentRange.'"><i class="icon-chevron-left"></i></a>';
 
-		    		echo '<a href="/jobs/overview/' . $currentRange . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart' . $currentRange}($uriDate, '+1')->format('c')) . '" data-event="tooltip" rel="next" class="btn" title="Next '.$currentRange.'"><i class="icon-chevron-right"></i></a>';
+		    		echo '<a href="/jobs/overview/' . $currentRange . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart' . $currentRange}($uriDate, '+1')->format('c')) . '" data-event="tooltip" rel="next"title="Next '.$currentRange.'"><i class="icon-chevron-right"></i></a>';
 
 		    	?>
 		    </div>

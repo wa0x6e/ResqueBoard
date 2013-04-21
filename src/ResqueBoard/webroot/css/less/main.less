@@ -15,7 +15,7 @@
 @colorShadePlusOne: #3B4D59;
 @colorShadePlusTwo: #222C33;
 
-@colorCompMinusTwo: #594444;
+@colorCompMinusTwo: #758A98;
 @colorCompMinusOne: #567E98;
 @colorCompPlusOne: #7F7F48;
 @colorCompPlusTwo: #98985E;
@@ -52,6 +52,10 @@ a:hover {
 	text-decoration: none;
 }
 
+h1, h2, h3, h4, h5 {
+	text-shadow: 0 1px 0 @white;
+}
+
 h1
 {
 	font-size: 32px;
@@ -64,11 +68,11 @@ h2{
 	font-size: 1.75em;
 	color: lighten(@textColor, 5);
 	
-	.badge.pull-right {
+	.badge.pull-right, .label.pull-right {
 		margin-top: 0.8em;
 	}
 	
-	.badge {
+	.badge, .label {
 		vertical-align: middle;
 		background-color: @colorShadeMinusOne;
 	}
@@ -125,6 +129,10 @@ h3{
 	padding: 0;
 	border-top: 1px solid @white;
 	min-height: 400px;
+	
+	& > .row > .span7 {
+		width : @gridColumnWidth * 7 + @gridGutterWidth * 7	
+	}
 }
 
 .content-bloc {
@@ -163,7 +171,7 @@ h3{
 		color: @color;
 		font-weight: bold;
 		text-transform: uppercase;
-		font-size: 12px;
+		font-size: 13px;
 	
 		&.active {
 			background-color: darken(@baseColor, 5);
@@ -235,19 +243,34 @@ h3{
 
 a.brand
 {
-	text-transform: none;
-	color: lighten(@baseColor, 60);
-	font-family: 'Fjalla One', sans-serif;
-	font-size: 24px;
-	line-height: 31px;
-	text-shadow: 0 -1px 0 rgba(0,0,0, 0.7);
+	@gutter: 7px;
+	
+	font-size: 12px;
 	font-weight: normal;
+	text-transform: none;
+	color: @colorShadeMinusTwo;
+	text-shadow: 0 -1px 0 rgba(0,0,0, 0.5);
+	
 	padding-left: 15px;
 	border-right: 0;
-	background-color: lighten(@baseColor, 3);
+	background-color: lighten(@baseColor, 4);
+	
+	em {
+		font-family: 'Fjalla One', sans-serif;
+		color: @colorShadeMinusOne;
+		font-size: 24px;
+		line-height: 31px;
+		font-weight: normal;
+		font-style: normal;
+		display: block;
+		text-shadow: 0 -1px 0 rgba(0,0,0, 0.7);
+		padding-bottom: @gutter;
+		margin-bottom: @gutter;
+		border-bottom: 2px solid @baseColor;
+	}
 	
 	&:hover {
-		color: @white;
+		color: @colorShadeMinusOne;
 	}
 }
 
@@ -264,6 +287,14 @@ a.brand
 	.makeColumn(11);
 	top: -22px;
 	.border-radius(0 0 3px 3px);
+}
+
+.alert {
+	background: lighten(@bodyBackgroundColor, 1);
+	border: 1px solid darken(@greyBorderColor, 5);
+	border-bottom: 2px solid darken(@greyBorderColor, 5);
+	.box-shadow(0 1px 1px rgba(255,255,255,0.8));
+	color: lighten(@textColor, 35);
 }
 
 h4.sep
@@ -459,6 +490,11 @@ footer.container p
 mark
 {
 	background-color: lighten(yellow, 25);
+	text-shadow: 0 1px 0 @white;
+}
+
+mark.light {
+	background-color: lighten(yellow, 40);
 }
 
 .job-status-icon
@@ -468,7 +504,7 @@ mark
 	margin-right: @insidePadding;
 }
 
-#job-details
+.job-details
 {
 	h4, code, pre
 	{
@@ -487,7 +523,6 @@ mark
 	small
 	{
 		display:block;
-	
 		color: lighten(@textColor, 25);
 	}
 	
@@ -518,10 +553,20 @@ mark
 	{
 		pre
 		{
-	
-			font-size: 11px;	
+			border: 0;
+			padding: 0;
+			font-size: 11px;
+			border-left: 4px solid @colorShadeMinusOne;
+			white-space: wrap;
+						
+			code {
+				padding: @insidePadding;
+				background: transparent;
+			}	
 		}
 	}
+	
+
 	
 	time
 	{
@@ -857,7 +902,7 @@ td.stats-nb, th.stats-nb
 				
 		& > div
 		{
-			padding: 10px 0 ;
+			padding: 14px 0 ;
 		}
 		
 		strong
@@ -1434,5 +1479,60 @@ th {
 	
 	& > li > a:active {
 		.box-shadow(0 5px 0 @colorShadePlusTwo);
+	}
+}
+
+#scheduled-jobs-graph {
+	position: relative;
+}
+
+.graph-browse-previous, .graph-browse-next {
+	position: absolute;
+	top: -@gridGutterWidth - (@baseFontSize * 1.75); // 1.75 is the h2 font size, buttons are placed beside h2
+	right: 0;
+	#navButtons .arrowNav();
+}
+
+.graph-browse-previous {
+	right: 22px;
+}
+
+.domain-nav a {
+	#navButtons .arrowNav();
+}
+
+.ftr-bloc .domain-nav {
+	margin-top: @gridGutterWidth;
+}
+
+#navButtons {
+	.arrowNav() {
+		border: 0;
+		text-align: center;
+		padding: @insidePadding/2 @insidePadding/1.25;
+		background: lighten(@grayLighter, 3);
+		
+		&:first-child {
+			.border-radius(3px 0 0 3px);
+			margin-right: 3px;
+		}
+		
+		&:last-child {
+			.border-radius(0 3px 3px 0);
+		}
+		
+		&, &:visited {
+			color: lighten(@textColor, 25);
+		}
+		
+		&:hover {
+			background: lighten(@textColor, 25);
+			color: @white;
+		}
+		
+		&:active {
+			background: @colorShadePlusOne;
+			color: @white;
+		}
 	}
 }

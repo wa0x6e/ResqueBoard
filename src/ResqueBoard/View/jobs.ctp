@@ -18,14 +18,6 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-	$jobStatus = array(
-				ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING => 'waiting',
-				ResqueBoard\Lib\ResqueStat::JOB_STATUS_RUNNING => 'running',
-				ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED => 'failed',
-				ResqueBoard\Lib\ResqueStat::JOB_STATUS_COMPLETE => 'complete'
-			);
-
-
 ?>
 	<div class="page-header">
 		<h1>Jobs Dashboard</h1>
@@ -187,7 +179,7 @@
 		echo '<h2><a href="/jobs/view">Latest Jobs</a></h2>';
 
 
-		if (!empty($jobs)) {
+
 
 			?>
 			<div class="breadcrumb clearfix">
@@ -200,163 +192,28 @@
 			</div>
 
 			<?php
-			echo '<ul class="unstyled" id="job-details">';
 
-			foreach ($jobs as $job) {
-				?>
-				<li class="accordion-group<?php if ($job['status'] == ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED) echo ' error' ?>">
-					<div class="accordion-heading" data-toggle="collapse" data-target="#<?php echo $job['job_id']?>">
-						<div class="accordion-toggle">
-							<span title="Job <?php echo $jobStatus[$job['status']] ?>" class="job-status-icon" data-event="tooltip">
-							<img src="/img/job_<?php echo $jobStatus[$job['status']] ?>.png" title="Job <?php echo $jobStatus[$job['status']] ?>" height=24 width=24 /></span>
-							<span class="label label-info pull-right"><?php echo $job['worker']?></span>
-							<h4>#<?php echo $job['job_id']?></h4>
-							<time datetime="<?php echo date('c', strtotime($job['time']))?>"><i class="icon-time"></i> <?php echo date('H:i:s', strtotime($job['time'])); ?></time>
-							<small>Performing <code><?php echo $job['class']?></code> in
-							<span class="label label-success"><?php echo $job['queue']?></span></small>
+			\ResqueBoard\Lib\JobHelper::renderJobs($failedJobs, 'No jobs found');
 
-						</div>
-					</div>
-					<div class="collapse<?php if (count($jobs) == 1) echo ' in'; ?> accordion-body" id="<?php echo $job['job_id']?>">
-						<div class="accordion-inner">
-							<p>
-								<span class="pull-right">Took <?php echo $job['took']; ?> ms</span>
-								<i class="icon-time<?php if ($job['status'] == ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED) echo ' icon-white' ?>"></i> <b>Added on </b><?php echo $job['time']; ?></p>
 
-							<?php if (isset($job['log'])) {
-								echo '<div class="alert alert-error">' . $job['log'] . '</div>';
-							}
-
-							if (isset($job['trace'])) {
-								echo '<pre class="job-trace"><code class="language-php">'. $job['trace'] . '</code></pre>';
-							}
-							?>
-
-							<pre class="job-args"><code class="language-php"><?php echo $job['args'] ?></code></pre>
-						</div>
-					</div>
-				</li>
-				<?php
-			}
-			echo '</ul>';
-
-		} else {
-			?>
-				<div class="alert alert-info">
-					Nothing to display
-				</div>
-			<?php
-		}
 		?>
 		<a href="/jobs/view" class="btn btn-block btn-small">More jobs</a>
 
 
-			<div class="">
+
 				<h2>Recent failures</h2>
-				<?php
-			if (!empty($failedJobs)) {
+				<?php \ResqueBoard\Lib\JobHelper::renderJobs($failedJobs, 'No failed jobs so far :)');
 
-
-			echo '<ul class="unstyled" id="job-details">';
-
-			foreach ($failedJobs as $job) {
-				?>
-				<li class="accordion-group<?php if ($job['status'] == ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED) echo ' error' ?>">
-					<div class="accordion-heading" data-toggle="collapse" data-target="#<?php echo $job['job_id']?>">
-						<div class="accordion-toggle">
-							<span title="Job <?php echo $jobStatus[$job['status']] ?>" class="job-status-icon" data-event="tooltip">
-							<img src="/img/job_<?php echo $jobStatus[$job['status']] ?>.png" title="Job <?php echo $jobStatus[$job['status']] ?>" height=24 width=24 /></span>
-							<span class="label label-info pull-right"><?php echo $job['worker']?></span>
-							<h4>#<?php echo $job['job_id']?></h4>
-							<time datetime="<?php echo date('c', strtotime($job['time']))?>"><i class="icon-time"></i> <?php echo date('H:i:s', strtotime($job['time'])); ?></time>
-							<small>Performing <code><?php echo $job['class']?></code> in
-							<span class="label label-success"><?php echo $job['queue']?></span></small>
-
-						</div>
-					</div>
-					<div class="collapse<?php if (count($jobs) == 1) echo ' in'; ?> accordion-body" id="<?php echo $job['job_id']?>">
-						<div class="accordion-inner">
-							<p>
-								<span class="pull-right">Took <?php echo $job['took']; ?> ms</span>
-								<i class="icon-time<?php if ($job['status'] == ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED) echo ' icon-white' ?>"></i> <b>Added on </b><?php echo $job['time']; ?></p>
-
-							<?php if (isset($job['log'])) {
-								echo '<div class="alert alert-error">' . $job['log'] . '</div>';
-							}
-
-							if (isset($job['trace'])) {
-								echo '<pre class="job-trace"><code class="language-php">'. $job['trace'] . '</code></pre>';
-							}
-							?>
-
-							<pre class="job-args"><code class="language-php"><?php echo $job['args'] ?></code></pre>
-						</div>
-					</div>
-				</li>
-				<?php
-			}
-			echo '</ul>';
-
-		} else {
-			?>
-				<div class="alert alert-info">
-					No failed jobs so far :)
-				</div>
-			<?php
-		}
 		?>
-			</div>
 
-			<div class="">
+
+
 				<h2><a href="/jobs/pending" title="View all pending jobs">Latest Pending jobs</a></h2>
-				<?php
-			if (!empty($pendingJobs)) {
-
-
-			echo '<ul class="unstyled" id="job-details">';
-
-			foreach ($pendingJobs as $job) {
+				<?php \ResqueBoard\Lib\JobHelper::renderJobs($pendingJobs, 'No pending jobs');
+					if (!empty($pendingJobs)) {
+						echo '<a href="/jobs/pending" title="View more pending jobs" class="btn btn-block btn-small">More pending jobs</a>';
+					}
 				?>
-				<li class="accordion-group">
-					<div class="accordion-heading" data-toggle="collapse" data-target="#<?php echo $job['job_id']?>">
-						<div class="accordion-toggle">
-							<span title="Job <?php echo $jobStatus[$job['status']] ?>" class="job-status-icon" data-event="tooltip">
-							<img src="/img/job_<?php echo $jobStatus[$job['status']] ?>.png" title="Job <?php echo $jobStatus[$job['status']] ?>" height=24 width=24 /></span>
-							<h4>#<?php echo $job['job_id']?></h4>
-							<small>Performing <code><?php echo $job['class']?></code> in
-							<span class="label label-success"><?php echo $job['queue']?></span></small>
-
-						</div>
-					</div>
-					<div class="collapse<?php if (count($jobs) == 1) echo ' in'; ?> accordion-body" id="<?php echo $job['job_id']?>">
-						<div class="accordion-inner">
-							<?php
-
-							if (isset($job['trace'])) {
-								echo '<h5>Error trace</h5>';
-								echo '<pre class="job-trace"><code class="language-php">'. $job['trace'] . '</code></pre>';
-							}
-							?>
-
-							<h5>Job arguments</h5>
-							<pre class="job-args"><code class="language-php"><?php echo $job['args'] ?></code></pre>
-						</div>
-					</div>
-				</li>
-				<?php
-			}
-			echo '</ul>';
-			echo '<a href="/jobs/pending" title="View more pending jobs" class="btn btn-block btn-small">More pending jobs</a>';
-
-		} else {
-			?>
-				<div class="alert alert-info">
-					No pending jobs
-				</div>
-			<?php
-		}
-		?>
-			</div>
 
 
 		</div>

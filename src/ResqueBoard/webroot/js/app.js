@@ -2050,18 +2050,23 @@ if ($("#scheduled-jobs-graph").length > 0) {
 		scale : [1,4,8,12],
 		itemName : ["job", "jobs"],
 		range: 10,
+		browsing: true,
+		browsingOptions: {
+			nextLabel : "<i class=\"icon-chevron-right\"></i>",
+			previousLabel : "<i class=\"icon-chevron-left\"></i>"
+		},
 		data: "/api/scheduled-jobs/stats/{{t:start}}/{{t:end}}",
 		onClick : function(start, itemNb) {
 
 			var formatDate = d3.time.format("%H:%M, %A %B %e %Y");
 
-			$("#scheduled-jobs-list").html("<h2>Jobs scheduled for " + formatDate(start) + "</h2>");
+			$("#scheduled-jobs-list").html("<h2>Jobs scheduled for <mark class=\"light\">" + formatDate(start) + "</mark></h2>");
 			$("#scheduled-jobs-list").append("<div class=\"alert alert-info\" id=\"scheduled-jobs-loading\">Loading datas ...</div>");
 
 			d3.json("/api/scheduled-jobs/" + (+start)/1000 + "/" + ((+start)/1000+60), function(data) {
 
 				$("#scheduled-jobs-loading").remove();
-				$("#scheduled-jobs-list").append("<ul class=\"unstyled\" id=\"job-details\"></ul>");
+				$("#scheduled-jobs-list").append("<ul class=\"unstyled job-details\"></ul>");
 
 				for (var timestamp in data) {
 
@@ -2081,7 +2086,7 @@ if ($("#scheduled-jobs-graph").length > 0) {
 				if (jobsCount === 0) {
 					$("#scheduled-jobs-list").append("<div class=\"alert\">No jobs found for this period</div>");
 				} else {
-					$("#scheduled-jobs-list h2").prepend("<span class=\"badge pull-right\">" + jobsCount + "</span>");
+					$("#scheduled-jobs-list h2").prepend("<strong>" + jobsCount + "</strong> ");
 				}
 
 			});

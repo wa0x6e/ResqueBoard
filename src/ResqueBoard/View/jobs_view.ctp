@@ -17,46 +17,44 @@
  * @since         1.0.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-
-	$jobStatus = array(
-		ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING => 'waiting',
-		ResqueBoard\Lib\ResqueStat::JOB_STATUS_RUNNING => 'running',
-		ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED => 'failed',
-		ResqueBoard\Lib\ResqueStat::JOB_STATUS_COMPLETE => 'complete'
-	);
-
-
 ?>
 
 	<div class="page-header">
 		<h1>Jobs Browser</h1>
 	</div>
 
+    <ul class="nav nav-tabs page-nav-tab">
+	    <li class="active">
+	    	<a href="<?php echo $_SERVER['REQUEST_URI'] ?>" title="View all completed/failed jobs">Processed Jobs</a>
+	    </li>
+	    <li>
+	    	<a href="/jobs/pending" title="View all pending jobs">Pending Jobs</a>
+	    </li>
+    </ul>
 
 
-
-		    <ul class="nav nav-tabs page-nav-tab">
-		    <li class="active">
-		    	<a href="<?php echo $_SERVER['REQUEST_URI'] ?>" title="View all completed/failed jobs">Completed/Failed Jobs</a>
-		    </li>
-		    <li>
-		    	<a href="/jobs/pending" title="View all pending jobs">Pending Jobs</a>
-		    </li>
-		    </ul>
-
-
-		<div class="span7">
+	<div class="row">
+	<div class="span7">
+	<div class="bloc">
 
 
 		<?php
 
 		if (!empty($searchToken)) {
-			echo '<h2>Search results</h2>';
+			echo '<h2>Search results';
+			if (!empty($pagination->totalResult)) {
+				echo '<span class="badge pull-right">' . number_format($pagination->totalResult) . ' results</span>';
+			}
+			echo'</h2>';
 		} else {
-			echo '<h2>Latest Jobs</h2>';
+			echo '<h2>Latest Jobs';
+			if (!empty($pagination->totalResult)) {
+				echo '<span class="badge pull-right">' . number_format($pagination->totalResult) . ' results</span>';
+			}
+			echo'</h2>';
 		}
 
-		if (!empty($jobs) && 1 == 2) {
+		if (!empty($jobs)) {
 
 			?>
 			<div class="breadcrumb clearfix">
@@ -87,81 +85,12 @@
 				echo 'Page ' . $pagination->current .' of ' . number_format($pagination->totalPage) . ', found ' . number_format($pagination->totalResult) . ' jobs';
 				} ?>
 			</div>
-			<p>Current server time is <?php echo date('r'); ?></p>
+
 			<?php
-			echo '<ul class="unstyled infinite-scroll" id="job-details">';
 
-			foreach ($jobs as $job) {
-				?>
-				<li class="accordion-group<?php if ($job['status'] == ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED) echo ' error' ?>">
-					<div class="accordion-heading" data-toggle="collapse" data-target="#<?php echo $job['job_id']?>">
-						<div class="accordion-toggle">
-							<span title="Job <?php echo $jobStatus[$job['status']] ?>" class="job-status-icon" data-event="tooltip">
-							<img src="/img/job_<?php echo $jobStatus[$job['status']] ?>.png" title="Job <?php echo $jobStatus[$job['status']] ?>" height=24 width=24 /></span>
-							<span class="label label-info pull-right"><?php echo $job['worker']?></span>
-							<h4>#<?php echo $job['job_id']?></h4>
-							<time datetime="<?php echo date('c', strtotime($job['time']))?>" title="<?php echo date('c', strtotime($job['time']))?>">
-								<i class="icon-time"></i> <?php echo date('H:i:s', strtotime($job['time'])); ?>
-							</time>
-							<small>Performing <code><?php echo $job['class']?></code> in
-							<span class="label label-success"><?php echo $job['queue']?></span></small>
+			\ResqueBoard\Lib\JobHelper::renderJobs($jobs, 'No jobs found', 'infinite-scroll');
+			\ResqueBoard\Lib\PageHelper::renderPagination($pagination);
 
-						</div>
-					</div>
-					<div class="collapse<?php if (count($jobs) == 1) echo ' in'; ?> accordion-body" id="<?php echo $job['job_id']?>">
-						<div class="accordion-inner">
-							<p>
-								<span class="pull-right">Took <?php echo $job['took']; ?> ms</span>
-
-								<i class="icon-time<?php if ($job['status'] == ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED) echo ' icon-white' ?>"></i> <b>Added on </b><?php echo $job['time']; ?></p>
-
-							<?php if (isset($job['log'])) {
-								echo '<div class="alert alert-error">' . $job['log'] . '</div>';
-							}
-
-							if (isset($job['trace'])) {
-								echo '<pre class="job-trace"><code class="language-php">'. $job['trace'] . '</code></pre>';
-							}
-							?>
-
-							<pre class="job-args"><code class="language-php"><?php echo $job['args'] ?></code></pre>
-						</div>
-					</div>
-				</li>
-				<?php
-			}
-			echo '</ul>';
-
-			if (isset($pagination)) {
-				?>
-						<ul class="pager">
-						<li class="previous<?php if ($pagination->current == 1) echo ' disabled'?>">
-							<a href="<?php
-								if ($pagination->current > 1) {
-									echo $pagination->baseUrl . http_build_query(array_merge($pagination->uri, array('page' => $pagination->current - 1)));
-								} else {
-									echo '#';
-								}
-							?>">&larr; Older</a>
-						</li>
-						<li>
-							Page <?php echo $pagination->current?> of <?php echo number_format($pagination->totalPage) ?>, found <?php echo number_format($pagination->totalResult) ?> jobs
-						</li>
-						<li class="next<?php if ($pagination->current == $pagination->totalPage) {
-							echo ' disabled';
-						}?>">
-							<a href="<?php
-								if ($pagination->current < $pagination->totalPage) {
-									echo $pagination->baseUrl . http_build_query(array_merge($pagination->uri, array('page' => $pagination->current + 1)));
-								} else {
-									echo '#';
-								}
-							?>">Newer &rarr;</a>
-						</li>
-						</ul>
-
-				<?php
-			}
 
 
 		}
@@ -171,15 +100,15 @@
 				Errors in your search request
 			</div>
 		<?php
-		} elseif ($searchToken !== null) {
+		} elseif (!empty($searchToken)) {
 			?>
 				<div class="alert alert-info">
-					No jobs found matching <mark><?php echo $searchToken?></mark>
+					No jobs found matching <mark class="light"><?php echo $searchToken?></mark>
 				</div>
 			<?php
 		} else {
 			?>
-				<div class="alert alert-info">
+				<div class="alert">
 					Nothing to display
 				</div>
 			<?php
@@ -187,11 +116,13 @@
 		?>
 		</div>
 </div>
+</div>
+</div>
 
 
 		<div class="sidebar sidebar-large">
 
-			<h2>Search</h2>
+			<h3>Search</h3>
 			<form class="" action="/jobs/view" method="GET">
 				<div class="input-append">
 					<input type="text" name="job_id" class="span2" placeholder="Job #Id"/>
@@ -199,7 +130,7 @@
 				</div>
 			</form>
 
-			<h2>Advanced search</h2>
+			<h3>Advanced search</h3>
 			<form action="/jobs/view" method="GET">
 				<fieldset>
 					<div class="control-group">

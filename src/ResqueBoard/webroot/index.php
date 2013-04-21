@@ -26,7 +26,7 @@ if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
 
-define('APPLICATION_VERSION', '1.5.1');
+define('APPLICATION_VERSION', '2.0.0-beta');
 
 include ROOT . DS . 'Config' . DS . 'Core.php';
 
@@ -429,7 +429,7 @@ $app->get(
 );
 
 $app->get(
-    '/scheduled-jobs',
+    '/jobs/scheduled',
     function () use ($app, $settings) {
         try {
 

@@ -6,34 +6,257 @@
 @import "variables.less";
 @import "cal-heatmap.less"; 
 
+@baseColor : #33414c;
+
+// From Kuler
+
+@colorShadeMinusTwo: #668498;
+@colorShadeMinusOne: #90BBD8;
+@colorShadePlusOne: #3B4D59;
+@colorShadePlusTwo: #222C33;
+
+@colorCompMinusTwo: #594444;
+@colorCompMinusOne: #567E98;
+@colorCompPlusOne: #7F7F48;
+@colorCompPlusTwo: #98985E;
+
+@insidePadding : @gridGutterWidth / 2;
+
+@bodyBackgroundColor : darken(@white, 5);
+
+@greyBorderColor: darken(@white, 10);
+
+
+@textColor : lighten(@baseColor, 5);
+@textColorLight : lighten(@baseColor, 50);
+
 body
 {
-	padding-top: 60px;
 	padding-bottom: @gridGutterWidth ;
-	background-color: @grayLighter;
+	background-color: @colorShadePlusTwo; 
+	font-family: 'PT Sans', sans-serif;
+	color: @textColor;
 }
 
 * {
 	.transition(all .2s);
 }
 
-#main
-{
-	background-color: @white;
-	padding: 0 @gridGutterWidth;
-	border: 1px solid darken(@grayLighter, 5);
-	position: relative;
+a, a:visited {
+	color: @colorCompPlusTwo;
+	text-decoration: none;
 }
 
-.navbar a.brand
+a:hover {
+	color: @colorCompPlusOne;
+	text-decoration: none;
+}
+
+h1
 {
-	padding: 8px 20px;
+	font-size: 32px;
+	margin: 0;
+	line-height: 1;
+	color: darken(@textColor, 5);
+}
+
+h2{
+	font-size: 1.75em;
+	color: lighten(@textColor, 5);
 	
-	img
-	{
-		vertical-align: text-bottom;
+	.badge.pull-right {
+		margin-top: 0.8em;
+	}
+	
+	.badge {
+		vertical-align: middle;
+		background-color: @colorShadeMinusOne;
 	}
 }
+
+h3{
+	font-size: 1.5em;
+	color: lighten(@textColor, 10);
+}
+
+.badge {
+	.border-radius(3px);
+	padding-left: @insidePadding/2;
+	padding-right: @insidePadding/2;
+}
+
+// Heading Subtitle
+.subtitle
+{
+	display: block;
+	line-height: 1;
+	font-size: 60%;
+}
+
+.page-header{
+	background-color: darken(@white, 2);
+	padding: @gridGutterWidth;
+	box-shadow: 0 1px 0 darken(@white, 1);
+	border-bottom-color: @greyBorderColor;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+
+.alert-page {
+	border-radius: 0;
+	border-top: 0;
+}
+
+#main
+{
+	background-color: @baseColor;
+	border: 1px solid darken(@baseColor, 10);
+	position: relative;
+	margin: 0 auto;
+	width: @gridColumnWidth * 12 + @gridGutterWidth * 11;
+	margin-top: @gridGutterWidth;
+	.clearfix();
+}
+
+#body {
+	background-color: @bodyBackgroundColor;
+	float: left;
+	padding: 0;
+	border-top: 1px solid @white;
+	min-height: 400px;
+}
+
+.content-bloc {
+	margin: 0 @gridGutterWidth;
+	background: @white;
+	border: 1px solid @greyBorderColor;
+}
+
+.bloc {
+	margin: 0 @gridGutterWidth;
+}
+
+.ftr-bloc {
+	padding: 0 @gridGutterWidth;
+	background-color: @white;
+	border-top: 1px solid @greyBorderColor;
+	border-bottom: 1px solid @greyBorderColor;
+	box-shadow: 0 1px 0 darken(@white, 1);
+}
+
+.menu {
+	
+	@color : #8b98a1;
+	@borderRightWidth : 3px;
+	
+	width: @gridColumnWidth * 2 + @gridGutterWidth* 2;
+	float: left;
+	border-top: 1px solid lighten(@baseColor, 5);
+	border-bottom: 1px solid lighten(@baseColor, 5);
+	list-style: none;
+	margin: 0;
+		
+	a {
+		display: block;
+		padding: 5px 15px;
+		color: @color;
+		font-weight: bold;
+		text-transform: uppercase;
+		font-size: 12px;
+	
+		&.active {
+			background-color: darken(@baseColor, 5);
+			color: lighten(@color, 15);
+		}
+		
+		&:hover {
+			background-color: darken(@baseColor, 10);
+		}
+		
+		&.brand:hover {
+			background-color: darken(@baseColor, 2);
+		}
+
+		&:active {
+			background-color: darken(@baseColor, 15);
+		}
+
+	}
+	
+	& > li {
+		border-top: 1px solid lighten(@baseColor, 5);
+		border-bottom: 1px solid darken(@baseColor, 5);
+	}
+	
+	ul {
+		margin: 0;
+		list-style: none;
+		
+		a {
+			color : darken(@color, 15);
+			padding-left: 20px;
+			font-size: 11px;
+			
+			i {
+				margin-right: 3px;	
+			}
+		}
+		
+		
+	}
+	
+	a:hover {
+		color:  @colorCompPlusTwo;
+	}
+	
+	.active{
+		
+	}
+	
+}
+
+.sidebar {
+	
+	width: @gridColumnWidth * 2 + @gridGutterWidth;
+	
+	&.sidebar-large {
+		width: @gridColumnWidth * 3 + @gridGutterWidth;
+	}
+	
+	background-color: @colorCompMinusOne;
+	margin-left: 0;
+	margin-right: 0;
+	padding: 0 @gridGutterWidth/2;
+	color: @textColorLight;
+	.clearfix();
+	float:left;
+}
+
+a.brand
+{
+	text-transform: none;
+	color: lighten(@baseColor, 60);
+	font-family: 'Fjalla One', sans-serif;
+	font-size: 24px;
+	line-height: 31px;
+	text-shadow: 0 -1px 0 rgba(0,0,0, 0.7);
+	font-weight: normal;
+	padding-left: 15px;
+	border-right: 0;
+	background-color: lighten(@baseColor, 3);
+	
+	&:hover {
+		color: @white;
+	}
+}
+
+.page-header, .menu a.brand {
+	@padding: @gridGutterWidth * 0.75;
+	padding-top: @padding;
+	padding-bottom: @padding;
+}
+
 
 .page-alert {
 	position: absolute;	
@@ -55,6 +278,7 @@ h4.sep
 {
 	height: 190px;
 	margin-top: @gridGutterWidth / 2;
+	background-color: @white;
 }
 
 .chart rect 
@@ -127,7 +351,7 @@ h4.sep
 #log-area
 {
 	list-style: none;
-	margin: @gridGutterWidth 0;
+	margin: 0;
 	
 	&:hover li
 	{
@@ -241,18 +465,11 @@ mark
 {
 	display: block;
 	float: left;
-	margin-right: 10px;
-	border: 1px solid darken(#fff, 20);
-	.border-radius(3px);
-	padding: 5px;
-	background-color: #fff;
-	.box-shadow(0 1px 5px 0 rgba(0,0,0,0.2) inset);
+	margin-right: @insidePadding;
 }
 
 #job-details
 {
-
-	
 	h4, code, pre
 	{
 		font-family: Consolas, "Courier New", Courier, mono;
@@ -264,56 +481,44 @@ mark
 		display: inline-block;
 		margin: 0;
 		padding: 0;
-		font-size: @baseFontSize * 1.1;
+		font-size: 1.1em;
 	}
 	
 	small
 	{
 		display:block;
-		font-size: 11px;
+	
 		color: lighten(@textColor, 25);
 	}
 	
-	.accordion-group {
-	  	border: 1px solid darken(#fff, 20);
-	  	
-	  	&.error
-		{
-			border: 1px solid lighten(@red, 35);
+	.job-status-icon {
+		margin-top: 8px;
+	}
 	
-			.accordion-body
-			{
-				#gradient .vertical(lighten(@red, 25), lighten(@red, 50));
-				color: #fff;
-			}
-			
-			.accordion-heading
-			{
-				#gradient .vertical(#fff, lighten(@red, 50));
-			}
+	.accordion-group {
+	  	border: 1px solid @greyBorderColor;
+	  	background: @white;
+	  	margin-bottom: 4px;
+	  	
+	  	&.error, &.error:hover
+		{
+			border-left: 4px solid @red;
+		}
+		
+		&:hover {
+			border: 1px solid darken(@greyBorderColor, 25);
 		}
 	}
 	
-	code
-	{
-		font-size: 11px;
+	.accordion-inner {
+		border-top: 0;
 	}
-	
-	.accordion-heading
-	{
-		#gradient .vertical(#fff, darken(#fff, 5));
-	}
-	
-	.accordion-heading:hover
-	{
-		#gradient .vertical(#fff, darken(#fff, 10));
-	}
-	
+		
 	.accordion-body
 	{
 		pre
 		{
-			background-color: #fff;
+	
 			font-size: 11px;	
 		}
 	}
@@ -329,6 +534,7 @@ mark
 		opacity: 0.6;
 	}
 }
+
 
 .workers-list-item
 {
@@ -525,33 +731,9 @@ span.chart-bar + b
 	z-index: 1;
 }
 
-// Heading Subtitle
-.subtitle
-{
-	display: block;
-	line-height: 1;
-}
 
-.job-trace, .job-args
-{
-	position: relative;
 
-	&:before
-	{
-		content: "Job error log";
-		position: absolute;
-		right: 5px;
-		background-color: darken(@yellow, 15);
-		color: #fff;
-		padding: 0 8px;
-		top: 5px;
-		.border-radius(3px);
-	}
-}
-.job-args:before
-{
-	content: "Job arguments";
-}
+
 
 .chart-pie path:hover, .classyPieChart path:hover
 {
@@ -561,6 +743,8 @@ span.chart-bar + b
 
 .breadcrumb
 {
+	background-color: @white;
+	
 	form, form + div
 	{
 		float:left;
@@ -661,20 +845,49 @@ td.stats-nb, th.stats-nb
   font-weight: bold;
 }
 
-.jobs-stats
-{
-	@borderColor : lighten(@grayLight, 25);
-	border: 1px solid @borderColor;
-	margin-bottom: @baseLineHeight;
+.stats {
+
+	margin-bottom: 0;
 	
 	li
 	{
 		color: @grayLight;
 		display:block;
 		float: left;
-		border-right: 1px solid @borderColor;
-		width: 33%;
-		background-color: lighten(@grayLighter, 5);
+				
+		& > div
+		{
+			padding: 10px 0 ;
+		}
+		
+		strong
+		{
+			color: @textColor;
+			font-size: 24px;
+			display: block;
+		}
+	}
+}
+
+.jobs-stats
+{
+	
+	.separated {
+		border-right: 1px solid @greyBorderColor;
+	}
+	
+	.separated:last-child
+	{
+		border-right: none;
+	}
+	
+	li
+	{
+		color: @grayLight;
+		display:block;
+		float: left;
+		
+		//background-color: lighten(@grayLighter, 5);
 				
 		& > div
 		{
@@ -696,7 +909,7 @@ td.stats-nb, th.stats-nb
 			clear: both;
 			float: none;
 			border-right: none;
-			border-bottom: 2px solid @borderColor;
+			border-bottom: 2px solid @greyBorderColor;
 			background-color: #fff;
 			
 			strong
@@ -744,10 +957,7 @@ td.stats-nb, th.stats-nb
 			}
 		}
 		
-		&:last-child
-		{
-			border-right: none;
-		}
+		
 	}
 }
 
@@ -810,16 +1020,6 @@ form label .icon-info-sign
 	cursor: help;
 }
 
-.page-header
-{
-	position: relative;
-}
-
-.page-header .btn-nav
-{
-	position: absolute;
-	bottom: -15px;
-}
 
 .li-head
 {
@@ -830,10 +1030,12 @@ form label .icon-info-sign
 
 .knight-unit
 {
-	background-color: @grayLighter;
+	background-color: @white;
 	padding: 50px;
 	.border-radius(5px);
 	text-align:center;
+	margin-top: @gridGutterWidth;
+	margin-bottom: @gridGutterWidth;
 
 	h2
 	{
@@ -862,11 +1064,12 @@ form label .icon-info-sign
 	=======================
 */
 .jobs-matrix {
-	@cellsize: 25px;
-	margin: 20px 0;
+	@cellsize: 19px;
+	margin: @gridGutterWidth 0;
+	padding: 0;
 	
 	td {
-		border: 1px solid #eee;
+		border: 1px solid @grayLighter;
 		text-align: center;
 		height: @cellsize;
 		width: @cellsize;
@@ -910,7 +1113,6 @@ form label .icon-info-sign
 		
 		b {
 			font-size: 12px;
-		
 		}		
 	}
 	
@@ -980,12 +1182,16 @@ form label .icon-info-sign
 }
 
 
+th {
+	background-color: lighten(@baseColor, 10);
+	color: lighten(@baseColor, 60);
 
+}
 
 .table-legend{
 	
 	border: 1px solid #eee;
-	width: 90px;
+	width: 102px;
 	float: left;
 	margin-right: 10px;
 	
@@ -994,6 +1200,7 @@ form label .icon-info-sign
 		float: left;
 		width: 15px;
 		height: 15px;
+		margin-right: 2px;
 	}
 }
 
@@ -1096,11 +1303,13 @@ form label .icon-info-sign
 
 #type-range {
 	
-	@borderColor : lighten(@grayLight, 25);
+
+	padding: 0 @gridGutterWidth;
+	position: relative;
 	
 	li > div {
 		padding: 0;
-		border-right:  1px solid @borderColor;
+		border-right:  1px solid @greyBorderColor;
 	}
 	
 	li:last-child > div {
@@ -1113,26 +1322,23 @@ form label .icon-info-sign
 	
 	li {
 		width: 20%;
-		border: 0;
 	}
 	
 	a {
 		display: block;
-		outline: 0;
 		
 		&:hover {
-			text-decoration: none;
+			background-color: @white;
+			box-shadow: 0 -5px 0 @colorCompPlusOne;
 		}
 	}
-	
+		
 	.active {
-		background-color: rgba(0,0,0,0.05);
-		.box-shadow(0 0 5px rgba(0,0,0,0.2) inset);
-		
-		&:hover {
-			background-color: rgba(0,0,0,0.08);
-		}
-		
+		background-color: lighten(@bodyBackgroundColor, 3);
+		box-shadow: 0 -5px 0 @colorCompPlusTwo;
+		outline: 0;
+		top: -5px;
+		position: relative;		
 	}
 	
 	i[class^="icon-"], i[class*=" icon-"] {
@@ -1183,4 +1389,50 @@ form label .icon-info-sign
 
 .dropdown-menu.styled {
 	#gradient .vertical(#fff, darken(#fff, 3));	
+}
+
+.split-three li {
+	width: 33%;
+}
+
+.split-four li {
+	width: 25%;
+}
+
+.split-four li:last-child {
+	width: 24.5%;
+}
+
+
+.page-nav-tab {
+	margin-bottom: 0;
+	padding: 0 @gridGutterWidth;
+	
+	& > li > a {
+		font-weight: bold;
+		border: 0;
+		.border-radius(0);
+		.box-shadow(0 2px 0 @white);
+	}
+	
+	& > .active > a {
+		background-color: lighten(@bodyBackgroundColor, 3);
+		border: 0;
+		.box-shadow(0 5px 0 @colorShadeMinusOne);
+		
+	}
+	
+	& > li > a:hover, .dropdown.open > a, .dropdown.open > a:hover, .active > a:hover {
+		background-color: lighten(@bodyBackgroundColor, 4);
+		border: 0;
+		.box-shadow(0 3px 0 @colorShadeMinusTwo);
+	}
+	
+	.open > .dropdown-toggle {
+		color: @colorShadePlusTwo;
+	}
+	
+	& > li > a:active {
+		.box-shadow(0 5px 0 @colorShadePlusTwo);
+	}
 }

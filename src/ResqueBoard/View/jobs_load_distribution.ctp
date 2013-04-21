@@ -21,18 +21,15 @@
 $timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
 
 ?>
-
-<div class="container" id="main">
 	<div class="page-header">
-		<h2>Jobs load distribution
-		<small class="subtitle">
-			Jobs distribution by hour and by day
-		</small>
-		</h2>
+		<h1>Jobs load distribution</h1>
 	</div>
 
 <div class="row">
-		<div class="span12">
+	<div class="span10">
+
+		<div class="bloc">
+
 			<form class="pull-right navigator">
 				<?php
 				$start = $startDate->modify('first day of this month');
@@ -60,6 +57,9 @@ $timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
 
 				echo '<h2>' . $date->format('F Y') . '</h2>';
 			?>
+		</div>
+
+		<div class="ftr-bloc">
 			<table class="jobs-matrix">
 				<?php
 
@@ -74,8 +74,9 @@ $timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
 					$totalMonth += $job['value'];
 				}
 
-				echo '<tr>';
 				$hours = range(0, 23);
+
+				echo '<tr>';
 				echo '<td></td>';
 				foreach ($hours as $hour) {
 					echo '<td class="head-hour">'.(($hour < 10) ? '0' : ''). $hour . '</td>';
@@ -161,10 +162,9 @@ $timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
 				</tr>
 			</table>
 		</div>
-	</div>
 
-	<div class="row">
-		<div class="span5">
+		<div class="bloc">
+			<p>
 			<ol class="table-legend unstyled clearfix">
 				<li class="q0"></li>
 				<li class="q1"></li>
@@ -175,7 +175,12 @@ $timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
 			</ol>
 
 			Scale based on current month
+		</p>
 		</div>
 
 	</div>
+
 </div>
+
+
+

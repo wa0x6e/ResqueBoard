@@ -177,7 +177,7 @@
 
 				var
 					margin = {top:25, right:35, bottom: 35, left: 20},
-					width = 620 - margin.right - margin.left,
+					width = 740 - margin.right - margin.left,
 					height = 180 - margin.top - margin.bottom,
 					barHeight = height,
 					barWidth = width/limit - 2,
@@ -2049,6 +2049,7 @@ if ($("#scheduled-jobs-graph").length > 0) {
 		id : "scheduled-jobs-graph",
 		scale : [1,4,8,12],
 		itemName : ["job", "jobs"],
+		range: 10,
 		data: "/api/scheduled-jobs/stats/{{t:start}}/{{t:end}}",
 		onClick : function(start, itemNb) {
 

@@ -18,23 +18,18 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 ?>
-
-<div class="container" id="main">
 	<div class="page-header">
-		<h2>Logs</h2>
-		<div class="btn-group btn-nav">
-            <a class="btn btn-small" href="/logs">Tail latest</a>
-            <a class="btn btn-small active" href="/logs/browse">Browse logs</a>
-        </div>
+		<h1>Logs</h1>
 	</div>
 
 
 	<div class="row">
-		<div class="span10">
+		<div class="span8">
+		<div class="bloc">
 
 			<?php
 				if ($logs === null) {
-					echo '<div class="knight-unit"><i class="icon-search icon"></i><h2>Log Browser</h2><p class="tagline">Search and browse logs</p></div>';
+					echo '<div class="knight-unit"><i class="icon-search icon"></i><h2>Log Browser</h2><p class="tagline">Use the form on the right side to<br/> search and browse logs</p></div>';
 
 
 				} elseif (empty($logs)) {
@@ -120,10 +115,10 @@
 		?>
 
 		</div>
+</div></div>
+	</div>
 
-
-
-		<div class="span2">
+		<div class="sidebar">
 			<form class="" id="log-browser-form">
 				<fieldset><legend>Verbosity</legend>
 				<select class="span2" name="event_level[]" multiple="" size="<?php echo count($logLevels)?>">
@@ -170,7 +165,4 @@
 				<button type="submit" class="btn btn-block btn-primary">Search</button>
 
 			</form>
-		</div>
-	</div>
 
-</div>

@@ -24,21 +24,18 @@
 	});
 </script>
 
-<div class="container" id="main">
 	<div class="page-header">
-		<h2>Logs</h2>
-		<div class="btn-group btn-nav">
-            <a class="btn btn-small active" href="/logs">Tail latest</a>
-            <a class="btn btn-small" href="/logs/browse">Browse logs</a>
-        </div>
+		<h1>Logs</h1>
 	</div>
 
 
 	<div class="row">
-		<div class="span10">
+		<div class="span8">
 
-			<div class="pull-right"><button class="btn btn-mini" id="clear-log-area">Clear All</button></div>
-			<h3>Lastest Activities <span class="badge badge-info" data-rel="log-counter">0</span></h3>
+			<div class="bloc">
+				<div class="pull-right"><button class="btn btn-mini" id="clear-log-area">Clear All</button></div>
+				<h2>Latest Activities <span class="badge badge-info" data-rel="log-counter">0</span></h2>
+			</div>
 
 			<script id="log-template" type="text/x-jsrender">
 				<li data-verbosity="{{>levelName}}" data-type="{{>action}}" data-worker="{{>workerClass}}">
@@ -48,66 +45,64 @@
 				</li>
 			</script>
 
-			<ol id="log-area"></ol>
-
-			<div class="alert alert-info">
-				<strong>Tips</strong>
-				Hover on a row to highlight all activities from the same worker
+			<div class="content-bloc">
+				<ol id="log-area"></ol>
 			</div>
 
 		</div>
 
-		<div class="span2">
-			<form class="" id="log-filter-form">
-				<fieldset><legend>Listen to</legend>
-					<?php
-						foreach ($logLevels as $code => $info) {
-
-							echo '<label class="checkbox"><input type="checkbox" data-rel="'.
-							$info['name'].'"';
-
-							if (!in_array($info['name'], $mutedLevels)) {
-								echo ' checked=""';
-							}
-
-							echo '> '.ucwords($info['name']).'</label>';
-
-						}
-					?>
-				</fieldset>
-			</form>
-
-			<form class="" id="log-sweeper-form">
-				<fieldset><legend>Clear</legend>
-					<h4 class="sep">By verbosity</h4>
-					<ul class="unstyled">
-						<?php
-							foreach ($logLevels as $code => $info) {
-								echo '<li><span class="badge '.$info['class'].'" data-rel="'.$info['name'].'">0</span> '.
-								$info['name'].' <button class="btn btn-mini pull-right" data-level="'.
-								$info['name'].'" data-rel="verbosity">Clear</button></li>';
-							}
-						?>
-					</ul>
-
-					<h4 class="sep">By type</h4>
-					<ul class="unstyled">
-						<?php
-							foreach ($logTypes as $type) {
-								echo '<li><span class="badge" data-rel="'.$type.'">0</span> '.
-								$type.' <button class="btn btn-mini pull-right" data-type="'.
-								$type.'" data-rel="type">Clear</button></li>';
-							}
-						?>
-					</ul>
-				</fieldset>
-			</form>
-
-				<div class="alert alert-info">
-					Clear action just clear lines from the display, and does not delete them from the database
-				</div>
-
-		</div>
 	</div>
 
 </div>
+
+<div class="sidebar">
+	<form class="" id="log-filter-form">
+		<fieldset><legend>Listen to</legend>
+			<?php
+				foreach ($logLevels as $code => $info) {
+
+					echo '<label class="checkbox"><input type="checkbox" data-rel="'.
+					$info['name'].'"';
+
+					if (!in_array($info['name'], $mutedLevels)) {
+						echo ' checked=""';
+					}
+
+					echo '> '.ucwords($info['name']).'</label>';
+
+				}
+			?>
+		</fieldset>
+	</form>
+
+	<form id="log-sweeper-form">
+		<fieldset><legend>Clear</legend>
+			<h4 class="sep">By verbosity</h4>
+			<ul class="unstyled">
+				<?php
+					foreach ($logLevels as $code => $info) {
+						echo '<li><span class="badge '.$info['class'].'" data-rel="'.$info['name'].'">0</span> '.
+						$info['name'].' <button class="btn btn-mini pull-right" data-level="'.
+						$info['name'].'" data-rel="verbosity">Clear</button></li>';
+					}
+				?>
+			</ul>
+
+			<h4 class="sep">By type</h4>
+			<ul class="unstyled">
+				<?php
+					foreach ($logTypes as $type) {
+						echo '<li><span class="badge" data-rel="'.$type.'">0</span> '.
+						$type.' <button class="btn btn-mini pull-right" data-type="'.
+						$type.'" data-rel="type">Clear</button></li>';
+					}
+				?>
+			</ul>
+		</fieldset>
+	</form>
+
+	<div class="alert alert-info">
+		Clear action just clear lines from the display, and does not delete them from the database
+	</div>
+
+

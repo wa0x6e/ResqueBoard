@@ -26,13 +26,13 @@
 			);
 
 
-?><div class="container" id="main">
+?>
 	<div class="page-header">
-		<h1>Jobs <small class="subtitle">Jobs dashboard</small></h1>
+		<h1>Jobs Dashboard</h1>
 	</div>
 	<div class="row">
 
-		<div class="span6">
+		<div class="span4">
 			<h2><a href="/jobs/distribution/class" title="View jobs distribution by classes">Distribution by classes</a></h2>
 
 			<div id="jobRepartition">
@@ -114,7 +114,7 @@
 			<a href="jobs/distribution">View all</a>
 		</div>
 
-		<div class="span6">
+		<div class="span4">
 
 			<ul class="jobs-stats unstyled clearfix">
 				<li class="total clearfix"><div>
@@ -178,13 +178,8 @@
 
 	</div>
 
-	<div class="row">
-		<div class="span12">
-		<hr>
-		</div>
 
-
-		<div class="span7">
+		<div class="span9">
 
 		<?php
 
@@ -254,9 +249,7 @@
 		}
 		?>
 		<a href="/jobs/view" class="btn btn-block btn-small">More jobs</a>
-		</div>
 
-		<div class="span5">
 
 			<div class="">
 				<h2>Recent failures</h2>
@@ -337,14 +330,15 @@
 					</div>
 					<div class="collapse<?php if (count($jobs) == 1) echo ' in'; ?> accordion-body" id="<?php echo $job['job_id']?>">
 						<div class="accordion-inner">
-							<p>
 							<?php
 
 							if (isset($job['trace'])) {
+								echo '<h5>Error trace</h5>';
 								echo '<pre class="job-trace"><code class="language-php">'. $job['trace'] . '</code></pre>';
 							}
 							?>
 
+							<h5>Job arguments</h5>
 							<pre class="job-args"><code class="language-php"><?php echo $job['args'] ?></code></pre>
 						</div>
 					</div>
@@ -367,5 +361,3 @@
 
 		</div>
 	</div>
-
-</div>

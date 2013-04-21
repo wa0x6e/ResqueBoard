@@ -28,15 +28,16 @@ $(document).ready(function() {
 <div id="worker-form" class="modal hide"></div>
 
 
-<div class="container" id="main">
 	<div class="page-header">
-		<h2>Workers <small class="subtitle">Active Workers activities</small></h2>
+		<h1>Workers</h1>
 	</div>
+
 	<div class="row">
-		<div class="span12">
+		<div class="span10">
 
+			<div class="bloc"><h2>Active workers <span class="badge badge-info"><?php echo count($workers) ?></span></h2></div>
 
-			<div id="working-area">
+			<div id="working-area" class="content-bloc">
 				<table class="table table-bordered">
 				<thead>
 					<tr>
@@ -54,10 +55,5 @@ $(document).ready(function() {
 			<script id="working-template" type="text/x-jsrender">
 				<span class="label" id="_{{>job_id}}">{{>action}}</span>
 			</script>
-
-
-
 		</div>
 	</div>
-
-</div>

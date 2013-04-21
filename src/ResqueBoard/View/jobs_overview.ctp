@@ -129,7 +129,7 @@ function formatDate($range, $start)
 {
 	switch ($range) {
 		case 'hour':
-			return $start->format('H') . ':00 -' . ($start->format('H') + 1) . ':00';
+			return $start->format('H') . ':00 - ' . ($start->format('H') + 1) . ':00';
 		case 'day':
 			return $start->format('l d F Y');
 		case 'week':
@@ -161,7 +161,7 @@ $headers = array(
 );
 
 
-?><div class="container" id="main">
+?>
 	<div class="page-header">
 		<h1>Jobs overview</h1>
 	</div>
@@ -173,9 +173,9 @@ $headers = array(
 	</script>
 
 	<div class="row">
-		<div class="span12">
+		<div class="span10">
 
-		    <ul class="nav nav-tabs" id="date-range">
+		    <ul class="nav nav-tabs page-nav-tab" id="date-range">
 		    	<?php
 		    		foreach ($ranges as $range => $info) {
 		    			echo '<li class="dropdown ' . ($currentRange !== $range ? '' : ' active') . '">';
@@ -222,6 +222,8 @@ $headers = array(
 		    	?>
 		    </ul>
 
+		    <div class="ftr-bloc">
+
 		    <div class="btn-group pull-right">
 		    	<?php
 		    		echo '<a href="/jobs/overview/' . $currentRange . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart' . $currentRange}($uriDate, '-1')->format('c')) . '" data-event="tooltip" rel="prev" class="btn" title="Previous '.$currentRange.'"><i class="icon-chevron-left"></i></a>';
@@ -238,32 +240,33 @@ $headers = array(
 		    	}
 		    	?></h2>
 
-		    <div class="row">
-		    	<div id="chart" class="span12"></div>
+
+		    	<div id="chart"></div>
+
 			</div>
 
-			<ul class="jobs-stats unstyled clearfix" id="type-range">
+			<ul class="stats unstyled clearfix" id="type-range">
 				<li><div>
 
-					<a class="active" href="" data-type="processed" data-expression="sum(got)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>">
+					<a class="active" href="#" data-type="processed" data-expression="sum(got)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>">
 						<i class="pull-right icon-check"></i>
-						<strong><?php echo number_format($jobsStats->total) ?></strong>Processed Jobs</a>
+						<strong><?php echo number_format($jobsStats->total) ?></strong>Processed Jobs<br/><br/></a>
 
 
 				</div></li>
 				<li><div>
 
-					<a href="" data-type="fail" data-expression="sum(fail)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><i class="pull-right icon-check-empty"></i>
-						<strong><?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?> %</strong> <?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]) ?> failed Jobs </a>
+					<a href="#" data-type="fail" data-expression="sum(fail)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><i class="pull-right icon-check-empty"></i>
+						<strong><?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?> %</strong> <?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]) ?> failed Jobs<br/><br/></a>
 				</div></li>
 				<li><div>
-					<a href="" data-type="scheduled" data-expression="sum(movescheduled)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>">
+					<a href="#" data-type="scheduled" data-expression="sum(movescheduled)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>">
 						<i class="pull-right icon-check-empty"></i>
 						<strong><?php echo number_format($jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_SCHEDULED]) ?> %</strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_SCHEDULED]) ?> Scheduled Jobs</a>
 				</div></li>
 				<li><div>
 
-					<a href="" data-type="total-process-time" data-expression="sum(done(time))" data-axis="right" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><i class="pull-right icon-check-empty"></i>
+					<a href="#" data-type="total-process-time" data-expression="sum(done(time))" data-axis="right" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><i class="pull-right icon-check-empty"></i>
 						<strong><?php echo ResqueBoard\Lib\DateHelper::humanize($totalProcessTime); ?></strong> Total processing time</a></div></li>
 
 				<li><div class="static"><!--<a href="" data-type="average-process-time" data-expression="avg(done(time))" data-axis="right" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>">--><strong><?php
@@ -275,5 +278,3 @@ $headers = array(
 
 		</div>
 	</div>
-
-</div>

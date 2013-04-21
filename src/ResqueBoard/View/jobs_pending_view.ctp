@@ -26,23 +26,23 @@
 	);
 
 
-?><div class="container" id="main">
+?>
 	<div class="page-header">
-		<h1>Jobs</h1>
+		<h1>Jobs Browser</h1>
 	</div>
 
-	<div class="row">
 
-		<div class="span12">
-		    <ul class="nav nav-tabs">
-		    <li>
-		    	<a href="/jobs/view">Completed/Failed Jobs</a>
-		    </li>
-		    <li class="active">
-		    	<a href="/jobs/pending">Pending Jobs</a>
-		    </li>
+
+
+		    <ul class="nav nav-tabs page-nav-tab">
+			    <li>
+			    	<a href="/jobs/view">Completed/Failed Jobs</a>
+			    </li>
+			    <li class="active">
+			    	<a href="/jobs/pending">Pending Jobs</a>
+			    </li>
 		    </ul>
-		</div>
+
 
 		<div class="span7">
 
@@ -87,7 +87,7 @@
 				echo 'Page ' . $pagination->current .' of ' . number_format($pagination->totalPage) . ', found ' . number_format($pagination->totalResult) . ' jobs';
 				} ?>
 			</div>
-			<p>Current server time is <?php echo date('r'); ?></p>
+
 			<?php
 			echo '<ul class="unstyled infinite-scroll" id="job-details">';
 
@@ -169,7 +169,7 @@
 		?>
 		</div>
 
-		<div class="span5">
+		<div class="span2">
 			<h2>Stats</h2>
 			<table class="table-condensed table">
 				<tr>
@@ -199,6 +199,4 @@
 				</tr>
 			</table>
 		</div>
-	</div>
 
-</div>

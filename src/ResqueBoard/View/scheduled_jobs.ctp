@@ -18,43 +18,41 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-?>
-<div class="container" id="main">
+	$message = '';
+	if (!empty($pastScheduledJobs)) :
+		$message = '<div class="alert alert-error alert-page">There is some scheduled jobs past their due date. Is the Scheduler Worker running ?</div>';
+	endif; ?>
+
 	<div class="page-header">
 		<h1>Scheduled Jobs</h1>
 	</div>
+	<?php echo $message ?>
 
 	<div class="row">
 
-		<div class="span12">
+		<div class="span10">
 
-		<?php if (!empty($pastScheduledJobs)) : ?>
-		<div class="alert alert-error">There is some scheduled jobs past their due date. Is the Scheduler Worker running ?</div>
-		<?php endif; ?>
+			<div class="bloc">
+				<ul class="stats unstyled clearfix split-three">
+					<li><div>
+						<strong><?php echo number_format($stats['total']['scheduled']); ?></strong>
+						Total <b>scheduled</b> jobs</div>
+					</li>
+					<li><div>
+						<strong><?php echo number_format($futureScheduledJobs); ?></strong>
+						Jobs <b>waiting</b> to be queued</div>
+					</li>
+					<li><div>
+						<strong><?php echo number_format($pastScheduledJobs); ?></strong>
+						<b>Past</b> jobs</div>
+					</li>
+				</ul>
+			</div>
 
-
-
-
-			<ul class="jobs-stats unstyled clearfix">
-				<li class="secondary clearfix"><div>
-					<strong><?php echo number_format($stats['total']['scheduled']); ?></strong>
-					total scheduled jobs so far</div>
-				</li>
-				<li class="secondary clearfix"><div>
-					<strong><?php echo number_format($futureScheduledJobs); ?></strong>
-					Jobs waiting to be queued</div>
-				</li>
-				<li class="secondary clearfix"><div>
-					<strong><?php echo number_format($pastScheduledJobs); ?></strong>
-					past jobs</div>
-				</li>
-			</ul>
-
-			<h2>Future scheduled jobs activites</h2>
-
-			<div id="scheduled-jobs-graph"></div>
-
-			<hr/>
+			<div class="ftr-bloc">
+				<h3>Future scheduled jobs activities</h3>
+				<div id="scheduled-jobs-graph"></div>
+			</div>
 
 			<script id="scheduled-jobs-list-tpl" type="text/x-jsrender">
 					<li class="accordion-group">
@@ -81,13 +79,11 @@
 					</div>
 				</li>
 			</script>
-			<div id="scheduled-jobs-list">
 
+			<div class="bloc">
+				<div id="scheduled-jobs-list"></div>
 			</div>
 
 		</div>
 
 	</div>
-
-
-</div>

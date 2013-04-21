@@ -27,75 +27,8 @@
 		<link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 		<link href="/css/main.css?v=<?php echo APPLICATION_VERSION ?>" rel="stylesheet" type="text/css">
 		<link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/default.min.css">
+		<link href='http://fonts.googleapis.com/css?family=Fjalla+One|PT+Sans:400,700' rel='stylesheet' type='text/css'>
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	</head>
 	<body>
 		<script type="text/javascript">CUBE_URL = '<?php echo CUBE_URL ?>'</script>
-		<div class="navbar navbar-fixed-top">
-			<div class="navbar-inner">
-				<div class="container">
-					<a class="brand" href="/"><img src="/img/resqueboard_24.png" width=24 height=24 alt="<?php echo APPLICATION_NAME ?>" title="<?php echo APPLICATION_NAME ?>" /> <?php echo APPLICATION_NAME ?></a>
-						<ul class="nav">
-							<?php
-								$navs = array(
-											'/' => array('title' => 'Home'),
-											'/logs' => array('title' => 'Logs'),
-											'/workers' => array('title' => 'Workers'),
-											'/jobs' => array(
-                                                    'title' => 'Jobs',
-                                                    'submenu' => array(
-                                                        '<i class="icon-dashboard"></i> Dashboard' => '/jobs',
-                                                    	false,
-                                                    	'<i class="icon-eye-open"></i> Jobs browser' => '/jobs/view',
-                                                        '<i class="icon-tasks"></i> Jobs class distribution' => 'jobs/distribution/class',
-                                                        '<i class="icon-table"></i> Jobs load distribution' => '/jobs/distribution/load',
-                                                        '<i class="icon-bar-chart"></i> Jobs load overview' => '/jobs/overview/hour'
-                                                    )
-                                             ),
-											'/scheduled-jobs' => array('title' => 'Scheduled Jobs'),
-										);
-
-								foreach ($navs as $link => $nav) {
-
-                                    $class = array();
-                                    if (((strpos($_SERVER['REQUEST_URI'], $link) !== false && $link != '/' || $_SERVER['REQUEST_URI'] == '/' && $link == '/'))) {
-                                        $class[] = 'active';
-                        			};
-
-                        			if (isset($nav['submenu'])) {
-                                        $class[] = 'dropdown';
-                                    }
-
-									echo '<li class="'. implode(' ', $class) .'">'.
-									'<a href="'.$link.'"';
-
-									if (isset($nav['submenu'])) {
-                                        echo 'class="dropdown-toggle" data-toggle="dropdown" id="l-'.strtolower($nav['title']).'" data-target="#"';
-                                    }
-
-									echo '>'.$nav['title'];
-									if (isset($nav['submenu'])) {
-                                        echo ' <b class="caret"></b>';
-                                    }
-									echo '</a>';
-
-									if (isset($nav['submenu'])) {
-                                        echo '<ul class="dropdown-menu" role="menu" aria-labelledby="l-'.strtolower($nav['title']).'">';
-                                        foreach($nav['submenu'] as $title => $link) {
-
-                                            if ($link === false) {
-                                                echo '<li class="divider"></li>';
-                                            } else {
-                                                echo '<li><a href="'.$link.'">'.$title.'</a></li>';
-                                            }
-                                        }
-                                        echo '</ul>';
-                                    }
-
-									echo '</li>';
-								}
-							?>
-						</ul>
-				</div>
-			</div>
-		</div>

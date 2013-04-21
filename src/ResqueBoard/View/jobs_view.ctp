@@ -1,4 +1,4 @@
-<?php
+ <?php
 /**
  * job template
  *
@@ -26,15 +26,16 @@
 	);
 
 
-?><div class="container" id="main">
+?>
+
 	<div class="page-header">
-		<h1>Jobs</h1>
+		<h1>Jobs Browser</h1>
 	</div>
 
-	<div class="row">
 
-		<div class="span12">
-		    <ul class="nav nav-tabs">
+
+
+		    <ul class="nav nav-tabs page-nav-tab">
 		    <li class="active">
 		    	<a href="<?php echo $_SERVER['REQUEST_URI'] ?>" title="View all completed/failed jobs">Completed/Failed Jobs</a>
 		    </li>
@@ -42,9 +43,10 @@
 		    	<a href="/jobs/pending" title="View all pending jobs">Pending Jobs</a>
 		    </li>
 		    </ul>
-		</div>
 
-		<div class="span8">
+
+		<div class="span7">
+
 
 		<?php
 
@@ -54,7 +56,7 @@
 			echo '<h2>Latest Jobs</h2>';
 		}
 
-		if (!empty($jobs)) {
+		if (!empty($jobs) && 1 == 2) {
 
 			?>
 			<div class="breadcrumb clearfix">
@@ -184,13 +186,15 @@
 		}
 		?>
 		</div>
+</div>
 
-		<div class="span4">
+
+		<div class="sidebar sidebar-large">
 
 			<h2>Search</h2>
 			<form class="" action="/jobs/view" method="GET">
 				<div class="input-append">
-					<input type="text" name="job_id" class="span3" placeholder="Job #Id"/>
+					<input type="text" name="job_id" class="span2" placeholder="Job #Id"/>
 					<button type="submit" class="btn"><i class="icon-search"></i></button>
 				</div>
 			</form>
@@ -244,10 +248,9 @@
 				<button class="btn btn-primary" type="submit">Search</button>
 
 			</form>
-		</div>
-	</div>
 
-</div>
+
+
 
 <?php
 

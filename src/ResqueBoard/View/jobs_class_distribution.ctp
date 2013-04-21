@@ -17,12 +17,12 @@
  * @since         1.0.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-?><div class="container" id="main">
+?>
 	<div class="page-header">
 		<h1>Jobs class distribution</h1>
 	</div>
 	<div class="row">
-		<div class="span12">
+		<div class="span10">
 			<div id="jobRepartition">
 				<?php
 					$pieDatas = array();
@@ -44,7 +44,7 @@
 				?>
 			</div>
 
-
+			<div class="content-bloc">
 			<table class="table table-hover">
 				<thead>
 					<tr>
@@ -86,5 +86,5 @@
 				</tbody>
 			</table>
 		</div>
+		</div>
 	</div>
-</div>

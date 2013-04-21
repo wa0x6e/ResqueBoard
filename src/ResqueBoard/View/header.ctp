@@ -27,7 +27,7 @@
 		<link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 		<link href="/css/main.css?v=<?php echo APPLICATION_VERSION ?>" rel="stylesheet" type="text/css">
 		<link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/default.min.css">
-		<link href='http://fonts.googleapis.com/css?family=Fjalla+One|PT+Sans:400,700' rel='stylesheet' type='text/css'>
+		<link href='//fonts.googleapis.com/css?family=Fjalla+One|PT+Sans:400,700' rel='stylesheet' type='text/css'>
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	</head>
 	<body>

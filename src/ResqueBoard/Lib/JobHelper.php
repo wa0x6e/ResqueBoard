@@ -67,6 +67,10 @@ class JobHelper
                         <div class="accordion-inner">
                             <?php
 
+                if (isset($job['log'])) {
+                    echo '<div class="console"><span class="error">' . $job['log'] . '</error></div>';
+                }
+
                 if (isset($job['trace'])) {
                     echo '<h5>Error trace</h5>';
                     echo '<pre class="job-trace"><code class="language-php">'. $job['trace'] . '</code></pre>';

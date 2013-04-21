@@ -28,9 +28,9 @@
 	</div>
 	<?php echo $message ?>
 
-	<div class="row">
+	<div class="full-width">
 
-		<div class="span10">
+
 
 			<div class="bloc">
 				<ul class="stats unstyled clearfix split-three">
@@ -84,6 +84,6 @@
 				<div id="scheduled-jobs-list"></div>
 			</div>
 
-		</div>
+
 
 	</div>

@@ -32,8 +32,8 @@ $(document).ready(function() {
 		<h1>Workers</h1>
 	</div>
 
-	<div class="row">
-		<div class="span10">
+	<div class="full-width">
+
 
 			<div class="bloc"><h2>Active workers <span class="badge badge-info"><?php echo count($workers) ?></span></h2></div>
 
@@ -56,4 +56,4 @@ $(document).ready(function() {
 				<span class="label" id="_{{>job_id}}">{{>action}}</span>
 			</script>
 		</div>
-	</div>
+

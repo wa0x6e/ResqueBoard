@@ -25,8 +25,8 @@ $timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
 		<h1>Jobs load distribution</h1>
 	</div>
 
-<div class="row">
-	<div class="span10">
+<div class="full-width">
+
 
 		<div class="bloc">
 
@@ -180,7 +180,6 @@ $timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
 
 	</div>
 
-</div>
 
 
 

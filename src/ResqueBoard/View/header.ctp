@@ -32,3 +32,7 @@
 	</head>
 	<body>
 		<script type="text/javascript">CUBE_URL = '<?php echo CUBE_URL ?>'</script>
+
+		<div class="container">
+			<a class="brand" href="/"><em><?php echo APPLICATION_NAME ?></em>Analytics for Resque PHP</a>
+		</div>

@@ -152,7 +152,7 @@
 	);
 
 	/**
-	 * Display lastest jobs stats
+	 * Display latest jobs stats
 	 *
 	 * @return void
 	 */
@@ -162,7 +162,7 @@
 		 * Number of division to display
 		 * @type int
 		 */
-		var limit = 25;
+		var limit = 80;
 
 		d3.json("http://"+CUBE_URL+"/1.0/metric/get"+
 			"?expression=sum(got)"+
@@ -177,7 +177,7 @@
 
 				var
 					margin = {top:25, right:35, bottom: 35, left: 20},
-					width = 740 - margin.right - margin.left,
+					width = 860 - margin.right - margin.left,
 					height = 180 - margin.top - margin.bottom,
 					barHeight = height,
 					barWidth = width/limit - 2,
@@ -236,7 +236,7 @@
 					.attr("x", width / 2)
 					.attr("y", height + barLabelHeight + 10)
 					.attr("text-anchor", "middle")
-					.text("time (min:sec)")
+					.text("time")
 					.attr("class", "axis-legend")
 				;
 
@@ -250,7 +250,7 @@
 				{
 					selection
 					.attr("title", function(d){return d.value;})
-					.attr("data-target", "#job-details-modal")
+					.attr("data-target", ".modal")
 					.on("click", function(d){
 						displayJobsModal(d.time);
 					})
@@ -276,7 +276,7 @@
 					.call(barProp)
 				;
 
-				var barLabelProp = function(selection)
+				/*var barLabelProp = function(selection)
 				{
 					selection
 					.attr("text-anchor", "middle")
@@ -284,7 +284,7 @@
 					.text(function(d){return d.value;})
 					.call(barLabelDim)
 					;
-				};
+				};*/
 
 				var barLabelDim = function(selection)
 				{
@@ -295,15 +295,15 @@
 					;
 				};
 
-				barArea.selectAll("text").data(data).enter().append("text")
+			/*	barArea.selectAll("text").data(data).enter().append("text")
 					.attr("x", function(d) { return x(d.time) + barWidth/2; })
 					.call(barLabelProp)
-				;
+				;*/
 
 				var xAxis = d3.svg.axis()
 					.scale(x)
-					.ticks(d3.time.seconds, 30)
-					.tickFormat(d3.time.format("%M:%S"))
+					//.ticks(d3.time.seconds, 30)
+					//.tickFormat(d3.time.format("%M:%S"))
 					.tickSubdivide(2)
 					.tickSize(6,3,0)
 					.orient("bottom")
@@ -335,7 +335,7 @@
 					y.domain([0,d3.max(data.map(function(d){return d.value;}))]);
 
 					var rect = barArea.selectAll("rect").data(data, function(d){return d.time;});
-					var text = barArea.selectAll("text").data(data, function(d){return d.time;});
+					//var text = barArea.selectAll("text").data(data, function(d){return d.time;});
 
 					// BAR
 					// *****
@@ -364,7 +364,7 @@
 
 					// TEXT
 					// *****
-					text.enter().insert("text")
+					/*text.enter().insert("text")
 						.call(barLabelProp)
 						.attr("x", function(d) { return x(getNextTick(getNextTick(d.time))) - barWidth/2; })
 						.transition()
@@ -383,7 +383,7 @@
 						.duration(duration)
 						.attr("x", function(d) { return x(d.time) + barWidth/2; })
 						.remove()
-					;
+					;*/
 
 
 					// AXIS
@@ -407,8 +407,8 @@
 
 					metricSocket.send(JSON.stringify({
 						"expression": "sum(got)",
-						"start" : encodeURIComponent(nextDate.toISOString()),
-						"stop": encodeURIComponent(getNextTick(nextDate).toISOString()),
+						"start" : nextDate.toISOString(),
+						"stop": getNextTick(nextDate).toISOString(),
 						"limit": 1,
 						"step" : step[0].code
 					}));
@@ -427,8 +427,8 @@
 							var nextDate = getNextTick(data[data.length-1].time);
 							metricSocket.send(JSON.stringify({
 								"expression": "sum(got)",
-								"start" : encodeURIComponent(nextDate.toISOString()),
-								"stop": encodeURIComponent(getNextTick(nextDate).toISOString()),
+								"start" : nextDate.toISOString(),
+								"stop": getNextTick(nextDate).toISOString(),
 								"limit": 1,
 								"step" : step[0].code
 							}));

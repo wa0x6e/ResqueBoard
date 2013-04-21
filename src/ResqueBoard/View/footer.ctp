@@ -38,6 +38,6 @@
 		<script type="text/javascript" src="/js/infinite-scroll-2.0.min.js"></script>
 		<script src="//yandex.st/highlightjs/7.3/highlight.min.js"></script>
 		<script type="text/javascript" src="/js/cal-heatmap.min.js"></script>
-		<script type="text/javascript" src="/js/app.min.js?v=<?php echo APPLICATION_VERSION ?>"></script>
+		<script type="text/javascript" src="/js/app.js?v=<?php echo APPLICATION_VERSION ?>"></script>
 	</body>
 </html>

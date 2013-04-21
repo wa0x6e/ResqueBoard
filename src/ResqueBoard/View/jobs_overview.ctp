@@ -172,9 +172,7 @@ $headers = array(
 	});
 	</script>
 
-	<div class="row">
-		<div class="span10">
-
+	<div class="full-width">
 		    <ul class="nav nav-tabs page-nav-tab" id="date-range">
 		    	<?php
 		    		foreach ($ranges as $range => $info) {
@@ -276,5 +274,5 @@ $headers = array(
 
 			</ul>
 
-		</div>
+
 	</div>

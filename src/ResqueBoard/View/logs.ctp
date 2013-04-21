@@ -29,29 +29,28 @@
 	</div>
 
 
-	<div class="row">
-		<div class="span8">
+	<div class="with-sidebar">
 
-			<div class="bloc">
-				<div class="pull-right"><button class="btn btn-mini" id="clear-log-area">Clear All</button></div>
-				<h2>Latest Activities <span class="badge badge-info" data-rel="log-counter">0</span></h2>
-			</div>
 
-			<script id="log-template" type="text/x-jsrender">
-				<li data-verbosity="{{>levelName}}" data-type="{{>action}}" data-worker="{{>workerClass}}">
-					<div class="label-c"><span class="label {{>levelClass}}">{{>levelName}}</span></div>
-					<a href="/workers#{{>workerClass}}"><em class="worker" style="color:{{>color}}">{{>worker}}</em></a>
-					<b class="type">{{>action}}</b> {{:detail}} <time data-event="tooltip" title="{{>time}}" datetime="{{>time}}">{{>relativeTime}}</time>
-				</li>
-			</script>
+		<div class="bloc">
+			<div class="pull-right"><button class="btn btn-mini" id="clear-log-area">Clear All</button></div>
+			<h2>Latest Activities <span class="badge badge-info" data-rel="log-counter">0</span></h2>
+		</div>
 
-			<div class="content-bloc">
-				<ol id="log-area"></ol>
-			</div>
+		<script id="log-template" type="text/x-jsrender">
+			<li data-verbosity="{{>levelName}}" data-type="{{>action}}" data-worker="{{>workerClass}}">
+				<div class="label-c"><span class="label {{>levelClass}}">{{>levelName}}</span></div>
+				<a href="/workers#{{>workerClass}}"><em class="worker" style="color:{{>color}}">{{>worker}}</em></a>
+				<b class="type">{{>action}}</b> {{:detail}} <time data-event="tooltip" title="{{>time}}" datetime="{{>time}}">{{>relativeTime}}</time>
+			</li>
+		</script>
 
+		<div class="content-bloc">
+			<ol id="log-area"></ol>
 		</div>
 
 	</div>
+
 
 </div>
 

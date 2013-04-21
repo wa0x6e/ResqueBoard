@@ -209,7 +209,7 @@ $app->map(
                     'workers' => ''
                 );
 
-            $searchData = array_merge($defaults, $app->request()->params());
+            $searchData = array_merge($defaults, cleanArgs($app->request()->params()));
             array_walk(
                 $searchData,
                 function (&$key) {
@@ -270,7 +270,7 @@ $app->map(
 
 
             $pagination->totalPage = ceil($pagination->totalResult / $pagination->limit);
-            $pagination->uri = $app->request()->params();
+            $pagination->uri = cleanArgs($app->request()->params());
 
             $app->render(
                 'jobs_view.ctp',
@@ -299,7 +299,7 @@ $app->get(
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
 
             $resultLimits = array(15, 50, 100);
-            $args = $app->request()->params();
+            $args = cleanArgs($app->request()->params());
 
             $pagination = new stdClass();
             $pagination->current = isset($args['page']) ? $args['page'] : 1;
@@ -319,7 +319,7 @@ $app->get(
 
             $pagination->totalResult = array_sum($resqueStat->getPendingJobsCount($options['queue']));
             $pagination->totalPage = ceil($pagination->totalResult / $pagination->limit);
-            $pagination->uri = $app->request()->params();
+            $pagination->uri = cleanArgs($app->request()->params());
 
             $app->render(
                 'jobs_pending_view.ctp',
@@ -473,7 +473,7 @@ $app->map(
 
             $searchData = array_merge(
                 $defaults,
-                $app->request()->params()
+                cleanArgs($app->request()->params())
             );
             array_walk(
                 $searchData,
@@ -514,7 +514,7 @@ $app->map(
             }
 
 
-            if (empty($errors) && $app->request()->params() != array()) {
+            if (empty($errors) && cleanArgs($app->request()->params()) != array()) {
                 $logs = $resqueStat->getLogs($conditions);
             } else {
                 $logs = null;
@@ -523,7 +523,7 @@ $app->map(
 
             $pagination->totalResult = $resqueStat->getLogs(array_merge($conditions, array('type' => 'count')));
             $pagination->totalPage = ceil($pagination->totalResult / $pagination->limit);
-            $pagination->uri = $app->request()->params();
+            $pagination->uri = cleanArgs($app->request()->params());
 
             $app->render(
                 'logs_browser.ctp',
@@ -680,7 +680,7 @@ $app->map(
                 'namespace' => ''
             );
 
-        $postDatas = $app->request()->params();
+        $postDatas = cleanArgs($app->request()->params());
         $postDatas['handler'] = 'Cube';
         $postDatas['target'] = 'udp://127.0.0.1:1180';
 
@@ -689,7 +689,7 @@ $app->map(
                 return json_encode(array('status' => true));
             }
 
-            $data = $app->request()->params();
+            $data = cleanArgs($app->request()->params());
         }
 
         $app->render(
@@ -705,3 +705,11 @@ $app->map(
 )->via('GET', 'POST');
 
 $app->run();
+
+function cleanArgs($args)
+{
+    if (isset($args[0])) {
+        $args[0] = parse_url($args[0], PHP_URL_QUERY);
+    }
+    return $args;
+}

@@ -23,8 +23,8 @@
 	</div>
 
 
-	<div class="row">
-		<div class="span8">
+	<div class="with-sidebar">
+
 		<div class="bloc">
 
 			<?php
@@ -115,7 +115,7 @@
 		?>
 
 		</div>
-</div></div>
+</div>
 	</div>
 
 		<div class="sidebar">

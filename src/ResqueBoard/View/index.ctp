@@ -31,13 +31,14 @@
 							</div>
 							<div class="collapse accordion-body" id="{{>job_id}}">
 						   <div class="accordion-inner">
-							<pre class="">{{>args}}</pre></div></div>
+						   <h5>Job arguments</h5>
+							<pre class=""><code>{{>args}}</code></pre></div></div>
 						</li>
 			</script>
 
 			<script type="text/javascript">
 				$(document).ready(function() {
-					listenToWorkersJob("pie", "list");
+					//listenToWorkersJob("pie", "list");
 					listenToJobsActivities();
 					QueuesList.init();
 				});
@@ -83,7 +84,7 @@
 						<button type="button" class="close" data-dismiss="modal">×</button>
 						<h3>Jobs <span class="badge badge-info"></span></h3>
 					</div>
-					<ul class="modal-body unstyled">
+					<ul class="modal-body unstyled job-details">
 					</ul>
 				</div>
 			</div>
@@ -130,8 +131,8 @@
 -->
 
 
-			<div class="row">
-				<div class="span6">
+
+				<div class="span7">
 
 				<h2>Workers <span class="badge badge-info workers-count"><?php echo count($workers)?></span></h2>
 
@@ -147,7 +148,7 @@
 				</div>
 
                 <div class="row workers-list">
-				<?php  ResqueBoard\Lib\WorkerHelper::renderList($stats, $workers, $readOnly); ?>
+					<?php  ResqueBoard\Lib\WorkerHelper::renderList($stats, $workers, $readOnly); ?>
 				</div>
 
 				</div>
@@ -180,6 +181,6 @@
 
 					</div>
 
-				</div>
+
 
 			</div>

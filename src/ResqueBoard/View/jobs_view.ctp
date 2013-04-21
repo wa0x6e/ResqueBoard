@@ -33,8 +33,8 @@
     </ul>
 
 
-	<div class="row">
-	<div class="span7">
+
+	<div class="with-sidebar">
 	<div class="bloc">
 
 
@@ -115,12 +115,12 @@
 		}
 		?>
 		</div>
-</div>
+
 </div>
 </div>
 
 
-		<div class="sidebar sidebar-large">
+		<div class="sidebar">
 
 			<h3>Search</h3>
 			<form class="" action="/jobs/view" method="GET">

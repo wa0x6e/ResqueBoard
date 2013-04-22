@@ -24,66 +24,75 @@
 	endif; ?>
 
 	<div class="page-header">
-		<h1>Scheduled Jobs</h1>
+		<h1>Jobs Browser</h1>
 	</div>
-	<?php echo $message ?>
+	<?php //echo $message ?>
 
-	<div class="full-width">
+	<ul class="nav nav-tabs page-nav-tab">
+	    <li>
+	    	<a href="/jobs/view">Processed Jobs</a>
+	    </li>
+	    <li>
+	    	<a href="/jobs/pending">Pending Jobs</a>
+	    </li>
+	    <li class="active">
+	    	<a href="/jobs/scheduled" title="View all scheduled jobs">Scheduled Jobs</a>
+	    </li>
+    </ul>
 
+	<div class="with-sidebar">
 
+		<div class="ftr-bloc">
+			<h3>Future scheduled jobs activities</h3>
+			<div id="scheduled-jobs-graph"></div>
+		</div>
 
-			<div class="bloc">
-				<ul class="stats unstyled clearfix split-three">
-					<li><div>
-						<strong><?php echo number_format($stats['total']['scheduled']); ?></strong>
-						Total <b>scheduled</b> jobs</div>
-					</li>
-					<li><div>
-						<strong><?php echo number_format($futureScheduledJobs); ?></strong>
-						Jobs <b>waiting</b> to be queued</div>
-					</li>
-					<li><div>
-						<strong><?php echo number_format($pastScheduledJobs); ?></strong>
-						<b>Past</b> jobs</div>
-					</li>
-				</ul>
-			</div>
+		<script id="scheduled-jobs-list-tpl" type="text/x-jsrender">
+				<li class="accordion-group">
+				<div class="accordion-heading" data-toggle="collapse" data-target="#{{>id}}">
+					<div class="accordion-toggle">
+						<span class="job-status-icon" data-event="tooltip" data-original-title="Job scheduled">
+						<img src="/img/job_scheduled.png" title="Job scheduled" height="24" width="24"></span>
 
-			<div class="ftr-bloc">
-				<h3>Future scheduled jobs activities</h3>
-				<div id="scheduled-jobs-graph"></div>
-			</div>
+						<h4>#{{>id}}</h4>
 
-			<script id="scheduled-jobs-list-tpl" type="text/x-jsrender">
-					<li class="accordion-group">
-					<div class="accordion-heading" data-toggle="collapse" data-target="#{{>id}}">
-						<div class="accordion-toggle">
-							<span class="job-status-icon" data-event="tooltip" data-original-title="Job scheduled">
-							<img src="/img/job_scheduled.png" title="Job scheduled" height="24" width="24"></span>
+						<small>Performing <code>{{>class}}</code> in
+						<span class="label label-success">{{>queue}}</span></small>
 
-							<h4>#{{>id}}</h4>
-
-							<small>Performing <code>{{>class}}</code> in
-							<span class="label label-success">{{>queue}}</span></small>
-
-						</div>
 					</div>
-					<div class="collapse accordion-body" id="{{>id}}">
-						<div class="accordion-inner">
-							<p>
-								<i class="icon-time"></i> <b>Added on </b>{{>created}}</p>
+				</div>
+				<div class="collapse accordion-body" id="{{>id}}">
+					<div class="accordion-inner">
+						<p>
+							<i class="icon-time"></i> <b>Added on </b>{{>created}}</p>
 
 
-							<pre class="job-args"><code class="language-php">{{>args}}</code></pre>
-						</div>
+						<pre class="job-args"><code class="language-php">{{>args}}</code></pre>
 					</div>
-				</li>
-			</script>
+				</div>
+			</li>
+		</script>
 
-			<div class="bloc">
-				<div id="scheduled-jobs-list"></div>
-			</div>
+		<div class="bloc">
+			<div id="scheduled-jobs-list"></div>
+		</div>
+	</div>
 
+</div>
 
-
+	<div class="sidebar">
+		<ul class="stats unstyled clearfix">
+			<li><div>
+				<strong><?php echo number_format($stats['total']['scheduled']); ?></strong>
+				Total <b>scheduled</b> jobs</div>
+			</li>
+			<li><div>
+				<strong><?php echo number_format($futureScheduledJobs); ?></strong>
+				Jobs <b>waiting</b> to be queued</div>
+			</li>
+			<li><div>
+				<strong><?php echo number_format($pastScheduledJobs); ?></strong>
+				<b>Past</b> jobs</div>
+			</li>
+		</ul>
 	</div>

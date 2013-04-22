@@ -30,6 +30,9 @@
 	    <li>
 	    	<a href="/jobs/pending" title="View all pending jobs">Pending Jobs</a>
 	    </li>
+	    <li>
+	    	<a href="/jobs/scheduled" title="View all scheduled jobs">Scheduled Jobs</a>
+	    </li>
     </ul>
 
 

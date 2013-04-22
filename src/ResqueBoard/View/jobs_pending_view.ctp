@@ -29,6 +29,9 @@
 	    <li class="active">
 	    	<a href="/jobs/pending">Pending Jobs</a>
 	    </li>
+	    <li>
+	    	<a href="/jobs/scheduled" title="View all scheduled jobs">Scheduled Jobs</a>
+	    </li>
     </ul>
 
 	<div class="with-sidebar">

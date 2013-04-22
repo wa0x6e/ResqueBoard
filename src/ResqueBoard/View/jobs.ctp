@@ -23,8 +23,8 @@
 		<h1>Jobs Dashboard</h1>
 	</div>
 	<div class="row">
-
-		<div class="span4">
+	<div class="bloc">
+		<div class="span5">
 			<h2><a href="/jobs/distribution/class" title="View jobs distribution by classes">Distribution by classes</a></h2>
 
 			<div id="jobRepartition">
@@ -106,7 +106,7 @@
 			<a href="jobs/distribution">View all</a>
 		</div>
 
-		<div class="span4">
+		<div class="span6">
 
 			<ul class="jobs-stats unstyled clearfix">
 				<li class="total clearfix"><div>
@@ -169,6 +169,7 @@
 		</div>
 
 	</div>
+</div>
 
 
 		<div class="span9">

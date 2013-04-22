@@ -118,6 +118,18 @@ h3{
 	border-top: 0;
 }
 
+
+
+.btn-primary {
+	#gradient .vertical(@baseColor, darken(@baseColor, 5));
+	color: @colorShadeMinusOne;
+	
+	&:hover {
+		#gradient .vertical(darken(@baseColor, 5), darken(@baseColor, 10));
+		background-position: 0 0;
+	}
+}
+
 #main
 {
 	background-color: @baseColor;
@@ -137,6 +149,10 @@ h3{
 	min-height: 400px;
 	
 	
+}
+
+.container {
+	width: @gridColumnWidth * 12 + @gridGutterWidth * 13;
 }
 
 .content-bloc {
@@ -159,7 +175,7 @@ h3{
 
 .menu {
 	
-	@color : #8b98a1;
+	@color : @colorCompMinusTwo;
 	@width: @gridColumnWidth + @gridGutterWidth;
 	
 	width: @width;
@@ -168,6 +184,8 @@ h3{
 	border-bottom: 1px solid lighten(@baseColor, 5);
 	list-style: none;
 	margin: 0;
+
+	
 		
 	& > li > a {
 		display: block;
@@ -180,7 +198,7 @@ h3{
 	
 		&.active {
 			background-color: darken(@baseColor, 5);
-			color: lighten(@color, 15);
+			color: @colorShadeMinusOne;
 			.box-shadow(-5px 0 0 rgba(0,0,0,0.2));
 		}
 		
@@ -201,10 +219,26 @@ h3{
 			font-weight: normal;
 			font-size: 2em;
 		}
+		
+		i.caret {
+			font-size: 12px;
+			position: absolute;
+			top: 25%;
+			right: 5px;
+			border: 0;
+			color: lighten(@baseColor, 8);
+		}
 
 	}
 	
+	
+	
 	& > li {
+	
+		&:first-child {
+			border-top: 0;
+		}
+	
 		border-top: 1px solid lighten(@baseColor, 5);
 		border-bottom: 1px solid darken(@baseColor, 5);
 	}
@@ -249,6 +283,15 @@ h3{
 			color:  @colorCompPlusTwo;
 			background: darken(@baseColor, 10);
 		}
+		
+		strong {
+			color: lighten(@color, 15);
+		}
+	}
+	
+	.divider {
+		background: darken(@baseColor, 5);
+		border-bottom-color: lighten(@baseColor, 5);
 	}
 	
 }
@@ -263,23 +306,93 @@ h3{
 
 .sidebar {
 	
-	width: @gridColumnWidth * 3 + @gridGutterWidth * 2;
+	@backgroundColor : @colorCompMinusOne;
+	@sidebarTextColor : lighten(@backgroundColor, 40);
+	
+	width: @gridColumnWidth * 3 + @gridGutterWidth;
 	
 	background-color: @colorCompMinusOne;
 	margin-left: 0;
 	margin-right: 0;
-	padding: 0 @gridGutterWidth/2;
-	color: @textColorLight;
+	padding: 0 @gridGutterWidth 0 (@gridGutterWidth - 5);
+	color: @sidebarTextColor;
+	border-left: 5px solid darken(@backgroundColor, 5);
+	
 	.clearfix();
 	float:left;
+	
+	h3 {
+		color: @white;	
+		text-shadow: 0 -1px 0 #000;
+	}
+	
+	h4 {
+		color: @baseColor;
+		text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+	}
+	
+	input[type=text] {
+		color: @baseColor;
+		font-weight: bold;
+	
+		width: @gridColumnWidth * 3;
+		border-color: darken(@backgroundColor, 10);
+		background: lighten(@backgroundColor, 15);
+		
+		.box-shadow(0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.1) inset);
+	}
+	
+	input[type=checkbox] {
+		margin-right: @insidePadding;
+	}
+	
+	hr {
+		border-top: 2px solid @baseColor;
+		border-bottom: 1px solid lighten(@backgroundColor, 10);
+	}
+	
+	legend {
+		font-size: 1.25em;
+		font-weight: bold;
+		line-height: 1;
+		color: lighten(@backgroundColor, 30);
+		border: 0;
+		padding: 0;
+	}
+	
+	.unstyled {
+		border-bottom: 1px solid lighten(@backgroundColor, 5);
+		border-top: 1px solid darken(@backgroundColor, 5);
+	
+		li {
+			border-bottom: 1px solid darken(@backgroundColor, 5);
+			border-top: 1px solid lighten(@backgroundColor, 5);
+			line-height: 1.6;
+			padding: 3px 5px;
+			
+			&:hover {
+				background: darken(@backgroundColor, 5);
+			}
+		}
+		
+		.btn {
+			margin-left: @insidePadding;
+			color: @sidebarTextColor;
+			text-shadow: 0 -1px 0 rgba(0,0,0,0.5);
+		}
+	}
+	
+	.btn {
+		#gradient .vertical(darken(@backgroundColor, 5), darken(@backgroundColor, 10));
+		color: @white
+	}
+	
 }
 
 a.brand
-{
-	@gutter: 7px;
-	
+{	
 	font-size: 1em;
-	color: @colorShadeMinusTwo;
+	color: @colorCompMinusTwo;
 	text-shadow: 0 -1px 0 rgba(0,0,0, 0.5);
 	
 	display : block;
@@ -296,10 +409,6 @@ a.brand
 		display: block;
 		text-shadow: 0 -1px 0 rgba(0,0,0, 0.7);
 
-	}
-	
-	&:hover {
-		color: @colorShadeMinusOne;
 	}
 }
 
@@ -478,18 +587,6 @@ h4.sep
 	}
 }
 
-#log-sweeper-form
-{
-	li
-	{
-		clear:both;
-		line-height: 1.6;
-		border-bottom: 1px solid @grayLighter;
-		padding: 3px 0;
-	}
-	
-	
-}
 
 .worker-name
 {
@@ -1481,7 +1578,7 @@ th {
 		font-weight: bold;
 		border: 0;
 		.border-radius(0);
-		.box-shadow(0 2px 0 @white);
+		.box-shadow(0 2px 0 @greyBorderColor);
 	}
 	
 	& > .active > a {
@@ -1508,6 +1605,7 @@ th {
 
 #scheduled-jobs-graph {
 	position: relative;
+	margin-left: 25px;
 }
 
 .graph-browse-previous, .graph-browse-next {

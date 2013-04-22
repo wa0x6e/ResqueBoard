@@ -124,11 +124,13 @@
 
 			<h3>Search</h3>
 			<form class="" action="/jobs/view" method="GET">
-				<div class="input-append">
-					<input type="text" name="job_id" class="span2" placeholder="Job #Id"/>
-					<button type="submit" class="btn"><i class="icon-search"></i></button>
-				</div>
+
+				<input type="text" name="job_id" class="span2" placeholder="Job #Id"/>
+				<button class="btn btn-primary" type="submit">Search</button>
+
 			</form>
+
+			<hr/>
 
 			<h3>Advanced search</h3>
 			<form action="/jobs/view" method="GET">
@@ -136,12 +138,10 @@
 					<div class="control-group">
 						<label for="job-search-class">Job class</label>
 						<input type="text" name="class" id="job-search-class" placeholder="ClassName" value="<?php echo $searchData['class'] ?>" />
-						<span class="help-inline">Multiple classes separated with a comma</span>
 					</div>
 					<div class="control-group">
 						<label for="job-search-queue">Queue</label>
 						<input type="text" name="queue" id="job-search-queue" placeholder="Queue name" value="<?php echo $searchData['queue'] ?>" />
-						<span class="help-inline">Multiple queues separated with a comma</span>
 					</div>
 					<div class="control-group<?php if (!empty($errors['date_after'])) echo ' error' ?>">
 						<label>After</label>
@@ -167,14 +167,11 @@
 						<input type="checkbox" name="worker[]" value="old"<?php if (in_array('old', $searchData['worker'])) echo ' checked="checked"'; ?> />
 					</label>
 
-					<label>Particular workers</label>
-					<input type="text" name="workers" placeholder="Worker name" value="<?php echo $searchData['workers'] ?>"/>
-
-					<span class="help-inline">Multiple queues separated with a comma</span>
-
+					<label>Other</label>
+					<div class="control-group">
+						<input type="text" name="workers" placeholder="Worker name" value="<?php echo $searchData['workers'] ?>"/>
+					</div>
 				</fieldset>
-
-				<hr>
 
 				<button class="btn btn-primary" type="submit">Search</button>
 

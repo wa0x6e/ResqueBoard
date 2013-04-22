@@ -119,7 +119,9 @@
 	</div>
 
 		<div class="sidebar">
-			<form class="" id="log-browser-form">
+
+			<h3>Search</h3>
+			<form id="log-browser-form">
 				<fieldset><legend>Verbosity</legend>
 				<select class="span2" name="event_level[]" multiple="" size="<?php echo count($logLevels)?>">
 					<?php
@@ -152,17 +154,18 @@
 					</select>
 				</fieldset>
 
-				<fieldset><legend>Date</legend></fieldset>
+				<fieldset><legend>Date</legend>
 
-				<label>Start Date
-					<input type="text" name="date_after" class="span2" value="<?php echo $searchData['date_after'] ?>" placeholder="YYYY-MM-DD hh:mm:ss" />
-				</label>
+					<label>Start Date
+						<input type="text" name="date_after" class="span2" value="<?php echo $searchData['date_after'] ?>" placeholder="YYYY-MM-DD hh:mm:ss" />
+					</label>
 
-				<label>End Date
-					<input type="text" name="date_before" class="span2" value="<?php echo $searchData['date_before'] ?>" placeholder="YYYY-MM-DD hh:mm:ss" />
-				</label>
+					<label>End Date
+						<input type="text" name="date_before" class="span2" value="<?php echo $searchData['date_before'] ?>" placeholder="YYYY-MM-DD hh:mm:ss" />
+					</label>
 
-				<button type="submit" class="btn btn-block btn-primary">Search</button>
+				</fieldset>
+				<button type="submit" class="btn btn-primary">Search</button>
 
 			</form>
 

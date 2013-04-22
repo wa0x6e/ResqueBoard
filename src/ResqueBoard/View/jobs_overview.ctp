@@ -248,14 +248,14 @@ $headers = array(
 
 					<a class="active" href="#" data-type="processed" data-expression="sum(got)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>">
 						<i class="pull-right icon-check"></i>
-						<strong><?php echo number_format($jobsStats->total) ?></strong>Processed Jobs<br/><br/></a>
+						<strong><?php echo number_format($jobsStats->total) ?></strong>Processed Jobs</a>
 
 
 				</div></li>
 				<li><div>
 
 					<a href="#" data-type="fail" data-expression="sum(fail)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><i class="pull-right icon-check-empty"></i>
-						<strong><?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?> %</strong> <?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]) ?> failed Jobs<br/><br/></a>
+						<strong><?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?> %</strong> <?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]) ?> failed Jobs</a>
 				</div></li>
 				<li><div>
 					<a href="#" data-type="scheduled" data-expression="sum(movescheduled)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>">

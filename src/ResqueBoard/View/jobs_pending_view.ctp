@@ -22,20 +22,17 @@
 		<h1>Jobs Browser</h1>
 	</div>
 
+    <ul class="nav nav-tabs page-nav-tab">
+	    <li>
+	    	<a href="/jobs/view">Processed Jobs</a>
+	    </li>
+	    <li class="active">
+	    	<a href="/jobs/pending">Pending Jobs</a>
+	    </li>
+    </ul>
 
-
-
-		    <ul class="nav nav-tabs page-nav-tab">
-			    <li>
-			    	<a href="/jobs/view">Processed Jobs</a>
-			    </li>
-			    <li class="active">
-			    	<a href="/jobs/pending">Pending Jobs</a>
-			    </li>
-		    </ul>
-
-
-		<div class="span7">
+	<div class="with-sidebar">
+		<div class="bloc">
 
 		<?php
 
@@ -128,9 +125,12 @@
 		}
 		?>
 		</div>
+	</div>
+</div>
 
-		<div class="span2">
-			<h2>Stats</h2>
+	<div class="sidebar">
+
+			<h3>Stats</h3>
 			<table class="table-condensed table">
 				<tr>
 					<th>Queue Name</th>
@@ -159,4 +159,4 @@
 				</tr>
 			</table>
 		</div>
-
+	</div>

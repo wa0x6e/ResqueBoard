@@ -55,8 +55,9 @@
 </div>
 
 <div class="sidebar">
+	<h3>Listen to</h3>
 	<form class="" id="log-filter-form">
-		<fieldset><legend>Listen to</legend>
+		<fieldset>
 			<?php
 				foreach ($logLevels as $code => $info) {
 
@@ -74,34 +75,35 @@
 		</fieldset>
 	</form>
 
+	<h3>Clear screen</h3>
 	<form id="log-sweeper-form">
-		<fieldset><legend>Clear</legend>
-			<h4 class="sep">By verbosity</h4>
+
+		<fieldset>
+			<h4>By verbosity</h4>
 			<ul class="unstyled">
 				<?php
 					foreach ($logLevels as $code => $info) {
-						echo '<li><span class="badge '.$info['class'].'" data-rel="'.$info['name'].'">0</span> '.
-						$info['name'].' <button class="btn btn-mini pull-right" data-level="'.
-						$info['name'].'" data-rel="verbosity">Clear</button></li>';
+						echo '<li>'.
+						' <button class="btn btn-mini pull-right" data-level="'.
+						$info['name'].'" data-rel="verbosity">Clear</button>'.
+						'<span class="pull-right badge '.$info['class'].'" data-rel="'.$info['name'].'">0</span>'.
+						$info['name'].' </li>';
 					}
 				?>
 			</ul>
 
-			<h4 class="sep">By type</h4>
+			<h4>By type</h4>
 			<ul class="unstyled">
 				<?php
 					foreach ($logTypes as $type) {
-						echo '<li><span class="badge" data-rel="'.$type.'">0</span> '.
+						echo '<li>'.
+
 						$type.' <button class="btn btn-mini pull-right" data-type="'.
-						$type.'" data-rel="type">Clear</button></li>';
+						$type.'" data-rel="type">Clear</button>' .
+						'<span class="pull-right badge" data-rel="'.$type.'">0</span>'.
+						'</li>';
 					}
 				?>
 			</ul>
 		</fieldset>
 	</form>
-
-	<div class="alert alert-info">
-		Clear action just clear lines from the display, and does not delete them from the database
-	</div>
-
-

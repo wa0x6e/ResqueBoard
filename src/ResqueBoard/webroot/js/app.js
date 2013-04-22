@@ -2049,7 +2049,8 @@ if ($("#scheduled-jobs-graph").length > 0) {
 		id : "scheduled-jobs-graph",
 		scale : [1,4,8,12],
 		itemName : ["job", "jobs"],
-		range: 10,
+		range: 11,
+		cellsize: 10,
 		browsing: true,
 		browsingOptions: {
 			nextLabel : "<i class=\"icon-chevron-right\"></i>",

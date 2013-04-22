@@ -41,12 +41,16 @@
                                 'icon' => 'icon-briefcase',
                                 'title' => 'Jobs',
                                 'submenu' => array(
-                                    '<i class="icon-dashboard"></i> Jobs Dashboard' => '/jobs',
-                                    '<i class="icon-eye-open"></i> Jobs browser' => '/jobs/view',
+                                    '<i class="icon-dashboard"></i> <strong>Jobs Dashboard</strong>' => '/jobs',
+                                    '',
+                                    '<i class="icon-eye-open"></i> Processed jobs' => '/jobs/view',
+                                    '<i class="icon-eye-open"></i> Pending jobs' => '/jobs/pending',
+                                    '<i class="icon-bar-chart"></i> Scheduled Jobs' => '/jobs/scheduled',
+                                    '',
                                     '<i class="icon-tasks"></i> Class distribution' => 'jobs/distribution/class',
                                     '<i class="icon-table"></i> Load distribution' => '/jobs/distribution/load',
-                                    '<i class="icon-bar-chart"></i> Load overview' => '/jobs/overview/hour',
-                                    '<i class="icon-bar-chart"></i> Scheduled Jobs' => '/jobs/scheduled'
+                                    '<i class="icon-bar-chart"></i> Load overview' => '/jobs/overview/hour'
+
                                 )
                          )
                     );
@@ -55,18 +59,11 @@
 
                 $class = array();
 
-                if (isset($nav['submenu'])) {
-                    foreach($nav['submenu'] as $title => $s_link) {
-                        if (strpos($_SERVER['REQUEST_URI'], $s_link) !== false && $link != '/') {
-                            $class['submenu'] = array($s_link => 'active');
-                            break;
-                        };
-                    }
-                } elseif (empty($class) || !isset($nav['submenu'])) {
-                    if (((strpos($_SERVER['REQUEST_URI'], $link) !== false && $link != '/' || $_SERVER['REQUEST_URI'] == '/' && $link == '/'))) {
-                        $class['root'] = array('active');
-                    };
-                }
+
+                if (((strpos($_SERVER['REQUEST_URI'], $link) !== false && $link != '/' || $_SERVER['REQUEST_URI'] == '/' && $link == '/'))) {
+                    $class['root'] = array('active');
+                };
+
 
 
                 echo '<li class="dropdown">'.
@@ -95,16 +92,22 @@
                     echo '<i class="'.$nav['icon'].'"></i> ';
                 }
                 echo $nav['title'];
+
+                if (isset($nav['submenu'])) {
+                    echo ' <i class="icon-chevron-right caret"></i>';
+                }
+
                 echo '</a>';
 
                 if (isset($nav['submenu'])) {
                     echo '<ul class="dropdown-menu" role="menu">';
                     foreach($nav['submenu'] as $title => $link) {
-                        echo '<li><a href="'.$link.'"';
-                        if (isset($class['submenu'][$link])) {
-                            echo ' class="'. $class['submenu'][$link] .'"';
+                        if ($link === '') {
+                            echo '<li class="divider"></li>';
+                        } else {
+                            echo '<li><a href="'.$link.'">'.$title.'</a></li>';
                         }
-                        echo '>'.$title.'</a></li>';
+
                     }
                     echo '</ul>';
                 }

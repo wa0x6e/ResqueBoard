@@ -30,20 +30,20 @@
 
 
 		<div class="bloc">
-			<div class="pull-right"><button class="btn btn-mini" id="clear-log-area">Clear All</button></div>
+			<div class="pull-right h2-btn"><button class="btn btn-mini" id="clear-log-area">Clear All</button></div>
 			<h2>Latest Activities <span class="badge badge-info" data-rel="log-counter">0</span></h2>
 		</div>
 
 		<script id="log-template" type="text/x-jsrender">
 			<li data-verbosity="{{>levelName}}" data-type="{{>action}}" data-worker="{{>workerClass}}">
-				<div class="label-c"><span class="label {{>levelClass}}">{{>levelName}}</span></div>
-				<a href="/workers#{{>workerClass}}"><em class="worker" style="color:{{>color}}">{{>worker}}</em></a>
-				<b class="type">{{>action}}</b> {{:detail}} <time data-event="tooltip" title="{{>time}}" datetime="{{>time}}">{{>relativeTime}}</time>
+				<span class="label {{>levelClass}}">{{>levelName}}</span>
+				<em class="worker" style="color:{{>color}}"><a href="/workers#{{>workerClass}}" title="{{>worker}}">{{>worker}}</a></em>
+				<div class="log-message"><b class="type">{{>action}}</b> {{:detail}}</div> <time data-event="tooltip" title="{{>time}}" datetime="{{>time}}"><i class="icon-time"></i> {{>hourTime}}</time>
 			</li>
 		</script>
 
-		<div class="content-bloc">
-			<ol id="log-area"></ol>
+		<div class="bloc">
+			<ol class="log-area" id="log-area"></ol>
 		</div>
 
 	</div>
@@ -85,7 +85,7 @@
 						' <button class="btn btn-mini pull-right" data-level="'.
 						$info['name'].'" data-rel="verbosity">Clear</button>'.
 						'<span class="pull-right badge '.$info['class'].'" data-rel="'.$info['name'].'">0</span>'.
-						$info['name'].' </li>';
+						ucwords($info['name']).' </li>';
 					}
 				?>
 			</ul>
@@ -96,7 +96,7 @@
 					foreach ($logTypes as $type) {
 						echo '<li>'.
 
-						$type.' <button class="btn btn-mini pull-right" data-type="'.
+						ucwords($type).' <button class="btn btn-mini pull-right" data-type="'.
 						$type.'" data-rel="type">Clear</button>' .
 						'<span class="pull-right badge" data-rel="'.$type.'">0</span>'.
 						'</li>';

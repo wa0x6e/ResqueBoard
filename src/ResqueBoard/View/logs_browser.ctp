@@ -36,7 +36,9 @@
 
 			?>
 			<h3>Search results <span class="badge badge-info" data-rel="log-counter"><?php echo number_format($pagination->totalResult) ?></span></h3>
-			<ol id="log-area" class="infinite-scroll">
+
+
+			<ol class="log-area" id="log-area" class="infinite-scroll">
 				<?php
 				$pivotDate = '';
 				$colors = array("#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a",
@@ -60,21 +62,23 @@
 
 					?>
 					<li data-verbosity="<?php echo $logLevels[$log['level']]['name'] ?>" data-type="<?php echo $log['event_type']; ?>" data-worker="<?php echo $workerId ?>">
-					<div class="label-c"><span class="label <?php echo $logLevels[$log['level']]['class'] ?>"><?php echo $logLevels[$log['level']]['name'] ?></span></div>
-					<em class="worker" style="color:<?php echo $colorMap[$workerId] ?>"><?php echo $log['worker'] ?></em>
+					<span class="label <?php echo $logLevels[$log['level']]['class'] ?>"><?php echo $logLevels[$log['level']]['name'] ?></span>
+					<em class="worker" style="color:<?php echo $colorMap[$workerId] ?>" title="<?php echo $log['worker'] ?>"><?php echo $log['worker'] ?></em>
+					<div class="log-message">
 					<b class="type"><?php echo $log['event_type']; ?></b> <?php
 						if (isset($log['job_id'])) {
 							echo 'Job <a href="/jobs/view?job_id='.$log['job_id'].'" rel="contents" title="View job details">#' . $log['job_id'] . '</a>';
 						} else {
 							echo 'Worker #' . $log['worker'];
 						}
-					?> <time title="<?php echo $log['date']->format('c') ?>" datetime="<?php echo $log['date']->format('c') ?>"><i class="icon-time"></i> <?php echo $log['date']->format('H:i:s') ?></time>
+					?></div> <time title="<?php echo $log['date']->format('c') ?>" datetime="<?php echo $log['date']->format('c') ?>"><i class="icon-time"></i> <?php echo $log['date']->format('H:i:s') ?></time>
 					</li>
 
 					<?php
 				}?>
 
 			</ol>
+
 
 			<?php if (isset($pagination)) {
 				?>

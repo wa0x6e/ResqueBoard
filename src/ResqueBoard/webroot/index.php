@@ -462,7 +462,7 @@ $app->map(
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
             $errors  = array();
 
-            $resultLimits = array(15, 50, 100);
+            $resultLimits = array(25, 50, 100);
 
             $defaults = array(
                 'page' => 1,

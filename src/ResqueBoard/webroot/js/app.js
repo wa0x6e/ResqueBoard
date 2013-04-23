@@ -18,14 +18,6 @@
 	$("[data-event~=expand-all]").on("click", function(e){ e.preventDefault(); $(".collapse").not(".in").collapse("show"); });
 	$("[data-event~=ajax-pagination]").on("change", "select", function(e){window.location=$(this).val();});
 
-	$("#log-area").on("mouseenter", "li", function(){
-		$("#log-area li[data-worker="+$(this).data("worker")+"]").addClass("hover-highlight");
-	});
-
-	$("#log-area").on("mouseleave", "li", function(){
-		$("#log-area li[data-worker="+$(this).data("worker")+"]").removeClass("hover-highlight");
-	});
-
 	$(".infinite-scroll").infinitescroll({
 		navSelector	: "ul.pager",
 		nextSelector : "ul.pager li.next a",
@@ -585,7 +577,7 @@
 		var formatData = function(type, data){
 			return {
 				time: data.time,
-				relativeTime: moment(data.time).fromNow(),
+				hourTime: moment(data.time).format("H:mm:ss"),
 				action: type,
 				levelName: level[data.data.level].name,
 				levelClass: level[data.data.level].classStyle,
@@ -634,9 +626,9 @@
 				incrCounter("type", type, 1);
 				incrCounter("general", "g", 1);
 
-				$("#log-area").find("time").each(function() {
+				/*$("#log-area").find("time").each(function() {
 					$(this).html(moment($(this).attr("title")).fromNow()).tooltip();
-				});
+				});*/
 			}
 		}
 

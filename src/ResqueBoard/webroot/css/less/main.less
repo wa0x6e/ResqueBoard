@@ -78,9 +78,12 @@ h2{
 	
 	.badge.pull-right, .label.pull-right {
 		margin-top: 0.8em;
-	}
-	
-	
+	}	
+}
+
+// Buttons on the same level as H2
+.h2-btn {
+	margin-top: 0.5em;
 }
 
 h3{
@@ -383,6 +386,10 @@ h3{
 			}
 		}
 		
+		.label.pull-right, .badge.pull-right {
+			margin-top: 3px;
+		}
+		
 		.btn {
 			margin-left: @insidePadding;
 			color: @sidebarTextColor;
@@ -569,56 +576,96 @@ h4.sep
 }
 
 
-#log-area
+.log-area
 {
-	list-style: none;
-	margin: 0;
+	@borderRadius : 3px;
 	
-	&:hover li
-	{
-		opacity: 0.8;
-	}
+	background-color: @white;
+	list-style: none;
+	margin: 0 0 @gridGutterWidth;
+	
+	border-top: 1px solid @greyBorderColor;
+	border-bottom: 2px solid @greyBorderColor;
+	
+	.border-radius(@borderRadius);
 	
 	.type
 	{
 		text-transform: uppercase;
 	}
 	
-	.label-c
+	.label
 	{
-		width: @gridColumnWidth;
+		line-height: 1em;
+		
+		padding: 3px 4px;
+		margin-top: 2px;
+	
+		width: @gridColumnWidth - @insidePadding * 2;
 		float: left;
-		text-align: right;
+		text-align: center;
+		text-transform: uppercase;
 		margin-right: @gridGutterWidth;
+		margin-left: @insidePadding;
 	}
 	
 	.worker
 	{
 		color: @grayLight;
+		font-size: 0.85em;
+		font-style: normal;
+		
+		width: @gridColumnWidth * 2 + @gridGutterWidth;
+		display: inline-block;
+		float: left;
+		
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		
 		margin-right: @gridGutterWidth;
-		font: normal 85% "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+		direction: rtl;
+		text-align: left;
 	}
 
 
-	
 	li
 	{
+
+	
 		border-bottom: 1px solid @grayLighter;
-		.transition(all .1s);
-		padding:3px 10px;
-		
+		padding: 5px @insidePadding 5px 0;
+		.clearfix();
+	
+				
 		&:hover
-		{			
-			background-color: @grayLighter;
-		}
-		
-		&.hover-highlight
 		{
-			opacity: 1;
-			color: @textColor!important;
 			background-color: lighten(@yellow, 43);
+	
 		}
 		
+	}
+	
+	.log-message {
+		float: left;
+		width: @gridColumnWidth * 4 + @gridGutterWidth * 3;
+
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+	
+	.li-head, .li-head:hover
+	{
+		background: @greyBorderColor;
+		font-weight: bold;
+		color: @gray;
+		
+		padding-top: 4px;
+		padding-bottom: 2px;
+		
+		border-top: 1px solid lighten(@greyBorderColor, 10);
+		border-bottom: 1px solid darken(@greyBorderColor, 5);
 	}
 	
 	li[data-verbosity="debug"]
@@ -628,19 +675,31 @@ h4.sep
 
 	li.filter-event
 	{
-		.gradientBar(@grayLighter, #fff);
+		background-color: lighten(@greyBorderColor, 7);
 		text-align: center;
-		font-size: 85%;
-		border-bottom: 1px solid @grayLighter;
+		font-size: 0.85em;
+		border-top: 1px solid @white;
+		border-bottom: 1px solid @greyBorderColor;
 		color: @grayLight;
-
+	}
+	
+	li:first-child {
+		.border-radius(@borderRadius @borderRadius 0 0);
+	}
+	
+	li:last-child {
+		.border-radius(0 0 @borderRadius @borderRadius);
 	}
 	
 	time
 	{
-		font-size:95%;
+		font-size: 0.85em;
+		line-height: 1em;
 		color:  @grayLight;
 		float: right;
+		
+		margin-top: 5px;
+		
 	}
 }
 
@@ -1035,6 +1094,11 @@ span.chart-bar + b
 	text-shadow: none;
 }
 
+.btn {
+	#gradient .vertical(lighten(@greyBorderColor, 8), @greyBorderColor);
+	color: darken(@greyBorderColor, 40);
+}
+
 // Horizon chart
 #worker-activities
 {
@@ -1128,7 +1192,6 @@ span.chart-bar + b
 			display:block;
 			padding: @gridGutterWidth;
 			color: @grayLight;
-			//outline: 1px solid #000;
 		}
 		
 		@hoverColor : @colorCompMinusTwo;
@@ -1244,48 +1307,6 @@ span.chart-bar + b
 }
 
 
-#jobs-load-monthly
-{
-	height: 200px;
-	
-	.graph-area
-	{
-		fill: #b5c7e6;
-	}
-	
-	.graph-average-area
-	{
-		fill : #c7e9c0;
-		opacity: 0.4;
-	}
-	
-	.graph-line
-	{
-		stroke: #4777b2;
-		stroke-width: 2;
-		fill: none;
-	}
-	
-	line {
-		stroke: @grayLighter;
-		stroke-width: 0.5;
-		fill: none;
-	}
-	
-	.graph-title
-	{
-		fill: steelblue;
-		font-size: 13px;
-		font-weight: bold;
-	}
-	
-	.graph-legend
-	{
-		fill: @grayLight;
-		font-size: 11px;
-	}
-}
-
 // To fix bug where hover not working for popover
 .pop-over
 {
@@ -1303,18 +1324,12 @@ form label .icon-info-sign
 }
 
 
-.li-head
-{
-	background: @grayLighter;
-	font-weight: bold;
-	color: @gray;
-}
+
 
 .knight-unit
 {
-	background-color: @white;
+	
 	padding: 50px;
-	.border-radius(5px);
 	text-align:center;
 	margin-top: @gridGutterWidth;
 	margin-bottom: @gridGutterWidth;
@@ -1342,11 +1357,11 @@ form label .icon-info-sign
 
 /*
 	=======================
-	Jobs class distribution
+	Jobs load distribution
 	=======================
 */
 .jobs-matrix {
-	@cellsize: 19px;
+	@cellsize: 22px;
 	margin: @gridGutterWidth 0;
 	padding: 0;
 	

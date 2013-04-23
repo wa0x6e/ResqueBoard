@@ -15,7 +15,7 @@
  * @package       resqueboard
  * @subpackage      resqueboard.webroot
  * @since         1.0.0
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.ctp)
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license)
  */
 
 if (!defined('ROOT')) {
@@ -32,21 +32,23 @@ include ROOT . DS . 'Config' . DS . 'Core.php';
 
 $app = new Slim\Slim($config);
 
+$app->runtime = $settings;
+
 $app->get(
     '/',
     function () use ($app, $settings) {
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
             $resqueApi = new ResqueBoard\Lib\ResqueApi($settings['resqueConfig']);
-            $app->render(
-                'index.ctp',
+
+            render(
+                $app,
+                'index',
                 array(
                     'stats' => $resqueStat->getStats(),
                     'workers' => $resqueStat->getWorkers(),
                     'schedulerWorkers' => $resqueStat->getSchedulerWorkers(),
-                    'queues' => $resqueStat->getQueues(),
-                    'pageTitle' => 'Home',
-                    'readOnly' => $settings['readOnly']
+                    'queues' => $resqueStat->getQueues()
                 )
             );
 
@@ -67,13 +69,13 @@ $app->get(
 
         $mutedLevels = array_filter(explode(',', $mutedLevels));
 
-        $app->render(
-            'logs.ctp',
+        render(
+            $app,
+            'logs',
             array(
                 'logLevels' => $logLevels,
                 'logTypes' => $logTypes,
                 'mutedLevels' => $mutedLevels,
-                'pageTitle' => 'Logs'
             )
         );
     }
@@ -85,11 +87,11 @@ $app->get(
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
 
-            $app->render(
-                'workers.ctp',
+            render(
+                $app,
+                'workers',
                 array(
                     'workers' => $resqueStat->getWorkers(),
-                    'pageTitle' => 'Active workers',
                     'readOnly' => $settings['readOnly']
                 )
             );
@@ -106,8 +108,9 @@ $app->get(
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
 
-            $app->render(
-                'jobs.ctp',
+            render(
+                $app,
+                'jobs',
                 array(
                     'jobs' => $resqueStat->getJobs(array('limit' => PAGINATION_LIMIT)),
                     'failedJobs' =>  $resqueStat->getJobs(
@@ -121,7 +124,7 @@ $app->get(
                     'jobsRepartitionStats' => $resqueStat->getJobsRepartionStats(),
                     'workers' => $resqueStat->getWorkers(),
                     'resultLimits' => array(15, 50, 100),
-                    'pageTitle' => 'Jobs'
+                    'queues' => $resqueStat->getQueues()
                 )
             );
 
@@ -137,11 +140,11 @@ $app->get(
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
 
-            $app->render(
-                'jobs_class_distribution.ctp',
+            render(
+                $app,
+                'jobs_class_distribution',
                 array(
-                    'jobsRepartitionStats' => $resqueStat->getJobsRepartionStats(null),
-                    'pageTitle' => 'Jobs distribution'
+                    'jobsRepartitionStats' => $resqueStat->getJobsRepartionStats(null)
                 )
             );
 
@@ -171,11 +174,11 @@ $app->get(
 
             $firstJob = $resqueStat->getJobs(array('limit' => 1, 'sort' => array('t' => 1), 'format' => false));
 
-            $app->render(
-                'jobs_load_distribution.ctp',
+            render(
+                $app,
+                'jobs_load_distribution',
                 array(
                     'jobsMatrix' => $resqueStat->getJobsMatrix($start, $end, ResqueBoard\Lib\ResqueStat::CUBE_STEP_1DAY),
-                    'pageTitle' => 'Jobs load distribution',
                     'startDate' => new DateTime(current($firstJob)['time']),
                     'currentDate' => $start
                 )
@@ -272,13 +275,13 @@ $app->map(
             $pagination->totalPage = ceil($pagination->totalResult / $pagination->limit);
             $pagination->uri = cleanArgs($app->request()->params());
 
-            $app->render(
-                'jobs_view.ctp',
+            render(
+                $app,
+                'jobs_view_processed',
                 array(
                     'jobs' => $jobs,
                     'workers' => $activeWorkers,
                     'resultLimits' => $resultLimits,
-                    'pageTitle' => 'Jobs',
                     'errors' => $errors,
                     'searchData' => $searchData,
                     'searchToken' => $searchToken,
@@ -321,11 +324,11 @@ $app->get(
             $pagination->totalPage = ceil($pagination->totalResult / $pagination->limit);
             $pagination->uri = cleanArgs($app->request()->params());
 
-            $app->render(
-                'jobs_pending_view.ctp',
+            render(
+                $app,
+                'jobs_view_pending',
                 array(
                     'jobs' => $resqueStat->getJobs($options),
-                    'pageTitle' => 'Pending Jobs',
                     'queues' => $resqueStat->getQueues(),
                     'resultLimits' => $resultLimits,
                     'pagination' => $pagination
@@ -407,10 +410,10 @@ $app->get(
 
 
 
-            $app->render(
-                'jobs_overview.ctp',
+            render(
+                $app,
+                'jobs_load_overview',
                 array(
-                    'pageTitle' => 'Jobs overview',
                     'ranges' => $rangeWhitelist,
                     'currentRange' => $range,
                     'currentStep' => $rangeWhitelist[$range],
@@ -436,14 +439,13 @@ $app->get(
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
             $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat($settings);
 
-            $app->render(
-                'scheduled_jobs.ctp',
+            render(
+                $app,
+                'jobs_view_scheduled',
                 array(
                     'stats' => $resqueStat->getStats(),
                     'futureScheduledJobs' => $resqueSchedulerStat->getScheduledJobsCount(time()),
-                    'pastScheduledJobs' => $resqueSchedulerStat->getScheduledJobsCount(0, time()),
-                    'pageTitle' => 'Scheduled Jobs'
-
+                    'pastScheduledJobs' => $resqueSchedulerStat->getScheduledJobsCount(0, time())
                 )
             );
 
@@ -525,12 +527,12 @@ $app->map(
             $pagination->totalPage = ceil($pagination->totalResult / $pagination->limit);
             $pagination->uri = cleanArgs($app->request()->params());
 
-            $app->render(
-                'logs_browser.ctp',
+            render(
+                $app,
+                'logs_browser',
                 array(
                     'logs' => $logs,
                     'resultLimits' => $resultLimits,
-                    'pageTitle' => 'Logs',
                     'errors' => $errors,
                     'searchData' => $searchData,
                     'pagination' => $pagination,
@@ -650,7 +652,8 @@ $app->error(
             'error.ctp',
             array(
                 'pageTitle' => 'Error',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
+                'trace' => $e->getTrace()
             )
         );
     }
@@ -692,10 +695,10 @@ $app->map(
             $data = cleanArgs($app->request()->params());
         }
 
-        $app->render(
-            'worker_form.ctp',
+        render(
+            $app,
+            'worker_form',
             array(
-                'pageTitle' => 'Start a worker',
                 'errors' => $resqueApi->getErrors(),
                 'raw' => true,
                 'data' => $data
@@ -712,4 +715,28 @@ function cleanArgs($args)
         $args[0] = parse_url($args[0], PHP_URL_QUERY);
     }
     return $args;
+}
+
+function render($app, $template, $args)
+{
+    $args['navs'] = $app->runtime['nav'];
+    $args['readOnly'] = $app->runtime['readOnly'];
+
+    $args['current'] = getMenu($args['navs'], $template);
+
+    if (!isset($args['pageTitle'])) {
+        $args['pageTitle'] = $args['current']['title'];
+    }
+
+    $app->render($template . '.ctp', $args);
+}
+
+function getMenu($args, $index)
+{
+    if (strpos($index, '_') !== false) {
+        $args = $args[substr($index, 0, strpos($index, '_'))]['submenu'];
+        $index = substr($index, strpos($index, '_') + 1);
+    }
+
+    return $args[$index];
 }

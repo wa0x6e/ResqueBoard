@@ -18,9 +18,7 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 ?>
-	<div class="page-header">
-		<h1>Jobs class distribution</h1>
-	</div>
+
 	<div class="full-width">
 
 			<div id="jobRepartition">

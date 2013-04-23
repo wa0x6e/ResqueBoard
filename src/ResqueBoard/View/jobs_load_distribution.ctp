@@ -21,9 +21,7 @@
 $timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
 
 ?>
-	<div class="page-header">
-		<h1>Jobs load distribution</h1>
-	</div>
+
 
 <div class="full-width">
 

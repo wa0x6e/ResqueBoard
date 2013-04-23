@@ -18,6 +18,13 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
+if (!defined('ROOT')) {
+    define('ROOT', dirname(dirname(__FILE__)));
+}
+
+if (!defined('DS')) {
+    define('DS', DIRECTORY_SEPARATOR);
+}
 
     /**
      * General settings
@@ -108,7 +115,7 @@
      * @since  1.5.1
      * @var string
      */
-    define('CUBE_URL', parse_url($_SERVER['HTTP_HOST'], PHP_URL_HOST) . ':' . $settings['cube']['port']);
+    define('CUBE_URL', parse_url(isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $settings['cube']['host'], PHP_URL_HOST) . ':' . $settings['cube']['port']);
 
     /**
      * Separator between the website name and other text, in the page title
@@ -116,5 +123,93 @@
      * @var string
      */
     define('TITLE_SEP', ' | ');
+
+    $settings['nav'] = array(
+        'index' => array(
+            'icon' => 'icon-home',
+            'name' => 'Home',
+            'title' => 'Dashboard',
+            'link' => '/'
+            ),
+        'workers' => array(
+            'icon' => 'icon-cogs',
+            'name' => 'Workers',
+            'title' => 'Workers',
+            'link' => '/workers'
+        ),
+        'logs' => array(
+            'icon' => 'icon-file',
+            'name' => 'Logs',
+            'title' => 'Logs',
+            'link' => '/logs',
+            'submenu' => array(
+                'tail' => array(
+                    'icon' => 'icon-eye-open',
+                    'name' => 'Latest logs',
+                    'title' => 'Logs',
+                    'link' => '/logs'
+                ),
+                'browser' => array(
+                    'icon' => 'icon-eye-open',
+                    'name' => 'Logs browser',
+                    'title' => 'Logs browser',
+                    'link' => '/logs/browse'
+                )
+            )
+        ),
+        'jobs' => array(
+                'icon' => 'icon-briefcase',
+                'name' => 'Jobs',
+                'title' => 'Jobs Dashboard',
+                'link' => '/jobs',
+                'submenu' => array(
+                    'dashboard' => array(
+                        'icon' => 'icon-dashboard',
+                        'name' => 'Jobs Dashboard',
+                        'title' => 'Jobs',
+                        'link' => '/jobs'
+                    ),
+                    '',
+                    'view_processed' => array(
+                        'icon' => 'icon-briefcase',
+                        'name' => 'Processed jobs',
+                        'title' => 'Processed jobs',
+                        'link' => '/jobs/view'
+                    ),
+                    'view_pending' => array(
+                        'icon' => 'icon-briefcase',
+                        'name' => 'Pending jobs',
+                        'title' => 'Pending jobs',
+                        'link' => '/jobs/pending'
+                    ),
+                    'view_scheduled' => array(
+                        'icon' => 'icon-briefcase',
+                        'name' => 'Scheduled jobs',
+                        'title' => 'Scheduled jobs',
+                        'link' => '/jobs/scheduled'
+                    ),
+                    '',
+                    'class_distribution' => array(
+                        'icon' => 'icon-tasks',
+                        'name' => 'Class distribution',
+                        'title' => 'Class distribution',
+                        'link' => '/jobs/distribution/class'
+                    ),
+                    'load_distribution' => array(
+                        'icon' => 'icon-table',
+                        'name' => 'Load distribution',
+                        'title' => 'Load distribution',
+                        'link' => '/jobs/distribution/load'
+                    ),
+                    'load_overview' => array(
+                        'icon' => 'icon-bar-chart',
+                        'name' => 'Load overview',
+                        'title' => 'Load overview',
+                        'link' => '/jobs/overview/hour'
+                    )
+                )
+         )
+    );
+
 
     require dirname(dirname(ROOT)) . DS . 'vendor' . DS . 'autoload.php';

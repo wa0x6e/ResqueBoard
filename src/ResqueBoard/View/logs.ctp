@@ -24,9 +24,6 @@
 	});
 </script>
 
-	<div class="page-header">
-		<h1>Logs</h1>
-	</div>
 
 
 	<div class="with-sidebar">
@@ -55,6 +52,7 @@
 </div>
 
 <div class="sidebar">
+	<div class="bloc">
 	<h3>Listen to</h3>
 	<form class="" id="log-filter-form">
 		<fieldset>
@@ -107,3 +105,4 @@
 			</ul>
 		</fieldset>
 	</form>
+</div>

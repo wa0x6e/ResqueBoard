@@ -162,9 +162,6 @@ $headers = array(
 
 
 ?>
-	<div class="page-header">
-		<h1>Jobs overview</h1>
-	</div>
 
 	<script type="text/javascript">
 	$(document).ready(function() {

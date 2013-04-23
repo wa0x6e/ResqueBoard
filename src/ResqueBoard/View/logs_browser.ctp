@@ -18,10 +18,6 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 ?>
-	<div class="page-header">
-		<h1>Logs</h1>
-	</div>
-
 
 	<div class="with-sidebar">
 
@@ -119,7 +115,7 @@
 	</div>
 
 		<div class="sidebar">
-
+			<div class="bloc">
 			<h3>Search</h3>
 			<form id="log-browser-form">
 				<fieldset><legend>Verbosity</legend>
@@ -168,4 +164,4 @@
 				<button type="submit" class="btn btn-primary">Search</button>
 
 			</form>
-
+</div>

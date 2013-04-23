@@ -714,7 +714,7 @@
 
 		return {
 			initJobsChart : function(chartType) {
-				if ($(".worker-stats").length !== 0)
+				if ($(".workers-list-item").length !== 0)
 				{
 					var getStaticStats = function(id)
 						{
@@ -735,7 +735,7 @@
 							};
 						};
 
-					$(".worker-stats").each(function(data){
+					$(".workers-list-item").each(function(data){
 						var $this = $(this);
 						var processedJobsCountDOM = $this.find("[data-status=processed]");
 						var failedJobsCountDOM = $this.find("[data-status=failed]");
@@ -1018,7 +1018,7 @@
 				{
 					if (jobStats.hasOwnProperty(i))
 					{
-						var data = initData(jobStats[i]);
+						var data = initData(jobStats[i]); console.log(jobStats);
 						var parent = jobStats[i].chart;
 
 						// Define the margin, radius, and color scale. The color scale will be
@@ -1421,7 +1421,7 @@
 		;
 
 	}
-
+/*
 
 	function jobsLoad()
 	{
@@ -1453,14 +1453,14 @@
 		.call(context.axis().orient("bottom").ticks(d3.time.minutes, 10).tickSize(6,3,0)
 		.tickFormat(d3.time.format("%H:%M")));
 	}
-
+*/
 	/**
 	 * Create a line graph of monthly jobs load
 	 *
 	 * @param	int average	Total average number of jobs by day
 	 * @return void
 	 */
-	function monthlyJobsLoad(average)
+	/*function monthlyJobsLoad(average)
 	{
 		var loadChart = function(start, end, title)
 		{
@@ -1604,7 +1604,7 @@
 		{
 			initChart();
 		});
-	}
+	}*/
 
 $(".workers-list, #working-area").on("click", ".stop-worker", function(event){
 	event.preventDefault();
@@ -2088,6 +2088,65 @@ if ($("#scheduled-jobs-graph").length > 0) {
 					$("#scheduled-jobs-list").append("<div class=\"alert\">No jobs found for this period</div>");
 				} else {
 					$("#scheduled-jobs-list h2").prepend("<strong>" + jobsCount + "</strong> ");
+				}
+
+			});
+
+		}
+	});
+}
+
+/**
+ * Home Page
+ * jobs calendar graph
+ * @since 2.0.0
+ */
+if ($("#latest-jobs-graph").length > 0) {
+	var cal = new CalHeatMap();
+	cal.init({
+		id : "latest-jobs-graph",
+
+		scale : [1,4,8,12],
+		itemName : ["job", "jobs"],
+		range: 6,
+		cellsize: 10,
+		browsing: true,
+		browsingOptions: {
+			nextLabel : "<i class=\"icon-chevron-right\"></i>",
+			previousLabel : "<i class=\"icon-chevron-left\"></i>"
+		},
+		data: "/api/scheduled-jobs/stats/{{t:start}}/{{t:end}}",
+		onClick : function(start, itemNb) {
+
+			var formatDate = d3.time.format("%H:%M, %A %B %e %Y");
+
+			$("#latest-jobs-list").html("<h3>Jobs for <mark class=\"light\">" + formatDate(start) + "</mark></h3>");
+			$("#latest-jobs-list").append("<div class=\"alert alert-info\" id=\"latest-jobs-loading\">Loading datas ...</div>");
+
+			d3.json("/api/scheduled-jobs/" + (+start)/1000 + "/" + ((+start)/1000+60), function(data) {
+
+				$("#latest-jobs-loading").remove();
+				$("#latest-jobs-list").append("<ul class=\"unstyled job-details\"></ul>");
+
+				for (var timestamp in data) {
+
+					for (var job in data[timestamp]) {
+						data[timestamp][job].created = new Date(data[timestamp][job].s_time*1000);
+						data[timestamp][job].args = print_r(data[timestamp][job].args);
+					}
+
+					$("#latest-jobs-list ul")
+					.append(
+						$("#latest-jobs-list-tpl").render(data[timestamp])
+					);
+				}
+
+				var jobsCount = $("#latest-jobs-list ul li").length;
+
+				if (jobsCount === 0) {
+					$("#latest-jobs-list").append("<div class=\"alert\">No jobs found for this period</div>");
+				} else {
+					$("#latest-jobs-list h3").prepend("<strong>" + jobsCount + "</strong> ");
 				}
 
 			});

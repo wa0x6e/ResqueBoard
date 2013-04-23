@@ -30,6 +30,9 @@
 @textColor : lighten(@baseColor, 5);
 @textColorLight : lighten(@baseColor, 50);
 
+@linkColor: @colorCompPlusTwo;
+@linkHoverColor: @colorCompPlusOne;
+
 body
 {
 	padding-bottom: @gridGutterWidth ;
@@ -43,12 +46,12 @@ body
 }
 
 a, a:visited {
-	color: @colorCompPlusTwo;
+	color: @linkColor;
 	text-decoration: none;
 }
 
 a:hover {
-	color: @colorCompPlusOne;
+	color: @linkHoverColor;
 	text-decoration: none;
 }
 
@@ -103,13 +106,18 @@ h3{
 	font-size: 60%;
 }
 
-.page-header{
+.page-header {
 	background-color: darken(@white, 2);
 	padding: @gridGutterWidth;
-	box-shadow: 0 1px 0 darken(@white, 1);
+	.box-shadow(0 1px 0 rgba(255,255,255,0.8));
 	border-bottom-color: @greyBorderColor;
 	margin-top: 0;
 	margin-bottom: 0;
+	
+	i {
+		float: right;	
+		color: lighten(@textColor, 60);
+	}
 }
 
 
@@ -309,14 +317,14 @@ h3{
 	@backgroundColor : @colorCompMinusOne;
 	@sidebarTextColor : lighten(@backgroundColor, 40);
 	
-	width: @gridColumnWidth * 3 + @gridGutterWidth;
+	width: @gridColumnWidth * 3 + @gridGutterWidth * 3;
 	
 	background-color: @colorCompMinusOne;
 	margin-left: 0;
 	margin-right: 0;
-	padding: 0 @gridGutterWidth 0 (@gridGutterWidth - 5);
+	padding: 0;
 	color: @sidebarTextColor;
-	border-left: 5px solid darken(@backgroundColor, 5);
+	.box-shadow(5px 0 0 darken(@backgroundColor, 5) inset);
 	
 	.clearfix();
 	float:left;
@@ -387,6 +395,54 @@ h3{
 		color: @white
 	}
 	
+	.page-header {
+		background-color: lighten(@backgroundColor, 3);
+		border-bottom-color: darken(@backgroundColor, 0);
+	
+		h3 {
+			margin: 0;
+			line-height: 32px; // Same as h1
+		}
+		
+		i {
+			color: darken(@backgroundColor, 1);
+			text-shadow: none;	
+			font-size: 32px;
+		}
+	}
+	
+	.stats {
+		li {
+			float: none;	
+			padding: 0;
+			line-height: 1;
+			
+			& > div, & > a {
+				color: @textColorLight;
+				padding: @gridGutterWidth/2 @gridGutterWidth;
+
+				strong {
+					color: lighten(@textColorLight, 10);
+					text-shadow: 0 -1px 0 rgba(0,0,0,.3);
+				}
+				
+				b {
+					color: lighten(@textColorLight, 5);
+				}
+			}
+			
+			a:hover {
+				.box-shadow(5px 0 0 @backgroundColor);
+				background-color: darken(@backgroundColor, 10);
+			}
+		}
+		
+		.active {
+			background-color: darken(@backgroundColor, 5);
+			color: @colorShadeMinusOne;
+			.box-shadow(5px 0 0 rgba(0,0,0,0.2));
+		}
+	}
 }
 
 a.brand
@@ -457,6 +513,7 @@ h4.sep
 #lastest-jobs 
 {
 	height: 190px;
+	width: @gridColumnWidth * 10 + @gridGutterWidth * 13;
 }
 
 .chart rect 
@@ -704,44 +761,38 @@ mark.light {
 
 .workers-list-item
 {
-	border: 1px solid darken(#fff, 10);
+	border: 1px solid @greyBorderColor;
+	border-bottom: 2px solid darken(@greyBorderColor, 5);
 	.border-radius(4px);
-	margin-bottom: @gridGutterWidth;
-	#gradient .vertical(#fff, darken(#fff, 5));
-	font-size: 11px;
+	margin-bottom: @insidePadding;
+	background: @white;
+	padding: 0;
 	
-	&>.btn-group
-	{
-		margin: 8px 8px 0 0;
-		color: lighten(@textColor, 50);
-		
-		.btn
-		{
-			font-size: 14px;
-		}
+	
+	.chart {
+		width: @gridColumnWidth;
+		height: @gridColumnWidth;
+		float: left;
+		margin-right: @gridGutterWidth;
+		text-align: center;
 	}
 	
 	h3
 	{
-		padding: 0px 10px;
-		border-bottom: 1px solid darken(#fff, 10);
-		font-size: 14px;
-		background-color: #fff;
-		.border-radius(4px 4px 0 0);
-		margin:0;
+		font-size: 1.10em;
+		line-height: 1;
+		margin: 0 0 @insidePadding/2;
+		padding-bottom: @insidePadding/2;
+		
+		border-bottom: 3px solid @grayLighter;
+		
 	}
 	
-	h3.sub
-	{
-		padding: 0 5px;
-		border:0;
-		font-size: 14px;
-		background-color: transparent;
-	}
-	
+
 	.worker-list-inner
 	{
-		padding: 5px;
+		padding: @insidePadding;
+		.clearfix();
 		
 		small
 		{
@@ -753,42 +804,72 @@ mark.light {
 			}
 			
 			color: lighten(@textColor, 20);
-			font-style: italic;
 			line-height: 12px;
-			text-align: right;
-			margin-right: 5px;
 		}
 	}
 	
-
+	.worker-list-inner-data {
+		float: left;
+		width: @gridColumnWidth * 4 + @gridGutterWidth * 2 - 2; // 2 is the border size
+		
+	}
 	
-	div.worker-stats
+	.worker-list-footer {
+		border-top: 1px solid @greyBorderColor;
+		list-style: none;
+		background: lighten(@grayLighter, 3);
+		margin: 0;
+		.clearfix();
+		
+		.box-shadow(0 1px 0 @white inset);
+		
+		li {
+			color: darken(@greyBorderColor, 20);
+			font-size: 0.85em;
+			line-height: 1;
+			border-left: 1px solid @greyBorderColor;
+			display: block;
+			float: right;
+			
+			&.text {
+				padding: @insidePadding;
+				display: block;
+			}
+		}
+		
+		a {
+			color: @textColorLight;	
+			padding: @insidePadding;
+			display: block;
+			background: lighten(@grayLighter, 5);
+			
+			&:hover {
+				background: darken(@grayLighter, 5);
+				color: @baseColor;
+			}
+		}
+		
+	}
+	
+	.worker-stats
 	{
-		background-color: #fff;
-		border: 1px solid darken(#fff, 10);
+		border: 1px solid @grayLighter;
 		margin-top: 5px;
 		.border-radius(3px);
-		padding: 8px;
-		
-		.chart-pie, .stat-count
-		{
-			float: left;
+			
+		a {
+			padding: @insidePadding;
+			display: block;
 		}
-		
-		.chart-pie
-		{
-			width: 40px;
-			height: 40px;
-		}
-	
+
+			
 		.stat-count
-		{
-			margin-left: 15px;
-			margin-top: 4px;
-			width: 100px;
+		{	
+			
+			width: 50%;
+			float: left;
 			color: lighten(@textColor, 10);
 			
-				
 			b
 			{
 				font-size: 22px;
@@ -825,10 +906,39 @@ tr.worker-stats:target td:first-child
 	.border-radius(2px);
 }
 
-table .queues-list
+.table-greyed
 {
-	font-size: 11px;
 	color: lighten(@textColor, 25);
+	
+	td, th {
+		text-align: right;
+	}
+	
+	a {
+		display: block;
+		padding: 0 5px;
+	}
+	
+	a:hover {
+		font-weight: bold;
+		background: @greyBorderColor;
+	}
+	
+	th {
+		background: transparent;
+		color: @textColor;
+		border-bottom: 2px solid darken(@greyBorderColor, 20);
+	}
+	
+	.name {
+		font-weight: bold;
+		text-align: left;
+	}
+	
+	&.table-hover tr:hover td {
+		background: @white;
+	}
+	
 }
 
 .table td.inner-wrap
@@ -881,14 +991,14 @@ table .queues-list
 	height: 37px;
 }
 
-span.chart-bar
+.chart-bar
 {
 	display: block;
 	height: 100%;
 	position: absolute;
 	top: 0;
 	left: 0;
-	background-color: #d8ecf7;
+	background-color: lighten(@colorShadeMinusOne, 15);
 }
 
 span.chart-bar + b
@@ -896,9 +1006,6 @@ span.chart-bar + b
 	position: relative;
 	z-index: 1;
 }
-
-
-
 
 
 .chart-pie path:hover, .classyPieChart path:hover
@@ -978,11 +1085,6 @@ span.chart-bar + b
 
 
 
-td.stats-nb, th.stats-nb
-{
-	text-align: right;
-}
-
 .table-condensed
 {
 	font-size: 13px;
@@ -1021,9 +1123,23 @@ td.stats-nb, th.stats-nb
 		display:block;
 		float: left;
 				
-		& > div
+		& > div, & > a
 		{
-			padding: 14px 0 ;
+			display:block;
+			padding: @gridGutterWidth;
+			color: @grayLight;
+			//outline: 1px solid #000;
+		}
+		
+		@hoverColor : @colorCompMinusTwo;
+		
+		a:hover {
+			background-color: rgba(255,255,255,.5);
+			.box-shadow(0 5px 0 lighten(@hoverColor, 25), 0 -5px 0 lighten(@hoverColor, 25));
+		}
+		
+		a:hover, a:hover strong {
+			color: @linkColor;
 		}
 		
 		strong
@@ -1565,9 +1681,7 @@ th {
 	width: 25%;
 }
 
-.split-four li:last-child {
-	width: 24.5%;
-}
+
 
 
 .page-nav-tab {
@@ -1603,9 +1717,46 @@ th {
 	}
 }
 
+#jobs-activities-graph {
+	
+	background: darken(@greyBorderColor, 1);
+	
+	min-height: 100px;
+	
+	border-top: 1px solid darken(@greyBorderColor, 5);
+	border-bottom: 1px solid darken(@greyBorderColor, 5);
+	.box-shadow(0 1px 0 rgba(255,255,255,.5));
+}
+
 #scheduled-jobs-graph {
-	position: relative;
 	padding-left: 16px;
+}
+#latest-jobs-graph {
+	padding: 1px 10px;
+	background-color: @white;
+	border-bottom: 4px solid darken(@greyBorderColor, 5);
+	
+	.graph-browse-previous, .graph-browse-next {
+		background-color: darken(@greyBorderColor, 5);
+	}
+}
+
+#latest-jobs-list {
+	border: 1px solid darken(@greyBorderColor, 5);
+	background: @greyBorderColor;
+	padding: 0 @insidePadding @insidePadding;
+	.border-radius(0 0 4px 4px);
+	
+	p {
+		color: darken(@greyBorderColor, 30);
+		margin:0;
+		padding-top: @insidePadding;
+		text-align: center;
+	}
+}
+
+#scheduled-jobs-graph, #latest-jobs-graph {
+	position: relative;
 }
 
 .graph-browse-previous, .graph-browse-next {

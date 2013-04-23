@@ -18,9 +18,6 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 ?>
-	<div class="page-header">
-		<h1>Jobs Browser</h1>
-	</div>
 
     <ul class="nav nav-tabs page-nav-tab">
 	    <li>
@@ -50,6 +47,12 @@
 		}
 
 		echo'</h2>';
+
+		$message = 'No pending jobs found';
+
+		if (isset($pagination->uri['queue']) && !empty($pagination->uri['queue'])) {
+			$message .= ' for the queue <strong>' . $pagination->uri['queue'] . '</strong>';
+		}
 
 		if (!empty($jobs)) {
 
@@ -85,7 +88,9 @@
 
 			<?php
 
-			\ResqueBoard\Lib\JobHelper::renderJobs($jobs, 'No pending jobs');
+
+
+			\ResqueBoard\Lib\JobHelper::renderJobs($jobs, $message);
 
 			if (isset($pagination)) {
 				?>
@@ -122,7 +127,7 @@
 		} else {
 			?>
 
-				<div class="alert">No pending jobs found</div>
+				<div class="alert"><?php echo $message; ?></div>
 
 			<?php
 		}
@@ -131,35 +136,54 @@
 	</div>
 </div>
 
-	<div class="sidebar">
+	<?php
+		$totalJobs = 0;
+		foreach ($queues as $queueName => $stats) {
+			if ($queueName === ResqueScheduler\ResqueScheduler::QUEUE_NAME) {
+				continue;
+			}
+			$totalJobs += $stats['jobs'];
+		}
+	?>
 
-			<h3>Stats</h3>
-			<table class="table-condensed table">
-				<tr>
-					<th>Queue Name</th>
-					<th>Pending Jobs</th>
-					<th>Workers Count</th>
-				</tr>
-				<?php
-				$totalJobs = $totalWorkers = 0;
-				foreach ($queues as $queueName => $stats) {
-					if ($queueName === ResqueScheduler\ResqueScheduler::QUEUE_NAME) continue;
-					$totalJobs += $stats['jobs'];
-					$totalWorkers += $stats['workers'];
-				?>
-					<tr<?php if (empty($stats['workers'])) echo ' class="error"'; ?>>
-						<td><?php echo $queueName; ?> <?php if (empty($stats['workers'])) {
-							echo '<i class="icon-warning-sign" title="This queue is not polled by any worker" data-event="tooltip"></i>';
-						} ?></td>
-						<td><?php echo $stats['jobs'] > 0 ? ('<a href="/jobs/pending?queue='.$queueName.'" title="View all pending jobs from ' . $queueName . '">' . number_format($stats['jobs']) . '</a>') : 0 ?></td>
-						<td><?php echo number_format($stats['workers']) ?></td>
-					</tr>
-				<?php } ?>
-				<tr class="info">
-					<td><b>Total</b></td>
-					<td><b><?php echo number_format($totalJobs) ?></b></td>
-					<td><b><?php echo number_format($totalWorkers) ?></b></td>
-				</tr>
-			</table>
+	<div class="sidebar">
+		<div class="page-header">
+			<h3>Quick Stats <i class="icon-bar-chart"></i></h3>
 		</div>
+
+		<ul class="stats unstyled clearfix">
+			<li class="<?php
+				if (!isset($pagination->uri['queue']) || $pagination->uri['queue'] === '') {
+					echo ' active';
+				}
+					 ?>"><a href="/jobs/pending">
+				<strong><?php echo number_format($totalJobs); ?></strong>
+				Total <b>pending</b> jobs</a>
+			</li>
+		</ul>
+
+		<div class="bloc">
+			<h3>Queues Stats</h3>
+		</div>
+
+		<ul class="stats unstyled clearfix">
+			<?php foreach ($queues as $queueName => $stats) { ?>
+				<li class="<?php if (empty($stats['workers'])) {
+					echo 'error';
+				}
+				if (isset($pagination->uri['queue']) && $pagination->uri['queue'] === $queueName) {
+					echo ' active';
+				}
+					 ?>">
+					<a href="/jobs/pending?queue=<?php echo $queueName; ?>" title="View all pending jobs from <?php echo $queueName ?>">
+						<strong>
+							<?php echo number_format($stats['jobs']); ?>
+						</strong> from <b><?php echo $queueName; ?></b>
+					</a>
+				</li>
+			<?php } ?>
+		</ul>
+
+
 	</div>
+</div>

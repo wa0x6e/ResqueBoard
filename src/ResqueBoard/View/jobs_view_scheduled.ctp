@@ -23,9 +23,7 @@
 		$message = '<div class="alert alert-error alert-page">There is some scheduled jobs past their due date. Is the Scheduler Worker running ?</div>';
 	endif; ?>
 
-	<div class="page-header">
-		<h1>Jobs Browser</h1>
-	</div>
+
 	<?php //echo $message ?>
 
 	<ul class="nav nav-tabs page-nav-tab">
@@ -81,6 +79,11 @@
 </div>
 
 	<div class="sidebar">
+
+		<div class="page-header">
+			<h3>Quick Stats <i class="icon-bar-chart"></i></h3>
+		</div>
+
 		<ul class="stats unstyled clearfix">
 			<li><div>
 				<strong><?php echo number_format($stats['total']['scheduled']); ?></strong>

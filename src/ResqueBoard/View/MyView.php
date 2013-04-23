@@ -52,12 +52,17 @@ class MyView extends \Slim\View
         ob_start();
         if (!isset($raw) || $raw === false) {
             require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->headerTemplate;
-            require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->bodyPrepend;
+
+            if ($template !== 'error.ctp') {
+                require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->bodyPrepend;
+            }
         }
         require $this->templatePath;
         if (!isset($raw) || $raw === false) {
             require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->bodyAppend;
-            require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->footerTemplate;
+            if ($template !== 'error.ctp') {
+                require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->footerTemplate;
+            }
         }
         return ob_get_clean();
     }

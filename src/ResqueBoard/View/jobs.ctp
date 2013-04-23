@@ -19,9 +19,37 @@
  */
 
 ?>
-	<div class="page-header">
-		<h1>Jobs Dashboard</h1>
+
+	<ul class="stats unstyled clearfix split-four">
+		<li>
+			<a href="/jobs/view">
+				<strong data-status="processed"><?php echo number_format($jobsStats->total) ?></strong>
+				<b>Processed</b> jobs
+			</a>
+		</li>
+		<li><div>
+			<strong class="warning" data-status="failed"><?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?>%</strong>
+			<b><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]) ?> failed</b> jobs</div>
+		</li>
+		<li>
+			<a href="/jobs/pending">
+				<strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING]); ?></strong>
+				<b>Pending</b> jobs
+			</a>
+		</li>
+		<li>
+			<a href="/jobs/scheduled">
+				<strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_RUNNING]) ?></strong>
+				<b>Running</b> jobs
+			</a>
+		</li>
+	</ul>
+
+
+	<div id="jobs-activities-graph">
+
 	</div>
+
 	<div class="row">
 	<div class="bloc">
 		<div class="span5">
@@ -46,19 +74,17 @@
 
 					echo "<script type='text/javascript'>";
 					echo "$(document).ready(function() { ";
-						echo "jobsLoad();";
-						echo "monthlyJobsLoad(". $jobsDailyAverage .");";
 						echo "pieChart('jobRepartition', " . $jobsRepartitionStats->total . ", " . json_encode($pieDatas) . ");";
 					echo "})</script>";
 				?>
 			</div>
 
-			<table class="table table-condensed table-hover">
+			<table class="table table-condensed table-hover table-greyed">
 				<thead>
 					<tr>
-						<th>Job class</th>
-						<th class="stats-nb">Count</th>
-						<th class="stats-nb">Distribution</th>
+						<th class="name">Job class</th>
+						<th>Count</th>
+						<th>Distribution</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -66,9 +92,9 @@
 					$total = 0;
 					foreach ($jobsRepartitionStats->stats as $stat) {
 						echo '<tr>';
-						echo '<td>' . $stat['_id'] . '</td>';
-						echo '<td class="stats-nb">' . number_format($stat['value']) . '</td>';
-						echo '<td class="stats-nb"><div style="position:relative;">';
+						echo '<td class="name">' . $stat['_id'] . '</td>';
+						echo '<td>' . number_format($stat['value']) . '</td>';
+						echo '<td><div style="position:relative;">';
 						echo '<span class="chart-bar" style="width:' . $stat['percentage'] . '%;"></span>';
 						echo '<b>' . ($stat['percentage'] != 0 ? '' : '~') . $stat['percentage'] . '%</b></div></div></td>';
 						echo '</tr>';
@@ -80,9 +106,9 @@
 						$p = round(($jobsRepartitionStats->total - $total) / $jobsRepartitionStats->total * 100, 2);
 
 						echo '<tr>';
-						echo '<td>Other</td>';
-						echo '<td class="stats-nb">' . number_format($jobsRepartitionStats->total - $total) . '</td>';
-						echo '<td class="stats-nb"><div style="position:relative;">';
+						echo '<td class="name">Other</td>';
+						echo '<td>' . number_format($jobsRepartitionStats->total - $total) . '</td>';
+						echo '<td><div style="position:relative;">';
 						echo '<span class="chart-bar" style="width:' . $p . '%;"></span>';
 						echo '<b>' . ($p != 0 ? '' : '~') . $p . '%</b></div></div></td>';
 						echo '</tr>';
@@ -91,8 +117,8 @@
 					if ($jobsRepartitionStats->total > 0) {
 						echo '<tr class="info">';
 						echo '<td>Total</td>';
-						echo '<td class="stats-nb">' . number_format($jobsRepartitionStats->total) . '</td>';
-						echo '<td class="stats-nb">100%</td>';
+						echo '<td>' . number_format($jobsRepartitionStats->total) . '</td>';
+						echo '<td>100%</td>';
 						echo '</tr>';
 					} else {
 						echo '<tr class="info">';
@@ -108,114 +134,70 @@
 
 		<div class="span6">
 
-			<ul class="jobs-stats unstyled clearfix">
-				<li class="total clearfix"><div>
+			<h2>Queues <span class="badge badge-info queues-count"><?php echo count($queues)?></span></h2>
 
-				<div class="pull-right secondary">
-				<strong><?php echo number_format($jobsStats->total_active) ?></strong>
-				from active workers
-				</div>
+			<?php
+			    echo '<table class="table table-condensed table-greyed"><thead>'.
+				    '<tr><th class="name">Name</th><th>Pending jobs</th><th>Total jobs</th><th>Workers</th></tr></thead><tbody>';
 
-				<strong><?php echo number_format($jobsStats->total) ?></strong> <span class="pull-left">Total Jobs</span>
-				<span class="chart-bar"><span class="chart-bar-in" style="width:<?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?>%"></span></span>
-				<small><?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?> % fails</small>
-				</div></li>
-				<li><div><strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]) ?></strong> failed Jobs</div></li>
-				<li><div><strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_RUNNING]) ?></strong> Running jobs</div></li>
-				<li>
-					<div><a href="/jobs/pending" title="View all pending jobs"><strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING]) ?></strong> Waiting jobs</a></div>
+				if (!empty($queues)) {
 
+					$totalPendingJobs = 0;
+					array_walk($queues, function($q) use (&$totalPendingJobs) { $totalPendingJobs += $q['jobs']; });
+
+					foreach ($queues as $queueName => $queueStat) {
+						if ($queueName === ResqueScheduler\ResqueScheduler::QUEUE_NAME) {
+							continue;
+						} ?>
+					<tr>
+						<td class="name"><?php echo $queueName?></td>
+						<td>
+							<div style="position:relative;">
+								<span class="chart-bar" style="width:<?php echo round($queueStat['jobs'] * 100 / $totalPendingJobs, 2) ?>%;"></span>
+							</div>
+							<a href="/jobs/pending?queue=<?php echo $queueName ?>"><?php echo number_format($queueStat['jobs']); ?></a>
+						</td>
+						<td><a href="/jobs/view?queue=<?php echo $queueName ?>">00x00</a></td>
+						<td>00x00</td>
+
+					</tr>
+				<?php
+				    }
+				}
+				echo '</tbody></table>';
+			 ?>
+
+
+			<h2>Latest activities</h2>
+			<div id="latest-jobs-graph"></div>
+			<div id="latest-jobs-list">
+				<p>Click on the graph to show the associated jobs</p>
+			</div>
+			<script id="latest-jobs-list-tpl" type="text/x-jsrender">
+				<li class="accordion-group">
+					<div class="accordion-heading" data-toggle="collapse" data-target="#{{>id}}">
+						<div class="accordion-toggle">
+							<span class="job-status-icon" data-event="tooltip" data-original-title="Job scheduled">
+							<img src="/img/job_scheduled.png" title="Job scheduled" height="24" width="24"></span>
+
+							<h4>#{{>id}}</h4>
+
+							<small>Performing <code>{{>class}}</code> in
+							<span class="label label-success">{{>queue}}</span></small>
+
+						</div>
+					</div>
+					<div class="collapse accordion-body" id="{{>id}}">
+						<div class="accordion-inner">
+							<p><i class="icon-time"></i> <b>Added on </b>{{>created}}</p>
+							<pre class="job-args"><code class="language-php">{{>args}}</code></pre>
+						</div>
+					</div>
 				</li>
-			</ul>
-
-			<h2>Jobs load <small>for the past hour</small></h2>
-			<div id="jobs-load" style="position:relative;"></div>
-
-
-			<h2><form class="pull-right">
-
-					<?php
-
-					if ($jobsStats->oldest === null) {
-						$jobsStats->oldest = new DateTime();
-					}
-
-					if ($jobsStats->newest === null) {
-						$jobsStats->newest = new DateTime();
-					}
-
-					$startDate = $jobsStats->oldest->setDate($jobsStats->oldest->format('Y'), $jobsStats->oldest->format('m'), 1);
-					$endDate = $jobsStats->newest->setDate($jobsStats->newest->format('Y'), $jobsStats->newest->format('m'), 1);
-
-					$dateRange = array(clone $startDate);
-					while ($startDate->modify('first day of next month') < $endDate) {
-						$dateRange[] = clone $startDate;
-					}
-
-
-					echo '<select class="span2" id="jobs-load-monthly-selector">';
-					$i = 0;
-					foreach ($dateRange as $date) {
-						echo '<option value="'.$date->format('Y-m').'"'. (++$i == count($dateRange) ? ' selected="selected"' : '') .'>'. $date->format('F Y') .'</option>';
-					}
-					echo '</select>';
-
-					?>
-
-			</form>
-			Jobs load <small>by month</small></h2>
-
-			<div id="jobs-load-monthly"></div>
+			</script>
 		</div>
 
 	</div>
 </div>
 
-
-		<div class="span9">
-
-		<?php
-
-
-		echo '<h2><a href="/jobs/view">Latest Jobs</a></h2>';
-
-
-
-
-			?>
-			<div class="breadcrumb clearfix">
-				<div class="pull-right">
-					<div class="btn-group">
-						<button class="btn" data-event="expand-all tooltip" title="Expand all"><i class="icon-folder-open"></i></button>
-						<button class="btn" data-event="collapse-all tooltip" title="Collapse all"><i class="icon-folder-close"></i></button>
-					</div>
-				</div>
-			</div>
-
-			<?php
-
-			\ResqueBoard\Lib\JobHelper::renderJobs($failedJobs, 'No jobs found');
-
-
-		?>
-		<a href="/jobs/view" class="btn btn-block btn-small">More jobs</a>
-
-
-
-				<h2>Recent failures</h2>
-				<?php \ResqueBoard\Lib\JobHelper::renderJobs($failedJobs, 'No failed jobs so far :)');
-
-		?>
-
-
-
-				<h2><a href="/jobs/pending" title="View all pending jobs">Latest Pending jobs</a></h2>
-				<?php \ResqueBoard\Lib\JobHelper::renderJobs($pendingJobs, 'No pending jobs');
-					if (!empty($pendingJobs)) {
-						echo '<a href="/jobs/pending" title="View more pending jobs" class="btn btn-block btn-small">More pending jobs</a>';
-					}
-				?>
-
-
-		</div>
-	</div>
+</div>

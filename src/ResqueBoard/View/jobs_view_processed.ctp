@@ -19,10 +19,6 @@
  */
 ?>
 
-	<div class="page-header">
-		<h1>Jobs Browser</h1>
-	</div>
-
     <ul class="nav nav-tabs page-nav-tab">
 	    <li class="active">
 	    	<a href="<?php echo $_SERVER['REQUEST_URI'] ?>" title="View all completed/failed jobs">Processed Jobs</a>
@@ -124,7 +120,7 @@
 
 
 		<div class="sidebar">
-
+			<div class="bloc">
 			<h3>Search</h3>
 			<form class="" action="/jobs/view" method="GET">
 
@@ -179,7 +175,7 @@
 				<button class="btn btn-primary" type="submit">Search</button>
 
 			</form>
-
+</div>
 
 
 

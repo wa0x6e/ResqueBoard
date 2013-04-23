@@ -29,10 +29,10 @@ $(document).ready(function() {
 
 <div class="full-width">
 
-	<div class="bloc"><h2>Active workers <span class="badge badge-info"><?php echo count($workers) ?></span></h2></div>
+	<div class="ftr-bloc"><h2>Active workers <span class="badge badge-info"><?php echo count($workers) ?></span></h2>
 
-	<div id="working-area" class="content-bloc">
-		<table class="table table-bordered">
+	<div id="working-area">
+		<table class="table">
 		<thead>
 			<tr>
 				<th>Worker</th>
@@ -49,5 +49,6 @@ $(document).ready(function() {
 	<script id="working-template" type="text/x-jsrender">
 		<span class="label" id="_{{>job_id}}">{{>action}}</span>
 	</script>
-</div>
 
+
+</div>

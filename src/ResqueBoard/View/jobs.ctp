@@ -39,8 +39,8 @@
 		</li>
 		<li>
 			<a href="/jobs/scheduled">
-				<strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_RUNNING]) ?></strong>
-				<b>Running</b> jobs
+				<strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_SCHEDULED]) ?></strong>
+				<b>Scheduled</b> jobs
 			</a>
 		</li>
 	</ul>

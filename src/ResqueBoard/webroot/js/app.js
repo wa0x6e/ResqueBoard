@@ -610,9 +610,9 @@
 		{
 			if ($("input[data-rel="+level[data.data.level].name+"]").is(":checked"))
 			{
-					$( "#log-area" ).append(
-						$("#log-template").render(formatData(type, data))
-					);
+				$( "#log-area" ).append(
+					$("#log-template").render(formatData(type, data))
+				);
 
 				if (!counters.verbosity.hasOwnProperty(level[data.data.level].name)) {
 					addCounter("verbosity", level[data.data.level].name, $("#log-sweeper-form span[data-rel="+level[data.data.level].name+"]"));
@@ -625,10 +625,6 @@
 				incrCounter("verbosity", level[data.data.level].name, 1);
 				incrCounter("type", type, 1);
 				incrCounter("general", "g", 1);
-
-				/*$("#log-area").find("time").each(function() {
-					$(this).html(moment($(this).attr("title")).fromNow()).tooltip();
-				});*/
 			}
 		}
 
@@ -708,24 +704,6 @@
 			initJobsChart : function(chartType) {
 				if ($(".workers-list-item").length !== 0)
 				{
-					var getStaticStats = function(id)
-						{
-							if ($("#" + id).length === 0)
-							{
-								return false;
-							}
-
-							var $this = $("#" + id);
-							var processedJobsCountDOM = $this.find("[data-status=processed]");
-							var failedJobsCountDOM = $this.find("[data-status=failed]");
-							return {
-								processedJobsCountDOM : processedJobsCountDOM,
-								failedJobsCountDOM : failedJobsCountDOM,
-								processedJobsCount : parseInteger(processedJobsCountDOM.html()),
-								failedJobsCount : parseInteger(failedJobsCountDOM.html()),
-								chart: $this.find("[data-type=chart]")
-							};
-						};
 
 					$(".workers-list-item").each(function(data){
 						var $this = $(this);
@@ -743,11 +721,12 @@
 							chartType : chartDOM.data("chart-type")
 						};
 
+
+
 						totalJobs += processedJobsCount;
 					});
 
-					jobsStats["global-worker-stats"] = getStaticStats("global-worker-stats");
-					jobsStats["active-worker-stats"] = getStaticStats("active-worker-stats");
+
 
 					jobsChartInit = 1;
 
@@ -828,37 +807,13 @@
 
 				updateCounter(workerId, true);
 
-				if (jobsStats["active-worker-stats"] !== false)
-				{
-					jobsStats["active-worker-stats"].processedJobsCount++;
-					updateCounter("active-worker-stats", true);
 
-					if (level === 400)
-					{
-						jobsStats["active-worker-stats"].failedJobsCount++;
-						updateCounter("active-worker-stats", false);
-					}
-
-				}
-				if (jobsStats["global-worker-stats"] !== false)
-				{
-					jobsStats["global-worker-stats"].processedJobsCount++;
-					updateCounter("global-worker-stats", true);
-
-					if (level === 400)
-					{
-						jobsStats["global-worker-stats"].failedJobsCount++;
-						updateCounter("global-worker-stats", false);
-					}
-				}
 
 				// Refresh Chart
 				switch (jobsStats[workerId].chartType)
 				{
 					case "pie" :
 						jobPieChart.redraw(jobsStats[workerId], true);
-						jobPieChart.redraw(jobsStats["active-worker-stats"], false);
-						jobPieChart.redraw(jobsStats["global-worker-stats"], false);
 						break;
 					case "horizontal-bar" :
 						for (var i = 0, length = jobsStats.length; i < length; i++) {
@@ -1010,7 +965,7 @@
 				{
 					if (jobStats.hasOwnProperty(i))
 					{
-						var data = initData(jobStats[i]); console.log(jobStats);
+						var data = initData(jobStats[i]);
 						var parent = jobStats[i].chart;
 
 						// Define the margin, radius, and color scale. The color scale will be
@@ -1620,11 +1575,34 @@ $(".workers-list, #working-area").on("click", ".stop-worker", function(event){
 			} else {
 				alert("An unknown error has occured while stopping the worker");
 			}
-
 		}
-
 	});
+});
 
+$(".workers-list, #working-area").on("click", ".pause-worker", function(event){
+	event.preventDefault();
+
+	var workerId = $(this).data("workerId");
+	var workerName = $(this).data("workerName");
+
+	$.ajax({
+		url: "/api/workers/pause/" + workerId,
+		statusCode: {
+			404: function() {
+				alert("page not found");
+			}
+		}
+	}).done(function(data){
+		if (data.status === true) {
+			stopWorkerEvent(workerName);
+		} else {
+			if (data.message) {
+				alert(data.message);
+			} else {
+				alert("An unknown error has occured while pausing the worker");
+			}
+		}
+	});
 });
 
 
@@ -2107,7 +2085,7 @@ if ($("#latest-jobs-graph").length > 0) {
 			nextLabel : "<i class=\"icon-chevron-right\"></i>",
 			previousLabel : "<i class=\"icon-chevron-left\"></i>"
 		},
-		data: "/api/scheduled-jobs/stats/{{t:start}}/{{t:end}}",
+		data: "/api/jobs/{{t:start}}/{{t:end}}",
 		onClick : function(start, itemNb) {
 
 			var formatDate = d3.time.format("%H:%M, %A %B %e %Y");

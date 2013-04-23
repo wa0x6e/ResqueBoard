@@ -547,7 +547,11 @@ $app->map(
     }
 )->via('GET', 'POST');
 
-
+/**
+ * Return all the jobs between a start and end date
+ * @param  int $start   Start timestamp
+ * @param  int $end     End timestamp
+ */
 $app->get(
     '/api/jobs/:start/:end',
     function ($start, $end) use ($app, $settings) {
@@ -561,6 +565,26 @@ $app->get(
         }
     }
 );
+
+
+/**
+ * Return the number of jobs between start and end date,
+ *
+ */
+$app->get(
+    '/api/jobs/stats/:start/:end',
+    function ($start, $end) use ($app, $settings) {
+        try {
+            $jobs = array();
+
+            $app->response()->header("Content-Type", "application/json");
+            echo json_encode($jobs);
+        } catch (\Exception $e) {
+            $app->error($e);
+        }
+    }
+);
+
 
 $app->get(
     '/api/scheduled-jobs/stats/:start/:end',
@@ -619,6 +643,22 @@ $app->get(
         $stop = $resqueApi->stop($workerId);
 
         echo json_encode(array('status' => true));
+    }
+);
+
+$app->get(
+    '/api/workers/pause/:workerId',
+    function ($workerId) use ($app, $settings) {
+
+
+    }
+);
+
+$app->get(
+    '/api/workers/resume/:workerId',
+    function ($workerId) use ($app, $settings) {
+
+
     }
 );
 

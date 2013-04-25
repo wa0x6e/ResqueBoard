@@ -50,6 +50,10 @@ if (!defined('DS')) {
                 'host' => '127.0.0.1',
                 'port' => 1081
             ),
+            'cubePublic' => array(
+                'host' => '127.0.0.1',
+                'port' => 1081
+            ),
             /*'resquePrefix' => 'resque',*/
             'readOnly' => true,
             'resqueConfig' => __DIR__ . DIRECTORY_SEPARATOR . './resque.ini',
@@ -115,7 +119,7 @@ if (!defined('DS')) {
      * @since  1.5.1
      * @var string
      */
-    define('CUBE_URL', parse_url(isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $settings['cube']['host'], PHP_URL_HOST) . ':' . $settings['cube']['port']);
+    define('CUBE_URL', $settings['cubePublic']['host'] . ':' . $settings['cubePublic']['port']);
 
     /**
      * Separator between the website name and other text, in the page title

@@ -1070,14 +1070,20 @@ tr.worker-stats:target td:first-child
 .chart-bar
 {
 	display: block;
-	height: 100%;
+	
+	height:  100%;
 	position: absolute;
 	top: 0;
 	left: 0;
+
 	background-color: lighten(@colorShadeMinusOne, 15);
 }
 
-span.chart-bar + b
+table .chart-bar {
+	min-height: 20px;
+}
+
+span.chart-bar + b, span.chart-bar + a
 {
 	position: relative;
 	z-index: 1;

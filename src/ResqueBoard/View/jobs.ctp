@@ -111,39 +111,7 @@
 
 		<div class="span6">
 
-			<h2>Queues <span class="badge badge-info queues-count"><?php echo count($queues)?></span></h2>
-
-			<?php
-			    echo '<table class="table table-condensed table-greyed"><thead>'.
-				    '<tr><th class="name">Name</th><th>Pending jobs</th><th>Total jobs</th><th>Workers</th></tr></thead><tbody>';
-
-				if (!empty($queues)) {
-
-					$totalPendingJobs = 0;
-					array_walk($queues, function($q) use (&$totalPendingJobs) { $totalPendingJobs += $q['jobs']; });
-
-					foreach ($queues as $queueName => $queueStat) {
-						if ($queueName === ResqueScheduler\ResqueScheduler::QUEUE_NAME) {
-							continue;
-						} ?>
-					<tr>
-						<td class="name"><?php echo $queueName?></td>
-						<td>
-							<div style="position:relative;">
-								<span class="chart-bar" style="width:<?php echo $totalPendingJobs === 0 ? 0 : round($queueStat['jobs'] * 100 / $totalPendingJobs, 2) ?>%;"></span>
-							</div>
-							<a href="/jobs/pending?queue=<?php echo $queueName ?>"><?php echo number_format($queueStat['jobs']); ?></a>
-						</td>
-						<td><a href="/jobs/view?queue=<?php echo $queueName ?>">00x00</a></td>
-						<td>00x00</td>
-
-					</tr>
-				<?php
-				    }
-				}
-				echo '</tbody></table>';
-			 ?>
-
+			<?php \ResqueBoard\Lib\PageHelper::renderQueuesStatsTable() ?>
 
 			<h2>Latest activities</h2>
 			<div id="latest-jobs-graph"></div>

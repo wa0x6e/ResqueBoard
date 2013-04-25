@@ -163,4 +163,79 @@ class WorkerHelper
             echo '</tr>';
         }
     }
+
+    public static function renderTemplate()
+    {
+        ?>
+        <div ng-controller="WorkersCtrl">
+
+            <div id="worker-form" class="modal hide"></div>
+            <div id="worker-details" class="modal hide">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h3>Worker properties</h3>
+                </div>
+                <ul class="modal-body unstyled">
+                </ul>
+            </div>
+
+            <h2>Workers <span class="badge badge-info">{{length}}</span></h2>
+            <div class="workers-list">
+                <div class="workers-list-item" ng-repeat="worker in workers">
+                    <div class="worker-list-inner">
+                        <div class="chart">
+                           <!-- <div class="chart-pie" data-type="chart" data-chart-type="pie" data-processed="<?php
+                               // echo $worker['processed'] - $worker['failed']?>"
+                                data-failed="<?php //echo $worker['failed'] ?>">
+                            </div>-->
+
+                            <small><b>{{worker.stats.jobrate|number:0}}</b> jobs / min</small>
+
+                        </div>
+
+                        <div class="worker-list-inner-data">
+
+                            <h3>{{worker.host}}:{{worker.process}}</h3>
+
+                            <small><strong><i class="icon-list-alt"></i> Queues : </strong>
+                                <span class="queue-name" ng-repeat="queue in worker.queues">{{queue}}</span>
+                            </small>
+
+                            <div class="worker-stats clearfix">
+                                <div class="stat-count">
+                                    <a href="/jobs/view?worker[]={{worker.host}}.{{worker.process}}">
+                                    <b>{{worker.stats.processed|number}}</b>
+                                    Processed</a>
+                                </div>
+                                <div class="stat-count">
+                                    <a href="">
+                                    <b class="warning" >{{worker.stats.failed|number}}</b>
+                                    Failed</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul class="worker-list-footer">
+                        <li>
+                            <a href="#" class="stop-worker" title="Stop worker" ng-click="stop()">
+                                <i class="icon-off"></i> Stop
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="pause-worker"  title="Pause worker" ng-click="pause()">
+                                <i class="icon-pause"></i> Pause
+                            </a>
+                        </li>
+                        <li class="text">
+                            <i class="icon-time"></i>
+                            <strong>Uptime</strong>
+                            <time datetime="{{worker.start}}" title="Started on {{worker.start}}">
+                            {{worker.start|uptime}}</time></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
 }

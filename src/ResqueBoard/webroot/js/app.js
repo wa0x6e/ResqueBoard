@@ -2351,29 +2351,120 @@ var print_r = function(obj,t){
 
 var ResqueBoard = angular.module("ResqueBoard", []);
 
+ResqueBoard.filter("uptime", function() {
+	return function(input) {
+		return moment().from(new Date(input), true);
+	};
+});
+
 ResqueBoard.factory("jobsProcessedCounter", function($rootScope) {
-	var socket = new WebSocket("ws://"+CUBE_URL+"/1.0/metric/get");
+	var socket = new WebSocket("ws://"+CUBE_URL+"/1.0/event/get");
+	var callbacks = [];
 
 	socket.onopen = function() {
+		var date = new Date();
 		socket.send(JSON.stringify({
-			"expression": "sum(got)",
-			"start":0
+			"expression": "got",
+			"start": date.toISOString()
 		}));
+	};
+
+	var listenMessage = function() {
+		socket.onmessage = function () {
+			var args = arguments;
+			$rootScope.$apply(function () {
+				for (var i in callbacks) {
+					callbacks[i].apply(socket, args);
+				}
+			});
+		};
+	};
+
+	var registerCallback = function(callback) {
+		callbacks.push(callback);
 	};
 
 	return {
 		onmessage: function (callback) {
-			socket.onmessage = function () {
-				var args = arguments;
-				$rootScope.$apply(function () {
-					callback.apply(socket, args);
-				});
-			};
+			registerCallback(callback);
+			listenMessage();
 		}
 	};
 });
 
-function JobsCtrl($scope, jobsProcessedCounter) {
+ResqueBoard.factory("jobsFailedCounter", function($rootScope) {
+	var socket = new WebSocket("ws://"+CUBE_URL+"/1.0/event/get");
+	var callbacks = [];
+
+	socket.onopen = function() {
+		var date = new Date();
+		socket.send(JSON.stringify({
+			"expression": "fail",
+			"start": date.toISOString()
+		}));
+	};
+
+	var listenMessage = function() {
+		socket.onmessage = function () {
+			var args = arguments;
+			$rootScope.$apply(function () {
+				for (var i in callbacks) {
+					callbacks[i].apply(socket, args);
+				}
+			});
+		};
+	};
+
+	var registerCallback = function(callback) {
+		callbacks.push(callback);
+	};
+
+	return {
+		onmessage: function (callback) {
+			registerCallback(callback);
+			listenMessage();
+		}
+	};
+});
+
+ResqueBoard.factory("jobsSuccessCounter", function($rootScope) {
+	var socket = new WebSocket("ws://"+CUBE_URL+"/1.0/event/get");
+	var callbacks = [];
+
+	socket.onopen = function() {
+		var date = new Date();
+		socket.send(JSON.stringify({
+			"expression": "done",
+			"start": date.toISOString()
+		}));
+	};
+
+	var listenMessage = function() {
+		socket.onmessage = function () {
+			var args = arguments;
+			$rootScope.$apply(function () {
+				for (var i in callbacks) {
+					callbacks[i].apply(socket, args);
+				}
+			});
+		};
+	};
+
+	var registerCallback = function(callback) {
+		callbacks.push(callback);
+	};
+
+	return {
+		onmessage: function (callback) {
+			registerCallback(callback);
+			listenMessage();
+		}
+	};
+});
+
+
+
+function JobsCtrl($scope, jobsProcessedCounter, jobsFailedCounter) {
 	$scope.stats = {
 		"processed" : 0,
 		"failed" : 0,
@@ -2381,7 +2472,69 @@ function JobsCtrl($scope, jobsProcessedCounter) {
 		"scheduled" : 0
 	};
 
-	jobsProcessedCounter.onmessage(function(data) {
-		console.log(data);
+	jobsProcessedCounter.onmessage(function(message) {
+		$scope.stats.processed++;
 	});
+
+	jobsFailedCounter.onmessage(function(message) {
+		$scope.stats.failed++;
+	});
+}
+
+function QueuesCtrl($scope, jobsProcessedCounter, $http) {
+	$http({method: "GET", url: "/api/queues"}).
+		success(function(data, status, headers, config) {
+			$scope.queues = data;
+			$scope.length = Object.keys(data).length;
+		}).
+		error(function(data, status, headers, config) {
+	});
+
+	$scope.stats = {totaljobs: 0};
+
+	for (var i in $scope.queues) {
+		$scope.stats.totaljobs += $scope.queues[i].stats.totaljobs;
+	}
+
+	jobsProcessedCounter.onmessage(function(message) {
+		var datas = JSON.parse(message.data);
+		$scope.queues[datas.data.args.queue].stats.totaljobs++;
+		$scope.stats.totaljobs++;
+		$scope.queues[datas.data.args.queue].stats.totaljobsperc =
+			$scope.queues[datas.data.args.queue].stats.totaljobs * 100 / $scope.stats.totaljobs;
+	});
+}
+
+function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter) {
+	$http({method: "GET", url: "/api/workers"}).
+		success(function(data, status, headers, config) {
+			$scope.workers = data;
+
+			var keys = Object.keys(data);
+			for(var k in keys) {
+				$scope.updateJobRateCounter(keys[k]);
+			}
+
+			$scope.length = keys.length;
+		}).
+		error(function(data, status, headers, config) {
+	});
+
+	jobsSuccessCounter.onmessage(function(message) {
+		var datas = JSON.parse(message.data);
+		$scope.workers[datas.data.worker].stats.processed++;
+		$scope.updateJobRateCounter(datas.data.worker);
+	});
+
+	jobsFailedCounter.onmessage(function(message) {
+		var datas = JSON.parse(message.data);
+		$scope.workers[datas.data.worker].stats.failed++;
+	});
+
+	$scope.updateJobRateCounter = function(worker) {
+		var start = moment($scope.workers[worker].start);
+		$scope.workers[worker].stats.jobrate = $scope.workers[worker].stats.processed / moment().diff(start, "minutes");
+	};
+
+
 }

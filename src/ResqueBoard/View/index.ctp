@@ -38,9 +38,9 @@
 
 <script type="text/javascript">
 	$(document).ready(function() {
-		listenToWorkersJob("pie", "list");
+		//listenToWorkersJob("pie", "list");
 		listenToJobsActivities();
-		QueuesList.init();
+		//QueuesList.init();
 	});
 </script>
 
@@ -66,54 +66,12 @@
 
 
 <div class="span5">
-
-	<h2>Workers <span class="badge badge-info workers-count"><?php echo count($workers)?></span></h2>
-
-
-	<div id="worker-form" class="modal hide"></div>
-	<div id="worker-details" class="modal hide">
-		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal">×</button>
-			<h3>Worker properties</h3>
-		</div>
-		<ul class="modal-body unstyled">
-		</ul>
-	</div>
-
-    <div class="workers-list">
-		<?php  ResqueBoard\Lib\WorkerHelper::renderList($stats, $workers, $readOnly); ?>
-	</div>
-
-	</div>
+	<?php  ResqueBoard\Lib\WorkerHelper::renderTemplate(); ?>
+</div>
 
 	<div class="span6">
 
-		<h2>Queues <span class="badge badge-info queues-count"><?php echo count($queues)?></span></h2>
-
-		<?php
-		    echo '<table class="table table-condensed table-greyed"><thead>'.
-			    '<tr><th class="name">Name</th><th>Pending jobs</th><th>Total jobs</th><th>Workers</th></tr></thead><tbody>';
-
-			if (!empty($queues)) {
-				foreach ($queues as $queueName => $queueStat) {
-					if ($queueName === ResqueScheduler\ResqueScheduler::QUEUE_NAME) {
-						continue;
-					} ?>
-				<tr>
-					<td class="name"><?php echo $queueName?></td>
-					<td class=""><a href="/jobs/pending?queue=<?php echo $queueName ?>"><?php echo number_format($queueStat['jobs']); ?></a></td>
-					<td class=""><a href="/jobs/view?queue=<?php echo $queueName ?>">00x00</a></td>
-					<td>00x00</td>
-
-				</tr>
-			<?php
-			    }
-			}
-			echo '</tbody></table>';
-		 ?>
-
-
-
+		<?php \ResqueBoard\Lib\PageHelper::renderQueuesStatsTable() ?>
 
 		<h2>Jobs activities</h2>
 		<div id="latest-jobs-graph"></div>

@@ -76,6 +76,7 @@ $app->get(
                 'logLevels' => $logLevels,
                 'logTypes' => $logTypes,
                 'mutedLevels' => $mutedLevels,
+               // 'ngController' => 'logsCtrl'
             )
         );
     }
@@ -622,6 +623,45 @@ $app->get(
     }
 );
 
+/**
+ * Return a list of all active workers
+ */
+$app->get(
+    '/api/workers',
+    function () use ($app, $settings) {
+
+        try {
+            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $resqueApi = new ResqueBoard\Lib\ResqueApi($settings['resqueConfig']);
+
+            $workers = $resqueStat->getWorkers();
+
+            $results = array();
+
+            foreach ($workers as $key => $value) {
+
+                $id = $value['host'] . ':' . $value['process'];
+
+                $results[$id] = $value;
+                $results[$id]['id'] = $id;
+
+                $results[$id]['start'] = $results[$id]['start']->format('c');
+                $results[$id]['stats'] = array(
+                    'processed' => $results[$id]['processed'],
+                    'failed' => $results[$id]['failed']
+                );
+
+                unset($results[$id]['processed'], $results[$id]['failed']);
+            }
+
+            echo json_encode($results);
+
+        } catch (\Exception $e) {
+            $app->error($e);
+        }
+    }
+);
+
 $app->get(
     '/api/workers/getinfo/:workerId',
     function ($workerId) use ($app, $settings) {
@@ -665,6 +705,43 @@ $app->get(
     function ($workerId) use ($app, $settings) {
 
 
+    }
+);
+
+$app->get(
+    '/api/queues',
+    function () use ($app, $settings) {
+
+        try {
+            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $resqueApi = new ResqueBoard\Lib\ResqueApi($settings['resqueConfig']);
+
+            $queues = $resqueStat->getQueues();
+
+            $result = array();
+
+            if (!empty($queues)) {
+                foreach ($queues as $queueName => $queueStat) {
+                    if ($queueName === ResqueScheduler\ResqueScheduler::QUEUE_NAME) {
+                        continue;
+                    }
+
+                    $result[$queueName] = array(
+                        'name' => $queueName,
+                        'stats' => array(
+                            'pendingjobs' => $queueStat['jobs'],
+                            'totaljobs' => 0,
+                            'workerscount' => 0
+                        )
+                    );
+                }
+            }
+
+            echo json_encode($result);
+
+        } catch (\Exception $e) {
+            $app->error($e);
+        }
     }
 );
 

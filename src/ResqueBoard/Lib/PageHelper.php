@@ -72,28 +72,46 @@ class PageHelper
         <ul class="stats unstyled clearfix split-four" ng-controller="JobsCtrl">
             <li id="global-worker-stats">
                 <a href="/jobs/view">
-                    <strong ng-init="stats.processed='<?php echo number_format($stats[ResqueStat::JOB_STATUS_COMPLETE]) ?>'">{{stats.processed}}</strong>
+                    <strong ng-init="stats.processed='<?php echo $stats[ResqueStat::JOB_STATUS_COMPLETE] ?>'">{{stats.processed|number}}</strong>
                     <b>Processed</b> jobs
                 </a>
             </li>
             <li><div>
-                <strong class="warning" ng-init="stats.failed='<?php echo number_format($stats[ResqueStat::JOB_STATUS_FAILED])?>'">{{stats.failed}}</strong>
+                <strong class="warning" ng-init="stats.failed='<?php echo $stats[ResqueStat::JOB_STATUS_FAILED]?>'">{{stats.failed|number}}</strong>
                 <b>Failed</b> jobs</div>
             </li>
             <li>
                 <a href="/jobs/pending">
-                    <strong ng-init="stats.pending='<?php echo number_format($stats[ResqueStat::JOB_STATUS_SCHEDULED])?>'">{{stats.pending}}</strong>
+                    <strong ng-init="stats.pending='<?php echo $stats[ResqueStat::JOB_STATUS_SCHEDULED]?>'">{{stats.pending|number}}</strong>
                     <b>Pending</b> jobs
                 </a>
             </li>
             <li>
                 <a href="/jobs/scheduled">
-                    <strong ng-init="stats.scheduled='0'">{{stats.scheduled}}</strong>
+                    <strong ng-init="stats.scheduled='0'">{{stats.scheduled|number}}</strong>
                     <b>Scheduled</b> jobs
                 </a>
             </li>
         </ul>
 
         <?php
+    }
+
+    public static function renderQueuesStatsTable()
+    {
+        echo '<div ng-controller="QueuesCtrl">';
+        echo '<h2>Queues <span class="badge badge-info">{{length}}</span></h2>';
+        echo '<table class="table table-condensed table-greyed"><thead>'.
+            '<tr><th class="name">Name</th><th>Pending jobs</th><th>Total jobs</th><th>Workers</th></tr></thead><tbody>';
+
+        echo '<tr ng-repeat="queue in queues">
+            <td class="name">{{queue.name}}</td>
+            <td><a href="/jobs/pending?queue={{queue.name}}">{{queue.stats.pendingjobs|number}}</a></td>
+            <td><a href="/jobs/view?queue={{queue.name}}"><div style="position:relative;"><span class="chart-bar" style="width:{{queue.stats.totaljobsperc}}%"></span></div><b>{{queue.stats.totaljobs|number}}</b></a></td>
+            <td>{{queue.stats.workerscount}}</td>
+        </tr>';
+
+
+        echo '</tbody></table></div>';
     }
 }

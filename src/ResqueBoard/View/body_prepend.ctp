@@ -18,7 +18,9 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 ?>
-<div id="main">
+<div id="main"<?php if (isset($ngController)) {
+    echo ' ng-controller="logsCtrl"';
+} ?>>
     <ul class="menu">
         <?php
 

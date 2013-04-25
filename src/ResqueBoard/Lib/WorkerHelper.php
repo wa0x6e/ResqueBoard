@@ -29,7 +29,7 @@ namespace ResqueBoard\Lib;
  */
 class WorkerHelper
 {
-    public static function renderList($totalStats, $workers = array(), $readOnly = true)
+    public static function renderList($stats, $workers = array(), $readOnly = true)
     {
         if (!empty($workers)) {
             foreach ($workers as $worker) {
@@ -42,8 +42,8 @@ class WorkerHelper
 
                                 <div class="chart">
                                     <div class="chart-pie" data-type="chart" data-chart-type="pie" data-processed="<?php
-                                        echo $totalStats['active']['processed'] - $totalStats['active']['failed']?>"
-                                        data-failed="<?php echo $totalStats['active']['failed']?>">
+                                        echo $worker['processed'] - $worker['failed']?>"
+                                        data-failed="<?php echo $worker['failed'] ?>">
                                     </div>
 
                                     <small><b>

@@ -86,7 +86,7 @@
 
 		<ul class="stats unstyled clearfix">
 			<li><div>
-				<strong><?php echo number_format($stats['total']['scheduled']); ?></strong>
+				<strong><?php echo number_format($totalScheduledJobs); ?></strong>
 				Total <b>scheduled</b> jobs</div>
 			</li>
 			<li><div>

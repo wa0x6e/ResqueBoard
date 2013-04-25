@@ -60,6 +60,7 @@ class ResqueSchedulerStat extends ResqueStat
         return array_sum($timestampLength);
     }
 
+
     /**
      * Return an array of scheduled jobs
      *

@@ -2085,18 +2085,20 @@ if ($("#latest-jobs-graph").length > 0) {
 			nextLabel : "<i class=\"icon-chevron-right\"></i>",
 			previousLabel : "<i class=\"icon-chevron-left\"></i>"
 		},
-		data: "/api/jobs/{{t:start}}/{{t:end}}",
+		data: "/api/jobs/stats/{{t:start}}/{{t:end}}",
 		onClick : function(start, itemNb) {
+
+			var jobsDomId = "latest-jobs-list";
 
 			var formatDate = d3.time.format("%H:%M, %A %B %e %Y");
 
-			$("#latest-jobs-list").html("<h3>Jobs for <mark class=\"light\">" + formatDate(start) + "</mark></h3>");
-			$("#latest-jobs-list").append("<div class=\"alert alert-info\" id=\"latest-jobs-loading\">Loading datas ...</div>");
+			$("#" + jobsDomId).html("<h3>Jobs for <mark class=\"light\">" + formatDate(start) + "</mark></h3>");
+			$("#" + jobsDomId).append("<div class=\"alert alert-info\" id=\"latest-jobs-loading\">Loading datas ...</div>");
 
-			d3.json("/api/scheduled-jobs/" + (+start)/1000 + "/" + ((+start)/1000+60), function(data) {
+			d3.json("/api/jobs/" + (+start)/1000 + "/" + ((+start)/1000+60), function(data) {
 
 				$("#latest-jobs-loading").remove();
-				$("#latest-jobs-list").append("<ul class=\"unstyled job-details\"></ul>");
+				$("#" + jobsDomId).append("<ul class=\"unstyled job-details\"></ul>");
 
 				for (var timestamp in data) {
 
@@ -2105,16 +2107,16 @@ if ($("#latest-jobs-graph").length > 0) {
 						data[timestamp][job].args = print_r(data[timestamp][job].args);
 					}
 
-					$("#latest-jobs-list ul")
+					$("#" + jobsDomId + " ul")
 					.append(
 						$("#latest-jobs-list-tpl").render(data[timestamp])
 					);
 				}
 
-				var jobsCount = $("#latest-jobs-list ul li").length;
+				var jobsCount = $("#" + jobsDomId + " ul li").length;
 
 				if (jobsCount === 0) {
-					$("#latest-jobs-list").append("<div class=\"alert\">No jobs found for this period</div>");
+					$("#" + jobsDomId).append("<div class=\"alert\">No jobs found for this period</div>");
 				} else {
 					$("#latest-jobs-list h3").prepend("<strong>" + jobsCount + "</strong> ");
 				}

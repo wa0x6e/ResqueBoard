@@ -14,7 +14,7 @@
  * @copyright     Copyright 2012, Wan Qi Chen <kami@kamisama.me>
  * @link          http://resqueboard.kamisama.me
  * @package       resqueboard
- * @subpackage      resqueboard.lib
+ * @subpackage    resqueboard.lib
  * @since         1.0.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
@@ -224,14 +224,35 @@ class ResqueStat
 
 
     /**
-     * Return general stats about active workers
+     * Return count of each jobs status
      *
      * @since 1.0.0
-     * @return array:
+     * @return array indexed by job status if more than one job status requested, else int
      */
-    public function getStats()
+    public function getStats($type = null)
     {
-        return $this->stats;
+        $stats = array();
+        $validType = array(
+            self::JOB_STATUS_FAILED => 'fail',
+            self::JOB_STATUS_COMPLETE => 'done',
+            self::JOB_STATUS_SCHEDULED => 'movescheduled'
+        );
+
+        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+
+        if ($type === null) {
+            $stats = array_combine(array_keys($validType), array_fill(0, count($validType), 0));
+        } elseif (array_key_exists($type, $validType)) {
+            $stats[$type] = 0;
+        } else {
+            return false;
+        }
+
+        foreach ($stats as $key => $value) {
+            $stats[$key] = $cube->selectCollection($validType[$key] . '_events')->count();
+        }
+
+        return $type === null ? $stats : $stats[$type];
     }
 
 
@@ -419,6 +440,109 @@ class ResqueStat
         $results = $this->formatJobs($jobsCursor);
         if ($options['format']) {
             return $this->setJobStatus($results);
+        }
+
+        return $results;
+    }
+
+    /**
+     *
+     *
+     * @since 2.0.0
+     */
+    public function getJobsCount($options = array())
+    {
+
+        $default = array(
+                'workerId' => null,
+                'status' => null,
+                'type' => 'find',
+                'date_after' => null,
+                'date_before' => null,
+                'class' => null,
+                'queue' => null,
+                'worker' => array(),
+                'format' => true
+            );
+
+        $options = array_merge($default, $options);
+
+        if ($options['date_before'] !== null && !is_int($options['date_before'])) {
+            $options['date_before'] = strtotime($options['date_before']);
+        }
+
+        if ($options['date_after'] !== null && !is_int($options['date_after'])) {
+            $options['date_after'] = strtotime($options['date_after']);
+        }
+
+        if (isset($options['status']) && $options['status'] === self::JOB_STATUS_WAITING) {
+            return $this->getPendingJobs($options);
+        }
+
+        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $jobsCollection = $cube->selectCollection('got_events');
+
+        $conditions = array();
+
+
+        if ($options['workerId'] !== null) {
+            $conditions['d.worker'] = $options['workerId'];
+        }
+
+        if (!empty($options['class'])) {
+            $conditions['d.args.payload.class'] = array('$in' => array_map('trim', explode(',', $options['class'])));
+        }
+
+        if (!empty($options['queue'])) {
+            $conditions['d.args.queue'] = array('$in' => array_map('trim', explode(',', $options['queue'])));
+        }
+
+        if (!empty($options['worker'])) {
+            if (in_array('old', $options['worker'])) {
+                $workers = array_map(
+                    function ($a) {
+                        return $a['host'].':'.$a['process'];
+                    },
+                    $this->getWorkers()
+                );
+                $exclude = array_diff($workers, $options['worker']);
+
+                if (!empty($exclude)) {
+                    $conditions['d.worker'] = array('$nin' => $exclude);
+                }
+            } else {
+                $conditions['d.worker'] = array('$in' => $options['worker']);
+            }
+        }
+
+        if ($options['status'] === self::JOB_STATUS_FAILED) {
+            $cursor = $cube->selectCollection('fail_events')
+                ->find(array(), array('d.job_id'));
+            $ids = array();
+            foreach ($cursor as $c) {
+                $ids[] = $c['d']['job_id'];
+            }
+            $conditions['d.args.payload.id'] = array('$in' => $ids);
+        }
+
+
+        if (!empty($options['date_after'])) {
+            $conditions['t']['$gte'] = new \MongoDate($options['date_after']);
+        }
+
+        if (!empty($options['date_before'])) {
+            $conditions['t']['$lt'] = new \MongoDate($options['date_before']);
+        }
+
+        $results = array();
+
+        $jobsCursor = $jobsCollection->find($conditions, array('t' => true));
+        foreach ($jobsCursor as $job) {
+            if (isset($results[$job['t']->sec])) {
+                $results[$job['t']->sec] += 1;
+            } else {
+                $results[$job['t']->sec] = 0;
+            }
         }
 
         return $results;

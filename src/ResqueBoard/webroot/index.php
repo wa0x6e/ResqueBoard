@@ -120,7 +120,7 @@ $app->get(
                         )
                     ),
                     'pendingJobs' => $resqueStat->getJobs(array('status' => ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING, 'limit' => 15)),
-                    'jobsStats' => $resqueStat->getJobsStats(),
+                    'stats' => $resqueStat->getStats(),
                     'jobsRepartitionStats' => $resqueStat->getJobsRepartionStats(),
                     'workers' => $resqueStat->getWorkers(),
                     'resultLimits' => array(15, 50, 100),
@@ -436,14 +436,13 @@ $app->get(
     function () use ($app, $settings) {
         try {
 
-            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
             $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat($settings);
 
             render(
                 $app,
                 'jobs_view_scheduled',
                 array(
-                    'stats' => $resqueStat->getStats(),
+                    'totalScheduledJobs' => $resqueSchedulerStat->getStats(ResqueBoard\Lib\ResqueStat::JOB_STATUS_SCHEDULED),
                     'futureScheduledJobs' => $resqueSchedulerStat->getScheduledJobsCount(time()),
                     'pastScheduledJobs' => $resqueSchedulerStat->getScheduledJobsCount(0, time())
                 )
@@ -559,7 +558,7 @@ $app->get(
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
             $jobs = array_values($resqueStat->getJobs(array('date_after' => (int)$start, 'date_before' => (int)$end)));
             $app->response()->header("Content-Type", "application/json");
-            echo json_encode($jobs);
+             echo json_encode($jobs);
         } catch (\Exception $e) {
             $app->error($e);
         }
@@ -568,14 +567,18 @@ $app->get(
 
 
 /**
- * Return the number of jobs between start and end date,
- *
+ * Return a list of jobs count grouped by time
+ * Used to populate the cal-heatmap
  */
 $app->get(
     '/api/jobs/stats/:start/:end',
     function ($start, $end) use ($app, $settings) {
         try {
             $jobs = array();
+            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $jobs =  $resqueStat->getJobsCount(array('date_after' => (int)$start, 'date_before' => (int)$end));
+
+
 
             $app->response()->header("Content-Type", "application/json");
             echo json_encode($jobs);
@@ -585,7 +588,10 @@ $app->get(
     }
 );
 
-
+/**
+ * Return a list of scheduled jobs count grouped by time
+ * Used to populate the cal-heatmap
+ */
 $app->get(
     '/api/scheduled-jobs/stats/:start/:end',
     function ($start, $end) use ($app, $settings) {

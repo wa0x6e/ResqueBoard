@@ -23,23 +23,23 @@
 	<ul class="stats unstyled clearfix split-four">
 		<li>
 			<a href="/jobs/view">
-				<strong data-status="processed"><?php echo number_format($jobsStats->total) ?></strong>
+				<strong data-status="processed"><?php echo number_format($stats[ResqueBoard\Lib\ResqueStat::JOB_STATUS_COMPLETE]) ?></strong>
 				<b>Processed</b> jobs
 			</a>
 		</li>
 		<li><div>
-			<strong class="warning" data-status="failed"><?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?>%</strong>
-			<b><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]) ?> failed</b> jobs</div>
+			<strong class="warning" data-status="failed"><?php echo round($stats[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]*100/$stats[ResqueBoard\Lib\ResqueStat::JOB_STATUS_COMPLETE], 2) ?>%</strong>
+			<b><?php echo number_format($stats[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]) ?> failed</b> jobs</div>
 		</li>
 		<li>
 			<a href="/jobs/pending">
-				<strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING]); ?></strong>
+				<strong><?php echo '00x00' ?></strong>
 				<b>Pending</b> jobs
 			</a>
 		</li>
 		<li>
 			<a href="/jobs/scheduled">
-				<strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_SCHEDULED]) ?></strong>
+				<strong><?php echo number_format($stats[ResqueBoard\Lib\ResqueStat::JOB_STATUS_SCHEDULED]) ?></strong>
 				<b>Scheduled</b> jobs
 			</a>
 		</li>
@@ -69,8 +69,8 @@
 						$pieDatas[] = array('name' => 'Other', 'count' => $total);
 					}
 
-					$diff = $jobsStats->oldest === null ? 0 : date_diff($jobsStats->oldest, new DateTime())->format('%a');
-					$jobsDailyAverage = empty($diff) ? 0 : round($jobsStats->total / $diff);
+					//$diff = $jobsStats->oldest === null ? 0 : date_diff($jobsStats->oldest, new DateTime())->format('%a');
+					//$jobsDailyAverage = empty($diff) ? 0 : round($jobsStats->total / $diff);
 
 					echo "<script type='text/javascript'>";
 					echo "$(document).ready(function() { ";

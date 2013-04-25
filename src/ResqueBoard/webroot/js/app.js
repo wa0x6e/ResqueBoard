@@ -2333,3 +2333,55 @@ var print_r = function(obj,t){
 	str = str.substring(0, str.length-2) + "\n" + tab;
 	return isArr ? (str + "]") : (str + "}");
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Angular.js ========================================================================================
+
+var ResqueBoard = angular.module("ResqueBoard", []);
+
+ResqueBoard.factory("jobsProcessedCounter", function($rootScope) {
+	var socket = new WebSocket("ws://"+CUBE_URL+"/1.0/metric/get");
+
+	socket.onopen = function() {
+		socket.send(JSON.stringify({
+			"expression": "sum(got)",
+			"start":0
+		}));
+	};
+
+	return {
+		onmessage: function (callback) {
+			socket.onmessage = function () {
+				var args = arguments;
+				$rootScope.$apply(function () {
+					callback.apply(socket, args);
+				});
+			};
+		}
+	};
+});
+
+function JobsCtrl($scope, jobsProcessedCounter) {
+	$scope.stats = {
+		"processed" : 0,
+		"failed" : 0,
+		"pending" : 0,
+		"scheduled" : 0
+	};
+
+	jobsProcessedCounter.onmessage(function(data) {
+		console.log(data);
+	});
+}

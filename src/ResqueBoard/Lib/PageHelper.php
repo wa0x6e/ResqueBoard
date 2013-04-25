@@ -65,4 +65,35 @@ class PageHelper
         <?php
         }
     }
+
+    public static function renderJobStats($stats)
+    {
+        ?>
+        <ul class="stats unstyled clearfix split-four" ng-controller="JobsCtrl">
+            <li id="global-worker-stats">
+                <a href="/jobs/view">
+                    <strong ng-init="stats.processed='<?php echo number_format($stats[ResqueStat::JOB_STATUS_COMPLETE]) ?>'">{{stats.processed}}</strong>
+                    <b>Processed</b> jobs
+                </a>
+            </li>
+            <li><div>
+                <strong class="warning" ng-init="stats.failed='<?php echo number_format($stats[ResqueStat::JOB_STATUS_FAILED])?>'">{{stats.failed}}</strong>
+                <b>Failed</b> jobs</div>
+            </li>
+            <li>
+                <a href="/jobs/pending">
+                    <strong ng-init="stats.pending='<?php echo number_format($stats[ResqueStat::JOB_STATUS_SCHEDULED])?>'">{{stats.pending}}</strong>
+                    <b>Pending</b> jobs
+                </a>
+            </li>
+            <li>
+                <a href="/jobs/scheduled">
+                    <strong ng-init="stats.scheduled='0'">{{stats.scheduled}}</strong>
+                    <b>Scheduled</b> jobs
+                </a>
+            </li>
+        </ul>
+
+        <?php
+    }
 }

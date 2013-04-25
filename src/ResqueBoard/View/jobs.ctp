@@ -20,30 +20,7 @@
 
 ?>
 
-	<ul class="stats unstyled clearfix split-four">
-		<li>
-			<a href="/jobs/view">
-				<strong data-status="processed"><?php echo number_format($stats[ResqueBoard\Lib\ResqueStat::JOB_STATUS_COMPLETE]) ?></strong>
-				<b>Processed</b> jobs
-			</a>
-		</li>
-		<li><div>
-			<strong class="warning" data-status="failed"><?php echo round($stats[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]*100/$stats[ResqueBoard\Lib\ResqueStat::JOB_STATUS_COMPLETE], 2) ?>%</strong>
-			<b><?php echo number_format($stats[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]) ?> failed</b> jobs</div>
-		</li>
-		<li>
-			<a href="/jobs/pending">
-				<strong><?php echo '00x00' ?></strong>
-				<b>Pending</b> jobs
-			</a>
-		</li>
-		<li>
-			<a href="/jobs/scheduled">
-				<strong><?php echo number_format($stats[ResqueBoard\Lib\ResqueStat::JOB_STATUS_SCHEDULED]) ?></strong>
-				<b>Scheduled</b> jobs
-			</a>
-		</li>
-	</ul>
+	<?php \ResqueBoard\Lib\PageHelper::renderJobStats($stats); ?>
 
 
 	<div id="jobs-activities-graph">

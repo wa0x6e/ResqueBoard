@@ -44,32 +44,7 @@
 	});
 </script>
 
-
-<ul class="stats unstyled clearfix split-four">
-	<li id="global-worker-stats">
-		<a href="/jobs/view">
-			<strong data-status="processed"><?php echo number_format($stats[ResqueBoard\Lib\ResqueStat::JOB_STATUS_COMPLETE]) ?></strong>
-			<b>Processed</b> jobs
-		</a>
-	</li>
-	<li><div>
-		<strong class="warning" data-status="failed"><?php echo number_format($stats[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED])?></strong>
-		<b>Failed</b> jobs</div>
-	</li>
-	<li>
-		<a href="/jobs/pending">
-			<strong>00x00</strong>
-			<b>Pending</b> jobs
-		</a>
-	</li>
-	<li>
-		<a href="/jobs/scheduled">
-			<strong><?php echo number_format($stats[ResqueBoard\Lib\ResqueStat::JOB_STATUS_SCHEDULED])?></strong>
-			<b>Scheduled</b> jobs
-		</a>
-	</li>
-</ul>
-
+<?php \ResqueBoard\Lib\PageHelper::renderJobStats($stats); ?>
 
 <div class="ftr-bloc">
 	<h3>Last activities</h3>

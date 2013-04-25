@@ -153,7 +153,7 @@
 						<td class="name"><?php echo $queueName?></td>
 						<td>
 							<div style="position:relative;">
-								<span class="chart-bar" style="width:<?php echo round($queueStat['jobs'] * 100 / $totalPendingJobs, 2) ?>%;"></span>
+								<span class="chart-bar" style="width:<?php echo $totalPendingJobs === 0 ? 0 : round($queueStat['jobs'] * 100 / $totalPendingJobs, 2) ?>%;"></span>
 							</div>
 							<a href="/jobs/pending?queue=<?php echo $queueName ?>"><?php echo number_format($queueStat['jobs']); ?></a>
 						</td>

@@ -32,86 +32,6 @@
 	// Init syntax highlighter
 	hljs.initHighlightingOnLoad();
 
-	var QueuesList = function() {
-
-		var queues = [];
-		var init = false;
-
-		function decrCounter(count) {
-			$(".queues-count").html(parseInt($(".queues-count").html(), 10) - count);
-			fireEffect($(".queues-count"), "highlight");
-		}
-
-		function incrCounter(count) {
-			$(".queues-count").html(parseInt($(".queues-count").html(), 10) + count);
-			fireEffect($(".queues-count"), "highlight");
-		}
-
-		return {
-			init : function() {
-				var tr = $(".queues-list tr");
-
-				tr.each(function(index) {
-
-					if ($(tr[index]).find("td").length > 0) {
-						var name = $(tr[index]).find("td.queues-list-name").text();
-						var count = $(tr[index]).find("td.queues-list-count").text();
-
-						queues[name] = {
-							"count" : parseInt(count, 10),
-							"dom" : $(this)
-						};
-					}
-				});
-
-				init = true;
-			},
-			add : function(queueName) {
-				if (init === false) {
-					return false;
-				}
-
-				if (queues.hasOwnProperty(queueName) === false) {
-					$(".queues-list tbody").append($("<tr><td class=\"queues-list-name\">"+queueName+"</td><td class=\"queues-list-count\">0</td></tr>"));
-
-					queues[queueName] = {
-						"count" : 0,
-						"dom" : $(".queues-list tbody tr:last-child")
-					};
-
-					incrCounter(1);
-				}
-
-
-				queues[queueName].count++;
-
-				queues[queueName].dom.find(".queues-list-count").html(queues[queueName].count);
-				fireEffect(queues[queueName].dom, "highlight");
-
-			},
-			substract : function(queueName) {
-				if (init === false) {
-					return false;
-				}
-
-				if (queues.hasOwnProperty(queueName))
-				{
-					queues[queueName].count--;
-
-					if (queues[queueName].count === 0) {
-						queues[queueName].dom.remove();
-						delete queues[queueName];
-						decrCounter(1);
-					} else {
-						queues[queueName].dom.find(".queues-list-count").html(queues[queueName].count);
-						fireEffect(queues[queueName].dom, "highlight");
-					}
-				}
-
-			}
-		};
-	}();
-
 
 	var stop = new Date(Date.now());
 
@@ -1368,190 +1288,6 @@
 		;
 
 	}
-/*
-
-	function jobsLoad()
-	{
-		var
-			context = cubism.context().size($("#jobs-load").width()),
-			cube = context.cube("http://"+CUBE_URL+""),
-			horizon = context.horizon().metric(cube.metric).height(100),
-			rule = context.rule();
-
-		var workersIds = [];
-		var metrics = [];
-
-
-		metrics.push("sum(got)");
-
-
-		d3.select("#jobs-load").append("div")
-		.attr("class", "rule")
-		.call(context.rule());
-
-		d3.select("#jobs-load").selectAll(".horizon")
-		.data(metrics)
-		.enter().append("div")
-		.attr("class", "horizon")
-		.call(horizon.extent([-180, 180]).title(null));
-
-		d3.select("#jobs-load").append("div")
-		.attr("class", "axis")
-		.call(context.axis().orient("bottom").ticks(d3.time.minutes, 10).tickSize(6,3,0)
-		.tickFormat(d3.time.format("%H:%M")));
-	}
-*/
-	/**
-	 * Create a line graph of monthly jobs load
-	 *
-	 * @param	int average	Total average number of jobs by day
-	 * @return void
-	 */
-	/*function monthlyJobsLoad(average)
-	{
-		var loadChart = function(start, end, title)
-		{
-			d3.json("http://"+CUBE_URL+"/1.0/metric/get"+
-				"?expression=sum(got)"+
-				"&start="+ encodeURIComponent(start) +
-				"&stop=" + encodeURIComponent(end) +
-				"&step=" + step[4].code,
-				function(data)
-				{
-					if (data === null) {
-						return displayCubeNoFoundError();
-					}
-
-					data = data.map(function(d){return {time:new Date(d.time), value:	d.value};});
-
-					var w = $("#jobs-load-monthly").width();
-					var h = $("#jobs-load-monthly").height();
-					var margin_top = 20;
-					var margin_right = 5;
-					var margin_bottom = 35;
-					var margin_left = 45;
-
-					var xScale = d3.time.scale()
-					.domain([data[0].time, data[data.length-1].time])
-					.range([0, w - margin_left - margin_right]);
-
-					var yScale = d3.scale.linear()
-					.domain([0, Math.max(d3.max(data.map(function(d){return d.value;})), average)*1.25])
-					.range([h - margin_top - margin_bottom, 0]);
-
-					d3.select("#jobs-load-monthly").selectAll("svg").remove();
-
-					var svg = d3.select("#jobs-load-monthly").append("svg")
-						.attr("width", w)
-						.attr("height", h)
-					;
-
-					var line = d3.svg.line()
-						.x(function(d) {return xScale(d.time);})
-						.y(function(d) {return yScale(d.value);})
-					;
-
-					var garea = d3.svg.area()
-						.x(function(d) {return xScale(d.time);})
-						.y0(h - margin_bottom - margin_top)
-						.y1(function(d) {return yScale(d.value);})
-					;
-
-					var xAxis = d3.svg.axis()
-						.scale(xScale)
-						.tickFormat(d3.time.format("%d"))
-						.tickSubdivide(1)
-						.orient("bottom")
-					;
-
-					var yAxis = d3.svg.axis()
-						.scale(yScale)
-						.tickSize(-w + margin_left + margin_right)
-						.ticks(8)
-						.orient("left")
-					;
-
-					svg.append("g")
-						.attr("class", "x-axis")
-						.attr("transform", "translate(" + margin_left + "," + (h - margin_bottom) + ")")
-						.call(xAxis)
-					;
-
-					svg.append("g")
-						.attr("class", "y-axis")
-						.attr("transform", "translate(" + (margin_left-1) + "," + margin_top + ")")
-						.call(yAxis)
-					;
-
-					var graph_group = svg.append("g")
-						.attr("width", w - margin_left + margin_right)
-						.attr("height", h - margin_top + margin_bottom)
-						.attr("transform", "translate(" + margin_left + "," + margin_top + ")")
-					;
-
-					graph_group.append("rect")
-						.attr("x", 0)
-						.attr("y", yScale(average))
-						.attr("width", w - margin_left - margin_right)
-						.attr("height", h - yScale(average) - margin_bottom - margin_top)
-						.attr("class", "graph-average-area")
-					;
-
-					graph_group.append("path")
-						.attr("class", "graph-line")
-						.attr("d", line(data))
-					;
-
-					graph_group.append("path")
-						.attr("class", "graph-area")
-						.attr("d", garea(data))
-					;
-
-
-
-					svg.append("text")
-						.attr("x", w/2)
-						.attr("y", h - 3)
-						.attr("text-anchor", "middle")
-						.text(title)
-						.attr("class", "graph-title")
-					;
-
-					svg.append("text")
-						.attr("x", margin_left/2)
-						.attr("y", 10)
-						.attr("text-anchor", "left")
-						.text("Jobs/days")
-						.attr("class", "graph-legend")
-					;
-
-					svg.append("text")
-						.attr("x", w - margin_right)
-						.attr("y", 10)
-						.attr("text-anchor", "end")
-						.text("Average : " + number_format(average) + " jobs/day")
-						.attr("class", "graph-legend")
-					;
-				}
-			);
-		}; // end load chart
-
-		var initChart = function()
-		{
-			var selection = $("#jobs-load-monthly-selector option:selected");
-			var startTime = moment(selection.val() + "-01", "YYYY-MM-DD");
-			var stopTime = moment(startTime).add("M", 1);
-
-			loadChart(startTime.format("YYYY-MM-DD"), stopTime.format("YYYY-MM-DD"), selection.text());
-		};
-
-		initChart();
-
-		$("#jobs-load-monthly-selector").on("change", function(e)
-		{
-			initChart();
-		});
-	}*/
 
 $(".workers-list, #working-area").on("click", ".stop-worker", function(event){
 	event.preventDefault();
@@ -2166,9 +1902,6 @@ function stopWorkerEvent(workerName) {
 
 		});
 	}
-
-
-
 }
 
 
@@ -2357,14 +2090,20 @@ ResqueBoard.filter("uptime", function() {
 	};
 });
 
-ResqueBoard.factory("jobsProcessedCounter", function($rootScope) {
+ResqueBoard.filter("urlencode", function() {
+	return function(input) {
+		return encodeURIComponent(input);
+	};
+});
+
+var SocketListener = function($rootScope, event) {
 	var socket = new WebSocket("ws://"+CUBE_URL+"/1.0/event/get");
 	var callbacks = [];
 
 	socket.onopen = function() {
 		var date = new Date();
 		socket.send(JSON.stringify({
-			"expression": "got",
+			"expression": event,
 			"start": date.toISOString()
 		}));
 	};
@@ -2390,78 +2129,42 @@ ResqueBoard.factory("jobsProcessedCounter", function($rootScope) {
 			listenMessage();
 		}
 	};
+};
+
+ResqueBoard.factory("jobsProcessedCounter", function($rootScope) {
+	var socketLister = new SocketListener($rootScope, "got");
+	return socketLister;
 });
 
 ResqueBoard.factory("jobsFailedCounter", function($rootScope) {
-	var socket = new WebSocket("ws://"+CUBE_URL+"/1.0/event/get");
-	var callbacks = [];
-
-	socket.onopen = function() {
-		var date = new Date();
-		socket.send(JSON.stringify({
-			"expression": "fail",
-			"start": date.toISOString()
-		}));
-	};
-
-	var listenMessage = function() {
-		socket.onmessage = function () {
-			var args = arguments;
-			$rootScope.$apply(function () {
-				for (var i in callbacks) {
-					callbacks[i].apply(socket, args);
-				}
-			});
-		};
-	};
-
-	var registerCallback = function(callback) {
-		callbacks.push(callback);
-	};
-
-	return {
-		onmessage: function (callback) {
-			registerCallback(callback);
-			listenMessage();
-		}
-	};
+	var socketLister = new SocketListener($rootScope, "fail");
+	return socketLister;
 });
 
 ResqueBoard.factory("jobsSuccessCounter", function($rootScope) {
-	var socket = new WebSocket("ws://"+CUBE_URL+"/1.0/event/get");
-	var callbacks = [];
-
-	socket.onopen = function() {
-		var date = new Date();
-		socket.send(JSON.stringify({
-			"expression": "done",
-			"start": date.toISOString()
-		}));
-	};
-
-	var listenMessage = function() {
-		socket.onmessage = function () {
-			var args = arguments;
-			$rootScope.$apply(function () {
-				for (var i in callbacks) {
-					callbacks[i].apply(socket, args);
-				}
-			});
-		};
-	};
-
-	var registerCallback = function(callback) {
-		callbacks.push(callback);
-	};
-
-	return {
-		onmessage: function (callback) {
-			registerCallback(callback);
-			listenMessage();
-		}
-	};
+	var socketLister = new SocketListener($rootScope, "done");
+	return socketLister;
 });
 
+ResqueBoard.factory("workerStartListener", function($rootScope) {
+	var socketLister = new SocketListener($rootScope, "start");
+	return socketLister;
+});
+
+ResqueBoard.factory("workerStopListener", function($rootScope) {
+	var socketLister = new SocketListener($rootScope, "shutdown");
+	return socketLister;
+});
+
+ResqueBoard.factory("workerPauseListener", function($rootScope) {
+	var socketLister = new SocketListener($rootScope, "pause");
+	return socketLister;
+});
+
+ResqueBoard.factory("workerResumeListener", function($rootScope) {
+	var socketLister = new SocketListener($rootScope, "resume");
+	return socketLister;
+});
 
 
 function JobsCtrl($scope, jobsProcessedCounter, jobsFailedCounter) {
@@ -2481,7 +2184,7 @@ function JobsCtrl($scope, jobsProcessedCounter, jobsFailedCounter) {
 	});
 }
 
-function QueuesCtrl($scope, jobsProcessedCounter, $http) {
+function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, workerStopListener) {
 	$http({method: "GET", url: "/api/queues"}).
 		success(function(data, status, headers, config) {
 			$scope.queues = data;
@@ -2503,38 +2206,158 @@ function QueuesCtrl($scope, jobsProcessedCounter, $http) {
 		$scope.queues[datas.data.args.queue].stats.totaljobsperc =
 			$scope.queues[datas.data.args.queue].stats.totaljobs * 100 / $scope.stats.totaljobs;
 	});
+
+	workerStartListener.onmessage(function(message) {
+		var datas = JSON.parse(message.data);
+		var w = datas.data.worker.split(":");
+		var queues = w[2].split(",");
+
+		for(var q in queues) {
+			if ($scope.queues.hasOwnProperty(queues[q])) {
+				$scope.queues[queues[q]].stats.workerscount++;
+			} else {
+				$scope.queues[queues[q]] = {};
+			}
+		}
+	});
 }
 
-function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter) {
+function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
+	workerStartListener, workerStopListener, workerPauseListener, workerResumeListener) {
+
+	$scope.workers = {};
+	$scope.length = 0;
+
+	// Holds the temporary workers counter
+	// in case jobsProcess event come before workerStart event
+	var tempCounters = {};
+
+	// Load initial workers datas
 	$http({method: "GET", url: "/api/workers"}).
 		success(function(data, status, headers, config) {
-			$scope.workers = data;
 
-			var keys = Object.keys(data);
-			for(var k in keys) {
-				$scope.updateJobRateCounter(keys[k]);
+			if (!$.isEmptyObject(data)) {
+				$scope.workers = data;
+
+				var keys = Object.keys(data);
+				for(var k in keys) {
+					$scope.updateJobRateCounter(keys[k]);
+					$scope.workers[keys[k]].active = true;
+				}
+
+				$scope.length = keys.length;
 			}
-
-			$scope.length = keys.length;
 		}).
 		error(function(data, status, headers, config) {
 	});
 
 	jobsSuccessCounter.onmessage(function(message) {
 		var datas = JSON.parse(message.data);
-		$scope.workers[datas.data.worker].stats.processed++;
-		$scope.updateJobRateCounter(datas.data.worker);
+
+		if ($scope.workers.hasOwnProperty(datas.data.worker)) {
+			$scope.workers[datas.data.worker].stats.processed++;
+			$scope.updateJobRateCounter(datas.data.worker);
+		} else {
+			console.log("jobs event before worker start");
+			/*if (tempCounters.hasOwnProperty(datas.data.worker)) {
+				tempCounters[datas.data.worker].stats.processed++;
+			} else {
+				tempCounters[datas.data.worker] = {stats: {processed: 1, failed: 0}};
+			}*/
+		}
 	});
 
 	jobsFailedCounter.onmessage(function(message) {
 		var datas = JSON.parse(message.data);
-		$scope.workers[datas.data.worker].stats.failed++;
+		if ($scope.workers.hasOwnProperty(datas.data.worker)) {
+			$scope.workers[datas.data.worker].stats.failed++;
+		} else {
+			console.log("jobs event before worker start");
+			/*if (tempCounters.hasOwnProperty(datas.data.worker)) {
+				tempCounters[datas.data.worker].stats.failed++;
+			} else {
+				tempCounters[datas.data.worker] = {stats: {processed: 0, failed: 1}};
+			}*/
+		}
 	});
 
 	$scope.updateJobRateCounter = function(worker) {
 		var start = moment($scope.workers[worker].start);
-		$scope.workers[worker].stats.jobrate = $scope.workers[worker].stats.processed / moment().diff(start, "minutes");
+		var diff = moment().diff(start, "minutes");
+		if (diff === 0) {
+			$scope.workers[worker].stats.jobrate = $scope.workers[worker].stats.processed;
+		} else {
+			$scope.workers[worker].stats.jobrate = $scope.workers[worker].stats.processed / diff;
+		}
 	};
 
+	workerStartListener.onmessage(function(message) {
+		var datas = JSON.parse(message.data);
+		console.log("Starting worker " + datas.data.worker);
+		console.log(datas);
+
+		var w = datas.data.worker.split(":");
+		var workerId = w[0] + ":" + w[1];
+		var worker = {
+			"fullname": datas.data.worker,
+			"id": workerId,
+			"host": w[0],
+			"process": w[1],
+			"queues": w[2].split(","),
+			"start": datas.time,
+			"active": true,
+			"stats": {
+				"processed": 0,
+				"failed": 0,
+				"jobrate": 0
+			}
+		};
+
+		$scope.workers[workerId] = worker;
+/*
+		console.log(tempCounters);
+
+		if (tempCounters.hasOwnProperty(workerId)) {
+			$scope.workers[workerId].stats.processed += tempCounters[workerId].stats.processed;
+			$scope.workers[workerId].stats.failed += tempCounters[workerId].stats.failed;
+
+			delete tempCounters[workerId];
+		}*/
+	});
+
+	workerStopListener.onmessage(function(message) {
+		var datas = JSON.parse(message.data);
+		console.log("Stopping worker " + datas.data.worker);
+		delete $scope.workers[datas.data.worker];
+	});
+
+	workerPauseListener.onmessage(function(message) {
+		var datas = JSON.parse(message.data);
+		$scope.workers[datas.data.worker].active = false;
+		console.log("Pausing worker " + datas.data.worker);
+	});
+
+	workerResumeListener.onmessage(function(message) {
+		var datas = JSON.parse(message.data);
+		$scope.workers[datas.data.worker].active = true;
+		console.log("Resuming worker " + datas.data.worker);
+	});
+
+	$scope.pause = function($index) {
+		var keys = Object.keys($scope.workers);
+		$scope.workers[keys[$index]].active = false;
+		console.log("Pausing worker " + $scope.workers[keys[$index]].id);
+	};
+
+	$scope.resume = function($index) {
+		var keys = Object.keys($scope.workers);
+		$scope.workers[keys[$index]].active = true;
+		console.log("Resuming worker " + $scope.workers[keys[$index]].id);
+	};
+
+	$scope.stop = function($index) {
+		var keys = Object.keys($scope.workers);
+
+	};
 
 }

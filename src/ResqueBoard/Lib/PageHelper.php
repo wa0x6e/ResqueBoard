@@ -69,7 +69,7 @@ class PageHelper
     public static function renderJobStats($stats)
     {
         ?>
-        <ul class="stats unstyled clearfix split-four" ng-controller="JobsCtrl">
+        <ul class="stats unstyled clearfix split-four" ng-controller="JobsCtrl" ng-cloak>
             <li id="global-worker-stats">
                 <a href="/jobs/view">
                     <strong ng-init="stats.processed='<?php echo $stats[ResqueStat::JOB_STATUS_COMPLETE] ?>'">{{stats.processed|number}}</strong>
@@ -99,15 +99,15 @@ class PageHelper
 
     public static function renderQueuesStatsTable()
     {
-        echo '<div ng-controller="QueuesCtrl">';
+        echo '<div ng-controller="QueuesCtrl" ng-cloak>';
         echo '<h2>Queues <span class="badge badge-info">{{length}}</span></h2>';
         echo '<table class="table table-condensed table-greyed"><thead>'.
             '<tr><th class="name">Name</th><th>Pending jobs</th><th>Total jobs</th><th>Workers</th></tr></thead><tbody>';
 
         echo '<tr ng-repeat="queue in queues">
             <td class="name">{{queue.name}}</td>
-            <td><a href="/jobs/pending?queue={{queue.name}}">{{queue.stats.pendingjobs|number}}</a></td>
-            <td><a href="/jobs/view?queue={{queue.name}}"><div style="position:relative;"><span class="chart-bar" style="width:{{queue.stats.totaljobsperc}}%"></span></div><b>{{queue.stats.totaljobs|number}}</b></a></td>
+            <td><a href="/jobs/pending?queue={{queue.name|urlencode}}">{{queue.stats.pendingjobs|number}}</a></td>
+            <td><a href="/jobs/view?queue={{queue.name|urlencode}}"><div style="position:relative;"><span class="chart-bar" style="width:{{queue.stats.totaljobsperc}}%"></span><b>{{queue.stats.totaljobs|number}}</b></a></div></td>
             <td>{{queue.stats.workerscount}}</td>
         </tr>';
 

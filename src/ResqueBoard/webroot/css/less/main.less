@@ -980,6 +980,7 @@ tr.worker-stats:target td:first-child
 	padding: 0px 4px 2px;
 	text-shadow: darken(@blue, 10) 0 -1px 0;
 	.border-radius(2px);
+	margin-right: 3px;
 }
 
 .table-greyed
@@ -996,9 +997,14 @@ tr.worker-stats:target td:first-child
 	}
 	
 	a:hover {
-		font-weight: bold;
-		background: @greyBorderColor;
+		.chart-bar {
+			background-color: @colorShadeMinusOne;
+		}
+		
+		color: @colorShadePlusOne;
+		text-shadow: 0 1px 0 @white;
 	}
+	
 	
 	th {
 		background: transparent;

@@ -167,7 +167,7 @@ class WorkerHelper
     public static function renderTemplate()
     {
         ?>
-        <div ng-controller="WorkersCtrl">
+        <div ng-controller="WorkersCtrl" ng-cloak>
 
             <div id="worker-form" class="modal hide"></div>
             <div id="worker-details" class="modal hide">
@@ -203,12 +203,12 @@ class WorkerHelper
 
                             <div class="worker-stats clearfix">
                                 <div class="stat-count">
-                                    <a href="/jobs/view?worker[]={{worker.host}}.{{worker.process}}">
+                                    <a href="/jobs/view?worker[]={{worker.host}}%3A{{worker.process}}">
                                     <b>{{worker.stats.processed|number}}</b>
                                     Processed</a>
                                 </div>
                                 <div class="stat-count">
-                                    <a href="">
+                                    <a href="/jobs/view?worker[]={{worker.host}}%3A{{worker.process}}">
                                     <b class="warning" >{{worker.stats.failed|number}}</b>
                                     Failed</a>
                                 </div>
@@ -218,13 +218,18 @@ class WorkerHelper
 
                     <ul class="worker-list-footer">
                         <li>
-                            <a href="#" class="stop-worker" title="Stop worker" ng-click="stop()">
+                            <a href="#" title="Stop worker" ng-click="stop($index)">
                                 <i class="icon-off"></i> Stop
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="pause-worker"  title="Pause worker" ng-click="pause()">
+                            <a href="#" ng-show="worker.active" title="Pause worker" ng-click="pause($index)">
                                 <i class="icon-pause"></i> Pause
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" ng-hide="worker.active" title="Resume worker" ng-click="resume($index)">
+                                <i class="icon-play"></i> Resume
                             </a>
                         </li>
                         <li class="text">

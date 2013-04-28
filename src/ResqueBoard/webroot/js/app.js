@@ -549,78 +549,6 @@
 
 
 
-
-	var WorkerActivities = function() {
-
-		var init = false;
-
-		var
-			context = cubism.context().size(466),
-			cube = context.cube("http://"+CUBE_URL),
-			horizon = context.horizon().metric(cube.metric).height(53),
-			rule = context.rule();
-
-		return {
-			isInit : function() {
-				return init;
-			},
-			init : function() {
-				WorkerActivities.redraw();
-				init = true;
-			},
-			redraw : function(initContainer) {
-
-				if (initContainer) {
-					$("#working-area tbody tr:first-child td:last-child").append($("<div class=\"padd-fixer\"><div id=\"worker-activities\"></div></div>"));
-				} else {
-					$("#worker-activities").empty();
-				}
-
-
-				var workersIds = [];
-				var metrics = [];
-
-				$(".worker-stats h4").each(function(i){ workersIds.push($(this).text());});
-
-				if (workersIds.length === 0) {
-					context.stop();
-					return;
-				}
-
-
-				for (var i = 0, length = workersIds.length; i < length; i++) {
-					metrics.push("sum(done.eq(worker, \"" + workersIds[i] + "\"))");
-				}
-
-				d3.select("#worker-activities").append("div")
-					.attr("class", "rule")
-					.call(context.rule());
-
-				d3.select("#worker-activities").selectAll(".horizon")
-					.data(metrics)
-					.enter().append("div")
-					.attr("class", "horizon")
-					.call(horizon.extent([-180, 180]).title(null));
-
-				d3.select("#worker-activities").append("div")
-					.attr("class", "axis")
-					.call(context.axis().orient("bottom").ticks(d3.time.minutes, 10).tickSize(6,3,0)
-					.tickFormat(d3.time.format("%H:%M")));
-			}
-		};
-
-	}();
-
-	/**
-	 * Draw a horizon chart of workers activities
-	 * @return void
-	 */
-	function listenToWorkersActivities()
-	{
-		WorkerActivities.init();
-	}
-
-
 	/**
 	 * Create a pie chart from a set of data
 	 *
@@ -1417,6 +1345,75 @@ ResqueBoard.filter("urlencode", function() {
 	};
 });
 
+ResqueBoard.directive("graphHorizonChart", function() {
+
+	return {
+		restrict: "E",
+		template: "<div></div>",
+		replace: true,
+		scope: {
+			workers: "=",
+			length: "="
+		},
+		link: function (scope, element, attrs) {
+
+			var
+				context = cubism.context().size(466),
+				cube = context.cube("http://"+CUBE_URL),
+				horizon = context.horizon().metric(cube.metric).height(element.parent().parent().height()),
+				rule = context.rule(),
+				metrics = [];
+
+
+
+			/*if (scope.workers.length === 0) {
+				context.stop();
+				return;
+			}*/
+
+
+
+			var redraw = function() {
+
+				metrics = [];
+				element.empty();
+
+				for(var k in scope.workers) {
+					metrics.push("sum(done.eq(worker, \"" + scope.workers[k].id + "\"))");
+				}
+
+				d3.select(element[0]).selectAll(".horizon")
+					.data(metrics)
+					.enter().append("div")
+					.attr("class", "horizon")
+					.call(horizon.extent([-180, 180]).title(null));
+
+				d3.select(element[0]).append("div")
+					.attr("class", "rule")
+					.call(context.rule());
+
+				d3.select(element[0]).append("div")
+					.attr("class", "axis")
+					.call(context.axis().orient("bottom").ticks(d3.time.minutes, 10).tickSize(6,3,0)
+					.tickFormat(d3.time.format("%H:%M")));
+			};
+
+			redraw();
+
+
+
+			scope.$watch("length", function (newVal, oldVal) {
+				if (newVal !== oldVal) {
+					redraw();
+				}
+			});
+
+		}
+	};
+
+
+});
+
 ResqueBoard.directive("graphPie", function() {
 
 	return {
@@ -1638,6 +1635,9 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 	// in case jobsProcess event come before workerStart event
 	var tempCounters = {};
 
+	// Total number of jobs for all active workers
+	$scope.jobsCount = 0;
+
 	// Load initial workers datas
 	$http({method: "GET", url: "/api/workers"}).
 		success(function(data, status, headers, config) {
@@ -1647,7 +1647,8 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 
 				var keys = Object.keys(data);
 				for(var k in keys) {
-					$scope.updateJobRateCounter(keys[k]);
+					$scope.jobsCount += $scope.workers[keys[k]].stats.processed;
+					$scope.updateStats(keys[k]);
 					$scope.workers[keys[k]].active = true;
 				}
 
@@ -1662,7 +1663,7 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 
 		if ($scope.workers.hasOwnProperty(datas.data.worker)) {
 			$scope.workers[datas.data.worker].stats.processed++;
-			$scope.updateJobRateCounter(datas.data.worker);
+			$scope.updateStats(datas.data.worker);
 		} else {
 			if (tempCounters.hasOwnProperty(datas.data.worker)) {
 				tempCounters[datas.data.worker].stats.processed++;
@@ -1670,6 +1671,8 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 				tempCounters[datas.data.worker] = {stats: {processed: 1, failed: 0}};
 			}
 		}
+
+		$scope.jobsCount++;
 	});
 
 	jobsFailedCounter.onmessage(function(message) {
@@ -1685,13 +1688,17 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 		}
 	});
 
-	$scope.updateJobRateCounter = function(worker) {
+	$scope.updateStats = function(worker) {
 		var start = moment($scope.workers[worker].start);
 		var diff = moment().diff(start, "minutes");
 		if (diff === 0) {
 			$scope.workers[worker].stats.jobrate = $scope.workers[worker].stats.processed;
 		} else {
 			$scope.workers[worker].stats.jobrate = $scope.workers[worker].stats.processed / diff;
+		}
+
+		if ($scope.jobsCount !== 0) {
+			$scope.workers[worker].stats.jobperc = $scope.workers[worker].stats.processed * 100 / $scope.jobsCount;
 		}
 	};
 
@@ -1713,11 +1720,13 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 			"stats": {
 				"processed": 0,
 				"failed": 0,
-				"jobrate": 0
+				"jobrate": 0,
+				"jobperc": 0
 			}
 		};
 
 		$scope.workers[workerId] = worker;
+		$scope.length++;
 
 		if (tempCounters.hasOwnProperty(workerId)) {
 			$scope.workers[workerId].stats.processed += tempCounters[workerId].stats.processed;

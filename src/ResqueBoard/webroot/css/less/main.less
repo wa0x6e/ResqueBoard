@@ -1056,10 +1056,10 @@ tr.worker-stats:target td:first-child
 
 .table td.inner-wrap
 {
-	padding: 0px 0px!important;
+	padding: 0!important;
 }
 
-#working-area
+.workers-table
 {
 	
 	td
@@ -1093,7 +1093,7 @@ tr.worker-stats:target td:first-child
 			line-height: 1;
 		}
 	}
-	padding-bottom: 20px;
+	margin-bottom: @gridGutterWidth * 2.5;
 }
 
 .padd-fixer
@@ -1160,16 +1160,15 @@ span.chart-bar + b, span.chart-bar + a
 	color: darken(@greyBorderColor, 40);
 }
 
+
 // Horizon chart
-#worker-activities
+.workers-table .graph
 {
 	top: 0;
 	left: 0;
+	margin: 0;
 	position: absolute;
 	z-index: 2;
-	
-	
-	
 }
 
 .horizon 
@@ -1756,8 +1755,6 @@ th {
 }
 
 
-
-
 .page-nav-tab {
 	margin-bottom: 0;
 	padding: 0 @gridGutterWidth;
@@ -1791,12 +1788,11 @@ th {
 	}
 }
 
+// HOME PAGE
+// Last activities graph
 #jobs-activities-graph {
-	
 	background: darken(@greyBorderColor, 1);
-	
 	min-height: 100px;
-	
 	border-top: 1px solid darken(@greyBorderColor, 5);
 	border-bottom: 1px solid darken(@greyBorderColor, 5);
 	.box-shadow(0 1px 0 rgba(255,255,255,.5));
@@ -1805,17 +1801,20 @@ th {
 #scheduled-jobs-graph {
 	padding-left: 16px;
 }
+
+// HOME PAGE && JOB PAGE
+// Latest jobs activities heatmap
 .latest-jobs-graph {
 	padding: 1px 10px;
 	background-color: @white;
 	border-bottom: 4px solid darken(@greyBorderColor, 5);
-	position: relative;
 	
 	.graph-browse-previous, .graph-browse-next {
 		background-color: darken(@greyBorderColor, 5);
 	}
 }
 
+// The jobs list under the heatmap
 .latest-jobs-list {
 	border: 1px solid darken(@greyBorderColor, 5);
 	background: @greyBorderColor;
@@ -1830,7 +1829,8 @@ th {
 	}
 }
 
-#scheduled-jobs-graph, #latest-jobs-graph {
+// Placing the nav buttons
+.scheduled-jobs-graph, .latest-jobs-graph {
 	position: relative;
 }
 

@@ -1,0 +1,30 @@
+<div ng-controller="QueuesCtrl">
+    <h2>Queues <span class="badge badge-info">{{length}}</span></h2>
+    <table class="table table-condensed table-greyed">
+        <thead>
+            <tr>
+                <th class="name">Name</th>
+                <th>Pending jobs</th>
+                <th>Total jobs</th>
+                <th>Workers</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="queue in queues">
+                <td class="name">{{queue.name}}</td>
+                <td>
+                    <a href="/jobs/pending?queue={{queue.name|urlencode}}">{{queue.stats.pendingjobs|number}}</a>
+                </td>
+                <td>
+                    <a href="/jobs/view?queue={{queue.name|urlencode}}">
+                        <div style="position:relative;">
+                            <span class="chart-bar" style="width:{{queue.stats.totaljobsperc}}%"></span>
+                            <b>{{queue.stats.totaljobs|number}}</b>
+                        </a>
+                    </div>
+                </td>
+                <td>{{queue.stats.workerscount}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

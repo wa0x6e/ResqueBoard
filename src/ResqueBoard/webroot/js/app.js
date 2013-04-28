@@ -29,6 +29,13 @@
 		bufferPx: 5000
 	});
 
+	/**
+	 * Use a form select's options as navigation
+	 */
+	$(".navigator").on("change", "select", function () {
+		window.location = $("option", this).filter(":selected").val();
+	});
+
 	// Init syntax highlighter
 	hljs.initHighlightingOnLoad();
 
@@ -68,7 +75,7 @@
 	 *
 	 * @return void
 	 */
-	function listenToJobsActivities()
+	function listenToJobsActivities($scope, $http)
 	{
 		/**
 		 * Number of division to display
@@ -164,7 +171,7 @@
 					.attr("title", function(d){return d.value;})
 					.attr("data-target", ".modal")
 					.on("click", function(d){
-						displayJobsModal(d.time);
+						$scope.viewJobs(d.time);
 					})
 					.call(barDim)
 					;
@@ -188,16 +195,6 @@
 					.call(barProp)
 				;
 
-				/*var barLabelProp = function(selection)
-				{
-					selection
-					.attr("text-anchor", "middle")
-					.attr("class", function(d){if ((height-y(d.value))<=barLabelHeight){ return "bar-label out";} return "bar-label";})
-					.text(function(d){return d.value;})
-					.call(barLabelDim)
-					;
-				};*/
-
 				var barLabelDim = function(selection)
 				{
 					selection
@@ -206,11 +203,6 @@
 					.attr("x", function(d) { return x(d.time) + barWidth/2; })
 					;
 				};
-
-			/*	barArea.selectAll("text").data(data).enter().append("text")
-					.attr("x", function(d) { return x(d.time) + barWidth/2; })
-					.call(barLabelProp)
-				;*/
 
 				var xAxis = d3.svg.axis()
 					.scale(x)
@@ -247,7 +239,6 @@
 					y.domain([0,d3.max(data.map(function(d){return d.value;}))]);
 
 					var rect = barArea.selectAll("rect").data(data, function(d){return d.time;});
-					//var text = barArea.selectAll("text").data(data, function(d){return d.time;});
 
 					// BAR
 					// *****
@@ -272,31 +263,6 @@
 						.attr("x", function(d, i) { return x(d.time) + barGutter; })
 						.remove()
 					;
-
-
-					// TEXT
-					// *****
-					/*text.enter().insert("text")
-						.call(barLabelProp)
-						.attr("x", function(d) { return x(getNextTick(getNextTick(d.time))) - barWidth/2; })
-						.transition()
-						.duration(duration)
-						.attr("x", function(d) { return x(d.time) + barWidth/2; })
-					;
-
-
-					text.transition()
-						.duration(duration)
-						.call(barLabelDim)
-					;
-
-
-					text.exit().transition()
-						.duration(duration)
-						.attr("x", function(d) { return x(d.time) + barWidth/2; })
-						.remove()
-					;*/
-
 
 					// AXIS
 					// *****
@@ -353,40 +319,7 @@
 
 
 
-	/**
-	 * Display a modal with jobs details for all
-	 * jobs between a `start` and an `end` date.
-	 * End time is automatically computed from the
-	 * start time, and step.second
-	 *
-	 * @param	string startTime start time in ISO 8601 format
-	 * @return void
-	 */
-	function displayJobsModal(startTime)
-	{
-		var startTimeStamp = (Date.parse(startTime))/1000;
-		var modalTimestamp = $("#job-details").data("timestamp");
 
-		if (modalTimestamp !== startTimeStamp)
-		{
-			$.ajax({
-				url : "/api/jobs/" + encodeURIComponent(startTimeStamp) + "/" + encodeURIComponent(startTimeStamp + step[0].second),
-				success : function(message){
-					$("#job-details .modal-body").html(
-						$("#jobs-tpl").render(message)
-					);
-					$("#job-details").data("timestamp", startTimeStamp);
-					$("#job-details .modal-header .badge").html(message.length);
-
-					$("#job-details").modal("show");
-				}
-			});
-		}
-		else
-		{
-			$("#job-details-modal").modal("show"); // Repeat because ajax is asynchronous
-		}
-	}
 
 
 
@@ -613,376 +546,8 @@
 
 	}
 
-	var Job = function()
-	{
-		var totalJobs = 0;
-		var jobsChartInit = 0;
-		var jobsStats = {};
-		var jobChartType = "";
-
-		return {
-			initJobsChart : function(chartType) {
-				if ($(".workers-list-item").length !== 0)
-				{
-
-					$(".workers-list-item").each(function(data){
-						var $this = $(this);
-						var processedJobsCountDOM = $this.find("[data-status=processed]");
-						var failedJobsCountDOM = $this.find("[data-status=failed]");
-						var processedJobsCount = parseInteger(processedJobsCountDOM.html());
-						var chartDOM = $this.find("[data-type=chart]");
-
-						jobsStats[$this.attr("id")] = {
-							processedJobsCountDOM: processedJobsCountDOM,
-							processedJobsCount: processedJobsCount,
-							failedJobsCountDOM: failedJobsCountDOM,
-							failedJobsCount : parseInteger(failedJobsCountDOM.html()),
-							chart : chartDOM,
-							chartType : chartDOM.data("chart-type")
-						};
 
 
-
-						totalJobs += processedJobsCount;
-					});
-
-
-
-					jobsChartInit = 1;
-
-					if (chartType === "pie")
-					{
-						jobPieChart.init(jobsStats);
-						jobChartType = chartType;
-					}
-				}
-				else {
-					jobsChartInit = 2;
-				}
-			},
-			/**
-			 * Add a new workers and its stats
-			 * @param String workerId Worker classname
-			 */
-			addJobChart : function(workerId) {
-				var $this = $("#" + workerId);
-				var processedJobsCountDOM = $this.find("[data-status=processed]");
-				var failedJobsCountDOM = $this.find("[data-status=failed]");
-				var processedJobsCount = parseInteger(processedJobsCountDOM.html());
-				var chartDOM = $this.find("[data-type=chart]");
-
-				jobsStats[workerId] = {
-					processedJobsCountDOM: processedJobsCountDOM,
-					processedJobsCount: processedJobsCount,
-					failedJobsCountDOM: failedJobsCountDOM,
-					failedJobsCount : parseInteger(failedJobsCountDOM.html()),
-					chart : chartDOM,
-					chartType : chartDOM.data("chart-type")
-				};
-
-				if (jobChartType === "pie") {
-					jobPieChart.add(jobsStats[workerId]);
-				}
-			},
-			/**
-			 * Remove a worker from the set
-			 *
-			 * @param	String	workerId	Worker ID classname
-			 * @return void
-			 */
-			removeJobChart : function(workerId) {
-				delete jobsStats[workerId];
-			},
-			updateJobsChart : function(workerId, level) {
-				if (jobsChartInit === 2) {
-					return;
-				}
-
-				jobsStats[workerId].processedJobsCount++;
-				totalJobs++;
-
-				if (level === 400)
-				{
-					jobsStats[workerId].failedJobsCount++;
-				}
-
-				var updateCounter = function(workerId, success)
-				{
-					var index = "processedJobsCount";
-					if (!success)
-					{
-						index = "failedJobsCount";
-					}
-
-					jobsStats[workerId][index + "DOM"].html(number_format(jobsStats[workerId][index]));
-					fireEffect(jobsStats[workerId][index + "DOM"], "highlight");
-				};
-
-
-				// Refresh Counter
-				if (level === 400)
-				{
-					updateCounter(workerId, false);
-				}
-
-				updateCounter(workerId, true);
-
-
-
-				// Refresh Chart
-				switch (jobsStats[workerId].chartType)
-				{
-					case "pie" :
-						jobPieChart.redraw(jobsStats[workerId], true);
-						break;
-					case "horizontal-bar" :
-						for (var i = 0, length = jobsStats.length; i < length; i++) {
-							if (jobsStats[i] !== false) {
-								jobsStats[i].chart.animate({
-									width: Math.floor((jobsStats[i].processedJobsCount / totalJobs) * 100) + "%"
-								}, 500);
-							}
-						}
-				}
-
-			},
-			isInit : function() {
-				return jobsChartInit !== 0;
-			}
-		};
-	}();
-
-
-	/**
-	 * Listen to workers activities in realtime
-	 * and update related counters
-	 *
-	 * @return void
-	 */
-	function listenToWorkersJob(chartType, layout) {
-
-		var eventProcessor = function(){
-			var getWorkerId = function(message) {
-				return message.data.worker;
-			};
-
-			return {
-				processDone : function(message){
-					Job.updateJobsChart(
-						cleanWorkerName(getWorkerId(message)),
-						message.data.level
-					);
-				},
-				processGot : function(message){
-					Job.updateJobsChart(
-						cleanWorkerName(getWorkerId(message)),
-						message.data.level
-					);
-				},
-				processFail : function(message){
-					Job.updateJobsChart(
-						cleanWorkerName(getWorkerId(message)),
-						message.data.level
-					);
-				},
-				processStop : function(message){
-					stopWorkerEvent(cleanWorkerName(getWorkerId(message)));
-				},
-				processStart : function(message){
-					startWorkerEvent(message.data.worker, layout);
-				}
-			};
-		}();
-
-
-		// Start Listening to events
-		// *************************
-		var events = {
-			//got	: {expression: "got", format: function(data){return "job #" + data.job_id;}},
-			//fork	: {expression: "fork", format: function(data){return "job #" + data.job_id;}},
-			done	: {expression: "done", format: function(data){return "job #" + data.job_id;}},
-			fail	: {expression: "fail", format: function(data){return "job #" + data.job_id;}},
-			stop	: {expression: "shutdown", format: function(data){return "worker #" + data.worker;}},
-			start : {expression: "start", format: function(data){return "worker #" + data.worker;}}
-		};
-
-		for(var e in events) {
-			init(e);
-		}
-
-		Job.initJobsChart(chartType);
-
-		function init(e) {
-			var socket = new WebSocket("ws://"+CUBE_URL+"/1.0/event/get");
-			socket.onopen = function() {
-				socket.send(JSON.stringify({
-					"expression": events[e].expression,
-					"start": formatISO(stop)
-				}));
-			};
-
-			socket.onmessage = function(message) {
-				process(e, JSON.parse(message.data));
-			};
-		}
-
-		// Process Messages
-		// *************************
-
-		function process(type, data)
-		{
-			switch(type) {
-				case "done" :
-					eventProcessor.processDone(data);
-					break;
-				case "fail" :
-					eventProcessor.processFail(data);
-					break;
-				case "stop" :
-					eventProcessor.processStop(data);
-					break;
-				case "start" :
-					eventProcessor.processStart(data);
-					break;
-				//case "done" :
-				//	eventProcessor.processDone(data);
-			}
-		}
-	}
-
-
-	var jobPieChart = function()
-	{
-		var initData = function(d){
-
-			var successCount = d.processedJobsCount - d.failedJobsCount;
-
-			var datas = [{
-					name : "success",
-					count : (successCount === 0 && d.failedJobsCount === 0) ? 1 : successCount,
-					color: "#aec7e8"
-				}, {
-					name : "failed",
-					count : d.failedJobsCount,
-					color : "#e7969c"
-				}];
-			return datas;
-		};
-
-		var m = 0;
-		var z = d3.scale.category20c();
-
-		var donut = d3.layout.pie().value(function(d){
-						return d.count;
-					});
-
-
-
-		return {
-			init : function(jobStats)
-			{
-				for(var i in jobStats)
-				{
-					if (jobStats.hasOwnProperty(i))
-					{
-						var data = initData(jobStats[i]);
-						var parent = jobStats[i].chart;
-
-						// Define the margin, radius, and color scale. The color scale will be
-						// assigned by index, but if you define your data using objects, you could pass
-						// in a named field from the data object instead, such as `d.name`. Colors
-						// are assigned lazily, so if you want deterministic behavior, define a domain
-						// for the color scale.
-
-						var r = (parent.width()-m*2)/2;
-						var arc = d3.svg.arc().innerRadius(r / 2).outerRadius(r);
-
-						// Insert an svg:svg element (with margin) for each row in our dataset. A
-						// child svg:g element translates the origin to the pie center.
-						var svg = d3.select(parent[0])
-						.append("svg:svg")
-						.attr("width", (r + m) * 2)
-						.attr("height", (r + m) * 2)
-						.append("svg:g")
-						.attr("transform", "translate(" + (r + m) + "," + (r + m) + ")");
-
-						// The data for each svg:svg element is a row of numbers (an array). We pass
-						// that to d3.layout.pie to compute the angles for each arc. These start and end
-						// angles are passed to d3.svg.arc to draw arcs! Note that the arc radius is
-						// specified on the arc, not the layout.
-						svg.selectAll("path")
-							.data(donut(data))
-							.enter().append("svg:path")
-							.attr("d", arc)
-							.attr("fill", function(d) { return d.data.color; })
-							.attr("title", function(d){return d.data.count + " " +	d.data.name + " jobs"; })
-							.each(function(d) { this._current = d; })
-						;
-					}
-				}
-			},
-
-			add : function(stats) {
-				var data = initData(stats);
-				var parent = stats.chart;
-
-				// Define the margin, radius, and color scale. The color scale will be
-				// assigned by index, but if you define your data using objects, you could pass
-				// in a named field from the data object instead, such as `d.name`. Colors
-				// are assigned lazily, so if you want deterministic behavior, define a domain
-				// for the color scale.
-
-				var r = (parent.width()-m*2)/2;
-				var arc = d3.svg.arc().innerRadius(r / 2).outerRadius(r);
-
-				// Insert an svg:svg element (with margin) for each row in our dataset. A
-				// child svg:g element translates the origin to the pie center.
-				var svg = d3.select(parent[0])
-				.append("svg:svg")
-				.attr("width", (r + m) * 2)
-				.attr("height", (r + m) * 2)
-				.append("svg:g")
-				.attr("transform", "translate(" + (r + m) + "," + (r + m) + ")");
-
-				// The data for each svg:svg element is a row of numbers (an array). We pass
-				// that to d3.layout.pie to compute the angles for each arc. These start and end
-				// angles are passed to d3.svg.arc to draw arcs! Note that the arc radius is
-				// specified on the arc, not the layout.
-				svg.selectAll("path")
-					.data(donut(data))
-					.enter().append("svg:path")
-					.attr("d", arc)
-					.attr("fill", function(d) { return d.data.color; })
-					.attr("title", function(d){return d.data.count + " " +	d.data.name + " jobs"; })
-					.each(function(d) { this._current = d; })
-				;
-			},
-
-			redraw : function(stat)
-			{
-				var data = initData(stat);
-
-				var parent = stat.chart;
-				var r = (parent.width()-m*2)/2;
-				var arc = d3.svg.arc().innerRadius(r / 2).outerRadius(r);
-
-				d3.select(parent[0]).select("svg").selectAll("path")
-				.data(donut(data))
-				.transition()
-				.duration(duration)
-				.attrTween("d", arcTween)
-				;
-
-				function arcTween(a) {
-					var i = d3.interpolate(this._current, a);
-					this._current = i(0);
-					return function(t) {
-					return arc(i(t));
-					};
-				}
-			}
-		};
-	}();
 
 
 	var WorkerActivities = function() {
@@ -1062,9 +627,8 @@
 	 * @param	{[type]} id		[description]
 	 * @param	{[type]} total	[description]
 	 * @param	{[type]} data	[description]
-	 * @param	{[type]} average [description]
 	 */
-	function pieChart(id, total, data, average)
+	function pieChart(id, total, data)
 	{
 		var m = 0;
 		var r = 80;
@@ -1289,96 +853,8 @@
 
 	}
 
-$(".workers-list, #working-area").on("click", ".stop-worker", function(event){
-	event.preventDefault();
-
-	var workerId = $(this).data("workerId");
-	var workerName = $(this).data("workerName");
-
-	$.ajax({
-		url: "/api/workers/stop/" + workerId,
-		statusCode: {
-			404: function() {
-				alert("page not found");
-			}
-		}
-	}).done(function(data){
-		if (data.status === true) {
-			stopWorkerEvent(workerName);
-		} else {
-			if (data.message) {
-				alert(data.message);
-			} else {
-				alert("An unknown error has occured while stopping the worker");
-			}
-		}
-	});
-});
-
-$(".workers-list, #working-area").on("click", ".pause-worker", function(event){
-	event.preventDefault();
-
-	var workerId = $(this).data("workerId");
-	var workerName = $(this).data("workerName");
-
-	$.ajax({
-		url: "/api/workers/pause/" + workerId,
-		statusCode: {
-			404: function() {
-				alert("page not found");
-			}
-		}
-	}).done(function(data){
-		if (data.status === true) {
-			stopWorkerEvent(workerName);
-		} else {
-			if (data.message) {
-				alert(data.message);
-			} else {
-				alert("An unknown error has occured while pausing the worker");
-			}
-		}
-	});
-});
 
 
-
-$(".get-worker-info").on("click", function(event){
-	event.preventDefault();
-
-	var workerId = $(this).data("workerId");
-
-	$.ajax({
-		url: "/api/workers/getinfo/" + workerId,
-		statusCode: {
-			404: function() {
-				alert("page not found");
-			}
-		}
-	}).done(function(data){
-
-		$("#worker-details .modal-body").html(
-			$("#workers-tpl").render(data)
-		);
-
-		$("#worker-details").modal("show");
-	});
-
-});
-
-
-$(".start-worker").on("click", function(event){
-	event.preventDefault();
-
-	$.ajax({
-		url: "/api/workers/start"
-	}).done(function(data){
-		$("#worker-form").html(data);
-		$("#worker-form").modal("show");
-		$(".pop-over").popover({trigger: "hover"});
-	});
-
-});
 
 /**
  *
@@ -1802,162 +1278,7 @@ if ($("#scheduled-jobs-graph").length > 0) {
 	});
 }
 
-/**
- * Home Page
- * jobs calendar graph
- * @since 2.0.0
- */
-if ($("#latest-jobs-graph").length > 0) {
-	var cal = new CalHeatMap();
-	cal.init({
-		id : "latest-jobs-graph",
 
-		scale : [1,4,8,12],
-		itemName : ["job", "jobs"],
-		range: 6,
-		cellsize: 10,
-		browsing: true,
-		browsingOptions: {
-			nextLabel : "<i class=\"icon-chevron-right\"></i>",
-			previousLabel : "<i class=\"icon-chevron-left\"></i>"
-		},
-		data: "/api/jobs/stats/{{t:start}}/{{t:end}}",
-		onClick : function(start, itemNb) {
-
-			var jobsDomId = "latest-jobs-list";
-
-			var formatDate = d3.time.format("%H:%M, %A %B %e %Y");
-
-			$("#" + jobsDomId).html("<h3>Jobs for <mark class=\"light\">" + formatDate(start) + "</mark></h3>");
-			$("#" + jobsDomId).append("<div class=\"alert alert-info\" id=\"latest-jobs-loading\">Loading datas ...</div>");
-
-			d3.json("/api/jobs/" + (+start)/1000 + "/" + ((+start)/1000+60), function(data) {
-
-				$("#latest-jobs-loading").remove();
-				$("#" + jobsDomId).append("<ul class=\"unstyled job-details\"></ul>");
-
-				for (var timestamp in data) {
-
-					for (var job in data[timestamp]) {
-						data[timestamp][job].created = new Date(data[timestamp][job].s_time*1000);
-						data[timestamp][job].args = print_r(data[timestamp][job].args);
-					}
-
-					$("#" + jobsDomId + " ul")
-					.append(
-						$("#latest-jobs-list-tpl").render(data[timestamp])
-					);
-				}
-
-				var jobsCount = $("#" + jobsDomId + " ul li").length;
-
-				if (jobsCount === 0) {
-					$("#" + jobsDomId).append("<div class=\"alert\">No jobs found for this period</div>");
-				} else {
-					$("#latest-jobs-list h3").prepend("<strong>" + jobsCount + "</strong> ");
-				}
-
-			});
-
-		}
-	});
-}
-
-
-/**
- * Processed after stopping a worker
- *
- * Handle all the DOM manipulation to remove a worker from the page
- * and refresh all the related counters
- *
- * @param	String workerName Clean worker name (processed with cleanWorkerName())
- * @return void
- */
-function stopWorkerEvent(workerName) {
-	var workerDom = $("#" + cleanWorkerName(workerName));
-	if (workerDom.length === 1) {
-		workerDom.fadeOut(400, function(){
-
-			workerDom.remove();
-
-			if ($(".workers-count").length > 0) {
-				var counter = $(".workers-count");
-				var count = counter.html();
-				counter.html(parseInt(count, 10) - 1);
-				fireEffect(counter, "highlight");
-			}
-
-			var workerQueues = workerDom.find(".queue-name");
-			workerQueues.each(function(i) {
-				QueuesList.substract($(workerQueues[i]).text());
-			});
-
-			if (Job.isInit()) {
-				Job.removeJobChart(cleanWorkerName(workerName));
-			}
-
-			if (WorkerActivities.isInit()) {
-				WorkerActivities.redraw(workerDom.find("#worker-activities").length === 1);
-			}
-
-		});
-	}
-}
-
-
-/**
- * Processed after starting a worker
- *
- * Do all the works to add worker details in the DOM
- *
- * @param	String workerName Worker ID
- * @return void
- */
-function startWorkerEvent(workerId, layout) {
-	$.ajax({
-		url: "/render/worker/" + layout + "/" + workerId,
-		statusCode: {
-			404: function() {
-				alert("page not found");
-			}
-		}
-	}).done(function(data){
-		switch(layout) {
-			case "list" :
-				$(".workers-list").append(data);
-				break;
-			case "table" :
-				$("#working-area tbody").append(data);
-				break;
-		}
-
-		if ($(".workers-count").length > 0) {
-			var count = $(".workers-count").html();
-			$(".workers-count").html(parseInt(count, 10) + 1);
-			fireEffect($(".workers-count"), "highlight");
-		}
-
-		var workerQueues = $("#" + cleanWorkerName(workerId)).find(".queue-name");
-		workerQueues.each(function(i) {
-			QueuesList.add($(workerQueues[i]).text());
-		});
-
-		if (Job.isInit()) {
-			Job.addJobChart(cleanWorkerName(workerId));
-		}
-
-		if (WorkerActivities.isInit()) {
-			WorkerActivities.redraw();
-		}
-	});
-}
-
-/**
- * Use a form select's options as navigation
- */
-$(".navigator").on("change", "select", function () {
-	window.location = $("option", this).filter(":selected").val();
-});
 
 
 /**
@@ -2094,6 +1415,91 @@ ResqueBoard.filter("urlencode", function() {
 	return function(input) {
 		return encodeURIComponent(input);
 	};
+});
+
+ResqueBoard.directive("graphPie", function() {
+
+	return {
+		restrict: "E",
+		template: "<div></div>",
+		replace: true,
+		scope: {
+			processedjobs: "=",
+			failedjobs: "="
+		},
+		link: function (scope, element, attrs) {
+
+			var datas = [{
+					name : "success",
+					count : Math.max(1, scope.processedjobs),
+					color: "#aec7e8"
+				}, {
+					name : "failed",
+					count : scope.failedjobs,
+					color : "#e7969c"
+			}];
+
+			var m = 0;
+			var z = d3.scale.category20c();
+			var r = (element.parent().width()-m*2)/2;
+			var arc = d3.svg.arc().innerRadius(r / 2).outerRadius(r);
+
+			var donut = d3.layout.pie().value(function(d){
+				return d.count;
+			});
+
+			var svg = d3.select(element[0])
+				.append("svg:svg")
+				.attr("width", (r + m) * 2)
+				.attr("height", (r + m) * 2)
+				.append("svg:g")
+				.attr("transform", "translate(" + (r + m) + "," + (r + m) + ")")
+			;
+
+			svg.selectAll("path")
+				.data(donut(datas))
+				.enter().append("svg:path")
+				.attr("d", arc)
+				.attr("fill", function(d) { return d.data.color; })
+				.attr("title", function(d){ return d.data.count + " " +	d.data.name + " jobs"; })
+				.each(function(d) { this._current = d; })
+			;
+
+			var redraw = function(datas) {
+				svg.selectAll("path")
+					.data(donut(datas))
+					.transition()
+					.duration(duration)
+					.attrTween("d", arcTween)
+				;
+
+				function arcTween(a) {
+					var i = d3.interpolate(this._current, a);
+					this._current = i(0);
+					return function(t) {
+						return arc(i(t));
+					};
+				}
+			};
+
+			scope.$watch("processedjobs", function (newVal, oldVal) {
+				if (newVal !== oldVal) {
+					datas[0].count = newVal;
+					redraw(datas);
+				}
+			});
+
+			scope.$watch("failedjobs", function (newVal, oldVal) {
+				if (newVal !== oldVal) {
+					datas[1].count = newVal;
+					redraw(datas);
+				}
+			});
+
+		}
+	};
+
+
 });
 
 var SocketListener = function($rootScope, event) {
@@ -2258,12 +1664,11 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 			$scope.workers[datas.data.worker].stats.processed++;
 			$scope.updateJobRateCounter(datas.data.worker);
 		} else {
-			console.log("jobs event before worker start");
-			/*if (tempCounters.hasOwnProperty(datas.data.worker)) {
+			if (tempCounters.hasOwnProperty(datas.data.worker)) {
 				tempCounters[datas.data.worker].stats.processed++;
 			} else {
 				tempCounters[datas.data.worker] = {stats: {processed: 1, failed: 0}};
-			}*/
+			}
 		}
 	});
 
@@ -2272,12 +1677,11 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 		if ($scope.workers.hasOwnProperty(datas.data.worker)) {
 			$scope.workers[datas.data.worker].stats.failed++;
 		} else {
-			console.log("jobs event before worker start");
-			/*if (tempCounters.hasOwnProperty(datas.data.worker)) {
+			if (tempCounters.hasOwnProperty(datas.data.worker)) {
 				tempCounters[datas.data.worker].stats.failed++;
 			} else {
 				tempCounters[datas.data.worker] = {stats: {processed: 0, failed: 1}};
-			}*/
+			}
 		}
 	});
 
@@ -2314,15 +1718,12 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 		};
 
 		$scope.workers[workerId] = worker;
-/*
-		console.log(tempCounters);
 
 		if (tempCounters.hasOwnProperty(workerId)) {
 			$scope.workers[workerId].stats.processed += tempCounters[workerId].stats.processed;
 			$scope.workers[workerId].stats.failed += tempCounters[workerId].stats.failed;
-
 			delete tempCounters[workerId];
-		}*/
+		}
 	});
 
 	workerStopListener.onmessage(function(message) {
@@ -2343,21 +1744,102 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 		console.log("Resuming worker " + datas.data.worker);
 	});
 
-	$scope.pause = function($index) {
-		var keys = Object.keys($scope.workers);
-		$scope.workers[keys[$index]].active = false;
-		console.log("Pausing worker " + $scope.workers[keys[$index]].id);
+	$scope.pause = function(index, $event) {
+		$event.preventDefault();
+		$scope.workers[index].active = false;
+		console.log("Pausing worker " + $scope.workers[index].id);
 	};
 
-	$scope.resume = function($index) {
-		var keys = Object.keys($scope.workers);
-		$scope.workers[keys[$index]].active = true;
-		console.log("Resuming worker " + $scope.workers[keys[$index]].id);
+	$scope.resume = function(index, $event) {
+		$event.preventDefault();
+		$scope.workers[index].active = true;
+		console.log("Resuming worker " + $scope.workers[index].id);
 	};
 
-	$scope.stop = function($index) {
-		var keys = Object.keys($scope.workers);
+	$scope.stop = function(index, $event) {
+		$event.preventDefault();
+		delete $scope.workers[index];
+		$scope.length--;
+	};
 
+}
+
+
+ResqueBoard.controller("LatestJobsHeatmapCtrl", ["$scope", "$http", function($scope, $http) {
+
+	$scope.jobs = [];
+	$scope.loading = false;
+	$scope.date = false;
+
+	var cal = new CalHeatMap();
+	cal.init({
+		id : "latest-jobs-heatmap",
+		scale : [1,4,8,12],
+		itemName : ["job", "jobs"],
+		range: 6,
+		cellsize: 10,
+		browsing: true,
+		browsingOptions: {
+			nextLabel : "<i class=\"icon-chevron-right\"></i>",
+			previousLabel : "<i class=\"icon-chevron-left\"></i>"
+		},
+		data: "/api/jobs/stats/{{t:start}}/{{t:end}}",
+		onClick : function(start, itemNb) {
+			$scope.loading = true;
+			var formatDate = d3.time.format("%H:%M, %A %B %e %Y");
+			$scope.date = formatDate(start);
+
+			$http({method: "GET", url: "/api/jobs/" + (+start)/1000 + "/" + ((+start)/1000+60)}).
+				success(function(data, status, headers, config) {
+					$scope.jobs = [];
+					for (var timestamp in data) {
+						for (var job in data[timestamp]) {
+							data[timestamp][job].created = new Date(data[timestamp][job].s_time*1000);
+							data[timestamp][job].args = print_r(data[timestamp][job].args);
+						}
+						$scope.jobs = data;
+					}
+					$scope.loading = false;
+				}).
+				error(function(data, status, headers, config) {
+			});
+		}
+	});
+
+	$scope.clear = function() {
+		$scope.date = false;
+		$scope.jobs = [];
+	};
+
+}]);
+
+function LatestJobsGraphCtrl($scope, $http) {
+	$scope.jobs = [];
+	listenToJobsActivities($scope, $http);
+
+	/**
+	 * Display a modal with jobs details for all
+	 * jobs between a `start` and an `end` date.
+	 * End time is automatically computed from the
+	 * start time, and step.second
+	 *
+	 * @param	string startTime start time in ISO 8601 format
+	 * @return void
+	 */
+	$scope.viewJobs = function(startTime)
+	{
+		var startTimeStamp = (Date.parse(startTime))/1000;
+
+		$http({
+			method: "GET",
+			url: "/api/jobs/" + encodeURIComponent(startTimeStamp) + "/" + encodeURIComponent(startTimeStamp + step[0].second)
+		}).
+			success(function(data, status, headers, config) {
+				$scope.jobs = data;
+				$("#job-details").modal("show");
+			}).
+			error(function(data, status, headers, config) {
+		});
 	};
 
 }

@@ -22,10 +22,7 @@
 
 	<?php \ResqueBoard\Lib\PageHelper::renderJobStats($stats); ?>
 
-
-	<div id="jobs-activities-graph">
-
-	</div>
+	<div id="jobs-activities-graph"></div>
 
 	<div class="row">
 	<div class="bloc">
@@ -110,36 +107,8 @@
 		</div>
 
 		<div class="span6">
-
-			<?php \ResqueBoard\Lib\PageHelper::renderQueuesStatsTable() ?>
-
-			<h2>Latest activities</h2>
-			<div id="latest-jobs-graph"></div>
-			<div id="latest-jobs-list">
-				<p>Click on the graph to show the associated jobs</p>
-			</div>
-			<script id="latest-jobs-list-tpl" type="text/x-jsrender">
-				<li class="accordion-group">
-					<div class="accordion-heading" data-toggle="collapse" data-target="#{{>id}}">
-						<div class="accordion-toggle">
-							<span class="job-status-icon" data-event="tooltip" data-original-title="Job scheduled">
-							<img src="/img/job_scheduled.png" title="Job scheduled" height="24" width="24"></span>
-
-							<h4>#{{>id}}</h4>
-
-							<small>Performing <code>{{>class}}</code> in
-							<span class="label label-success">{{>queue}}</span></small>
-
-						</div>
-					</div>
-					<div class="collapse accordion-body" id="{{>id}}">
-						<div class="accordion-inner">
-							<p><i class="icon-time"></i> <b>Added on </b>{{>created}}</p>
-							<pre class="job-args"><code class="language-php">{{>args}}</code></pre>
-						</div>
-					</div>
-				</li>
-			</script>
+			<ng-include src="'/partials/queues-table.html'" ng-cloak></ng-include>
+			<ng-include src="'/partials/latest-jobs-heatmap.html'" ng-cloak></ng-include>
 		</div>
 
 	</div>

@@ -181,7 +181,7 @@ class WorkerHelper
 
             <h2>Workers <span class="badge badge-info">{{length}}</span></h2>
             <div class="workers-list">
-                <div class="workers-list-item" ng-repeat="worker in workers">
+                <div class="workers-list-item" ng-repeat="worker in workers" ng-class="{paused: !worker.active}">
                     <div class="worker-list-inner">
                         <div class="chart">
                            <!-- <div class="chart-pie" data-type="chart" data-chart-type="pie" data-processed="<?php
@@ -195,6 +195,7 @@ class WorkerHelper
 
                         <div class="worker-list-inner-data">
 
+                            <span class="pull-right badge" ng-hide="worker.active">paused</span>
                             <h3>{{worker.host}}:{{worker.process}}</h3>
 
                             <small><strong><i class="icon-list-alt"></i> Queues : </strong>

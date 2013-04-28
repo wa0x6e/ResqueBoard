@@ -57,8 +57,10 @@ body
 }
 
 * {
-	.transition(all .2s);
+	.transition(~"color,background-color,border,box-shadow,text-shadow,width" .2s);
 }
+
+
 
 a, a:visited {
 	color: @linkColor;
@@ -143,7 +145,6 @@ h3{
 	border-radius: 0;
 	border-top: 0;
 }
-
 
 
 .btn-primary {
@@ -760,6 +761,10 @@ mark.light {
 
 .job-details
 {
+	p {
+		text-align: left;
+	}
+	
 	h4, code, pre
 	{
 		font-family: Consolas, "Courier New", Courier, mono;
@@ -844,6 +849,32 @@ mark.light {
 	background: @white;
 	padding: 0;
 	
+	&.paused {
+		background-color: @grayLighter;
+		border-color: darken(@greyBorderColor, 10);
+		.box-shadow(0 0 5px rgba(0,0,0,0.25) inset);
+		
+		h3 {
+			border-bottom-color: darken(@grayLighter, 10);
+		}
+		
+		.worker-stats {
+			background-color: darken(@grayLighter, 3);
+			border-color: darken(@grayLighter, 10);
+		}
+		
+		.queue-name
+		{
+			.gradientBar(darken(@greyBorderColor, 15), darken(@greyBorderColor, 25));
+		}
+		
+		.badge {
+			position: relative;
+			top: -3px;
+			text-transform: uppercase;
+			padding-top: 3px;
+		}
+	}
 	
 	.chart {
 		width: @gridColumnWidth;
@@ -1002,7 +1033,6 @@ tr.worker-stats:target td:first-child
 		}
 		
 		color: @colorShadePlusOne;
-		text-shadow: 0 1px 0 @white;
 	}
 	
 	
@@ -1010,6 +1040,7 @@ tr.worker-stats:target td:first-child
 		background: transparent;
 		color: @textColor;
 		border-bottom: 2px solid darken(@greyBorderColor, 20);
+		text-shadow: 0 1px 0 @white;
 	}
 	
 	.name {
@@ -1093,6 +1124,7 @@ span.chart-bar + b, span.chart-bar + a
 {
 	position: relative;
 	z-index: 1;
+	text-shadow: 0 1px 0 @white;
 }
 
 
@@ -1773,17 +1805,18 @@ th {
 #scheduled-jobs-graph {
 	padding-left: 16px;
 }
-#latest-jobs-graph {
+.latest-jobs-graph {
 	padding: 1px 10px;
 	background-color: @white;
 	border-bottom: 4px solid darken(@greyBorderColor, 5);
+	position: relative;
 	
 	.graph-browse-previous, .graph-browse-next {
 		background-color: darken(@greyBorderColor, 5);
 	}
 }
 
-#latest-jobs-list {
+.latest-jobs-list {
 	border: 1px solid darken(@greyBorderColor, 5);
 	background: @greyBorderColor;
 	padding: 0 @insidePadding @insidePadding;

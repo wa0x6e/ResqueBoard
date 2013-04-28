@@ -46,9 +46,7 @@ $app->get(
                 'index',
                 array(
                     'stats' => $resqueStat->getStats(),
-                    'workers' => $resqueStat->getWorkers(),
-                    'schedulerWorkers' => $resqueStat->getSchedulerWorkers(),
-                    'queues' => $resqueStat->getQueues()
+                    'schedulerWorkers' => $resqueStat->getSchedulerWorkers()
                 )
             );
 
@@ -113,19 +111,9 @@ $app->get(
                 $app,
                 'jobs',
                 array(
-                    'jobs' => $resqueStat->getJobs(array('limit' => PAGINATION_LIMIT)),
-                    'failedJobs' =>  $resqueStat->getJobs(
-                        array(
-                            'status' => ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED,
-                            'limit' => 10
-                        )
-                    ),
-                    'pendingJobs' => $resqueStat->getJobs(array('status' => ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING, 'limit' => 15)),
                     'stats' => $resqueStat->getStats(),
                     'jobsRepartitionStats' => $resqueStat->getJobsRepartionStats(),
-                    'workers' => $resqueStat->getWorkers(),
-                    'resultLimits' => array(15, 50, 100),
-                    'queues' => $resqueStat->getQueues()
+                    'resultLimits' => array(15, 50, 100)
                 )
             );
 
@@ -714,8 +702,6 @@ $app->get(
 
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
-            $resqueApi = new ResqueBoard\Lib\ResqueApi($settings['resqueConfig']);
-
             $queues = $resqueStat->getQueues();
 
             $result = array();
@@ -753,9 +739,6 @@ $app->get(
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
 
             switch($layout) {
-                case 'list':
-                    echo ResqueBoard\Lib\WorkerHelper::renderList($resqueStat->getStats(), array($resqueStat->getWorker($workerId)));
-                    break;
                 case 'table':
                     echo ResqueBoard\Lib\WorkerHelper::renderTable(array($resqueStat->getWorker($workerId)));
                     break;

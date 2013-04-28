@@ -1,0 +1,22 @@
+<ul class="unstyled job-details">
+    <li class="accordion-group" ng-repeat="job in jobs">
+        <div class="accordion-heading" data-toggle="collapse" data-target="#_{{job.job_id}}">
+            <div class="accordion-toggle">
+                <span class="job-status-icon" data-event="tooltip" data-original-title="Job scheduled">
+                <img src="/img/job_scheduled.png" title="Job scheduled" height="24" width="24"></span>
+
+                <h4>#{{job.job_id}}</h4>
+
+                <small>Performing <code>{{job.class}}</code> in
+                <span class="label label-success">{{job.queue}}</span></small>
+
+            </div>
+        </div>
+        <div class="collapse accordion-body" id="_{{job.job_id}}">
+            <div class="accordion-inner">
+                <p><i class="icon-time"></i> <b>Added on </b>{{job.created}}</p>
+                <pre class="job-args"><code class="language-php">{{job.args}}</code></pre>
+            </div>
+        </div>
+    </li>
+</ul>

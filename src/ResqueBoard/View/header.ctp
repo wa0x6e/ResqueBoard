@@ -29,7 +29,7 @@
 		<link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/default.min.css">
 		<link href='//fonts.googleapis.com/css?family=Fjalla+One|PT+Sans:400,700' rel='stylesheet' type='text/css'>
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-		<script type="text/javascript" src="/js/angular.min.js?v=1.0.6"></script>
+
 	</head>
 	<body>
 		<script type="text/javascript">CUBE_URL = '<?php echo CUBE_URL ?>'</script>

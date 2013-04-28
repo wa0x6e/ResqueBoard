@@ -11,7 +11,7 @@
     </div>
 
     <h2>Workers <span class="badge badge-info">{{length}}</span></h2>
-    <div class="workers-list">
+    <div class="workers-list" ng-hide="length==0">
         <div class="workers-list-item" ng-repeat="worker in workers" ng-class="{paused: !worker.active}">
             <div class="worker-list-inner">
                 <div class="chart">
@@ -67,4 +67,7 @@
             </ul>
         </div>
     </div>
+
+    <div ng-show="length==0" class="knight-unit smaller"><p class="tagline"><i class="icon-cogs icon"></i> No active workers</p></div>
+
 </div>

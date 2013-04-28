@@ -1,6 +1,6 @@
 <div ng-controller="QueuesCtrl">
     <h2>Queues <span class="badge badge-info">{{length}}</span></h2>
-    <table class="table table-condensed table-greyed">
+    <table class="table table-condensed table-greyed" ng-hide="queues.length==0">
         <thead>
             <tr>
                 <th class="name">Name</th>
@@ -27,4 +27,6 @@
             </tr>
         </tbody>
     </table>
+
+    <div ng-show="queues.length==0" class="knight-unit smaller"><p class="tagline"><i class="icon-align-left icon"></i> No queues yet</p></div>
 </div>

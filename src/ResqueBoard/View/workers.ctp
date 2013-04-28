@@ -23,7 +23,7 @@
 
 <div class="full-width" ng-controller="WorkersCtrl" ng-cloak>
 
-    <div class="knight-unit" ng-show="length==0"><i class="icon-cogs icon"></i><p class="tagline">No active workers</p></div>
+    <div class="knight-unit" ng-show="length==0"><i class="icon-cogs icon"></i><h2>No active workers</h2></div>
 
 	<div class="ftr-bloc" ng-hide="length==0">
 		<h2>Active workers <span class="badge badge-info">{{length}}</span></h2>

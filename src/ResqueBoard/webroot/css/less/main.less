@@ -1393,7 +1393,7 @@ form label .icon-info-sign
 	text-align:center;
 	margin-top: @gridGutterWidth;
 	margin-bottom: @gridGutterWidth;
-
+	
 	h2
 	{
 		font-size: 32px;
@@ -1401,16 +1401,30 @@ form label .icon-info-sign
 	
 	p 
 	{
-		font-size: 150%;
+		font-size: 125%;
 		color: lighten(@textColor, 25);
+		margin-bottom: 0;
 	}
 	
 	.icon
 	{
 		font-size: 80px;
+		line-height: 1;
 		color: lighten(@textColor, 25);
 		margin-bottom: 30px;
 		display: block;
+	}
+	
+	&.smaller {
+		text-shadow: 0 1px 0 @white;
+		padding: @gridGutterWidth;
+		background-color: darken(@bodyBackgroundColor, 3);
+		.border-radius(5px);
+		
+		.icon {
+			font-size: 200%;
+			margin-bottom: 0;
+		}		
 	}
 	
 }
@@ -1818,7 +1832,8 @@ th {
 .latest-jobs-list {
 	border: 1px solid darken(@greyBorderColor, 5);
 	background: @greyBorderColor;
-	padding: 0 @insidePadding @insidePadding;
+	padding: 0 @insidePadding;
+	margin-bottom: @gridGutterWidth;
 	.border-radius(0 0 4px 4px);
 	
 	p {
@@ -1830,7 +1845,7 @@ th {
 }
 
 // Placing the nav buttons
-.scheduled-jobs-graph, .latest-jobs-graph {
+#scheduled-jobs-graph, .latest-jobs-graph {
 	position: relative;
 }
 

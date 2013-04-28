@@ -17,14 +17,8 @@
  * @since         1.5.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
+?>
 
-	$message = '';
-	if (!empty($pastScheduledJobs)) :
-		$message = '<div class="alert alert-error alert-page">There is some scheduled jobs past their due date. Is the Scheduler Worker running ?</div>';
-	endif; ?>
-
-
-	<?php //echo $message ?>
 
 	<ul class="nav nav-tabs page-nav-tab">
 	    <li>
@@ -38,41 +32,24 @@
 	    </li>
     </ul>
 
-	<div class="with-sidebar">
+	<div class="with-sidebar" ng-controller="ScheduledJobsCtrl" ng-cloak>
 
 		<div class="ftr-bloc">
 			<h3>Future scheduled jobs activities</h3>
 			<div id="scheduled-jobs-graph"></div>
 		</div>
 
-		<script id="scheduled-jobs-list-tpl" type="text/x-jsrender">
-				<li class="accordion-group">
-				<div class="accordion-heading" data-toggle="collapse" data-target="#{{>id}}">
-					<div class="accordion-toggle">
-						<span class="job-status-icon" data-event="tooltip" data-original-title="Job scheduled">
-						<img src="/img/job_scheduled.png" title="Job scheduled" height="24" width="24"></span>
-
-						<h4>#{{>id}}</h4>
-
-						<small>Performing <code>{{>class}}</code> in
-						<span class="label label-success">{{>queue}}</span></small>
-
-					</div>
-				</div>
-				<div class="collapse accordion-body" id="{{>id}}">
-					<div class="accordion-inner">
-						<p>
-							<i class="icon-time"></i> <b>Added on </b>{{>created}}</p>
-
-
-						<pre class="job-args"><code class="language-php">{{>args}}</code></pre>
-					</div>
-				</div>
-			</li>
-		</script>
-
 		<div class="bloc">
-			<div id="scheduled-jobs-list"></div>
+			<div class="knight-unit smaller" ng-show="jobs.length==0 && date==false"><i class="icon-briefcase icon"></i><p class="tagline">Click on the graph to show the associated jobs</p></div>
+
+			<button ng-hide="jobs.length==0 && date==false" ng-click="clear()" type="button" class="close">×</button>
+	        <h3 ng-hide="jobs.length==0 && date==false"><ng-pluralize count="jobs.length" when="{'0': 'No job', '1': '1 job', 'other': '{} jobs'}"></ng-pluralize> for <mark class="light">{{date}}</mark></h3>
+
+	        <div ng-show="loading" class="alert alert-info">Loading datas ...</div>
+
+	        <div ng-show="date!=false && jobs.length==0" class="alert">No job found for this period</div>
+
+			<ng-include src="'/partials/jobs-list.html'"></ng-include>
 		</div>
 	</div>
 

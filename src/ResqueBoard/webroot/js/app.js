@@ -1148,66 +1148,6 @@ function initJobsOverview() {
 }
 
 
-/**
- * Scheduler Worker Page
- * Future scheduled jobs calendar graph
- * @since 1.5.0
- */
-if ($("#scheduled-jobs-graph").length > 0) {
-	var cal = new CalHeatMap();
-	cal.init({
-		id : "scheduled-jobs-graph",
-		scale : [1,4,8,12],
-		itemName : ["job", "jobs"],
-		range: 8,
-		cellsize: 10,
-		browsing: true,
-		browsingOptions: {
-			nextLabel : "<i class=\"icon-chevron-right\"></i>",
-			previousLabel : "<i class=\"icon-chevron-left\"></i>"
-		},
-		data: "/api/scheduled-jobs/stats/{{t:start}}/{{t:end}}",
-		onClick : function(start, itemNb) {
-
-			var formatDate = d3.time.format("%H:%M, %A %B %e %Y");
-
-			$("#scheduled-jobs-list").html("<h2>Jobs scheduled for <mark class=\"light\">" + formatDate(start) + "</mark></h2>");
-			$("#scheduled-jobs-list").append("<div class=\"alert alert-info\" id=\"scheduled-jobs-loading\">Loading datas ...</div>");
-
-			d3.json("/api/scheduled-jobs/" + (+start)/1000 + "/" + ((+start)/1000+60), function(data) {
-
-				$("#scheduled-jobs-loading").remove();
-				$("#scheduled-jobs-list").append("<ul class=\"unstyled job-details\"></ul>");
-
-				for (var timestamp in data) {
-
-					for (var job in data[timestamp]) {
-						data[timestamp][job].created = new Date(data[timestamp][job].s_time*1000);
-						data[timestamp][job].args = print_r(data[timestamp][job].args);
-					}
-
-					$("#scheduled-jobs-list ul")
-					.append(
-						$("#scheduled-jobs-list-tpl").render(data[timestamp])
-					);
-				}
-
-				var jobsCount = $("#scheduled-jobs-list ul li").length;
-
-				if (jobsCount === 0) {
-					$("#scheduled-jobs-list").append("<div class=\"alert\">No jobs found for this period</div>");
-				} else {
-					$("#scheduled-jobs-list h2").prepend("<strong>" + jobsCount + "</strong> ");
-				}
-
-			});
-
-		}
-	});
-}
-
-
-
 
 /**
  * Clean a worker name
@@ -1850,5 +1790,51 @@ function LatestJobsGraphCtrl($scope, $http) {
 			error(function(data, status, headers, config) {
 		});
 	};
+}
 
+function ScheduledJobsCtrl($scope, $http) {
+
+	$scope.jobs = [];
+	$scope.loading = false;
+	$scope.date = false;
+
+	var cal = new CalHeatMap();
+	cal.init({
+		id : "scheduled-jobs-graph",
+		scale : [1,4,8,12],
+		itemName : ["job", "jobs"],
+		range: 8,
+		cellsize: 10,
+		browsing: true,
+		browsingOptions: {
+			nextLabel : "<i class=\"icon-chevron-right\"></i>",
+			previousLabel : "<i class=\"icon-chevron-left\"></i>"
+		},
+		data: "/api/scheduled-jobs/stats/{{t:start}}/{{t:end}}",
+		onClick : function(start, itemNb) {
+			$scope.loading = true;
+			var formatDate = d3.time.format("%H:%M, %A %B %e %Y");
+			$scope.date = formatDate(start);
+
+			$http({method: "GET", url: "/api/scheduled-jobs/" + (+start)/1000 + "/" + ((+start)/1000+60)}).
+				success(function(data, status, headers, config) {
+					$scope.jobs = [];
+					for (var timestamp in data) {
+						for (var job in data[timestamp]) {
+							data[timestamp][job].created = new Date(data[timestamp][job].s_time*1000);
+							data[timestamp][job].args = print_r(data[timestamp][job].args);
+						}
+						$scope.jobs = data;
+					}
+					$scope.loading = false;
+				}).
+				error(function(data, status, headers, config) {
+			});
+		}
+	});
+
+	$scope.clear = function() {
+		$scope.date = false;
+		$scope.jobs = [];
+	};
 }

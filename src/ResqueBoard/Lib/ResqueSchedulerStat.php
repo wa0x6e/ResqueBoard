@@ -94,15 +94,22 @@ class ResqueSchedulerStat extends ResqueStat
         }
         $jobs = $redisPipeline->exec();
 
+        $results = array();
+
+        $i = 0;
         foreach ($jobs as &$job) {
             foreach ($job as &$j) {
                 $j = json_decode($j, true);
-                $j['id'] = $j['args'][0]['id'];
+                $j['job_id'] = $j['args'][0]['id'];
                 unset($j['args'][0]['id']);
-                $j['args'] = $j['args'][0];
-            }
-        }
+                $j['args'] = var_export($j['args'][0], true);
+                $j['time'] = date('c', $timestamps[$i]);
+                $j['status'] = self::JOB_STATUS_SCHEDULED;
 
-        return array_combine($timestamps, $jobs);
+                $results[] = $j;
+            }
+            $i++;
+        }
+        return $results;
     }
 }

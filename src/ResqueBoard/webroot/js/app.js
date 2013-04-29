@@ -1285,6 +1285,46 @@ ResqueBoard.filter("urlencode", function() {
 	};
 });
 
+ResqueBoard.directive("iconJob", function() {
+
+	var data = {
+		1: {
+			"icon" : "job_waiting.png",
+			"name" : "Pending"
+		},
+		2: {
+			"icon" : "job_running.png",
+			"name" : "Running"
+		},
+		3: {
+			"icon" : "job_failed.png",
+			"name" : "Failed"
+		},
+		4: {
+			"icon" : "job_complete.png",
+			"name" : "Completed"
+		},
+		63: {
+			"icon" : "job_scheduled.png",
+			"name" : "Scheduled"
+		}
+	};
+
+
+	return {
+		restrict: "E",
+		template: "<img height=24 width=24 />",
+		replace: true,
+		scope: {
+			status: "="
+		},
+		link: function (scope, element, attrs) {
+			element.attr("src", "/img/" + data[scope.status].icon);
+			element.attr("title", data[scope.status].name + " job");
+		}
+	};
+});
+
 ResqueBoard.directive("graphHorizonChart", function() {
 
 	return {
@@ -1303,15 +1343,6 @@ ResqueBoard.directive("graphHorizonChart", function() {
 				horizon = context.horizon().metric(cube.metric).height(element.parent().parent().height()),
 				rule = context.rule(),
 				metrics = [];
-
-
-
-			/*if (scope.workers.length === 0) {
-				context.stop();
-				return;
-			}*/
-
-
 
 			var redraw = function() {
 
@@ -1735,6 +1766,7 @@ ResqueBoard.controller("LatestJobsHeatmapCtrl", ["$scope", "$http", function($sc
 		data: "/api/jobs/stats/{{t:start}}/{{t:end}}",
 		onClick : function(start, itemNb) {
 			$scope.loading = true;
+
 			var formatDate = d3.time.format("%H:%M, %A %B %e %Y");
 			$scope.date = formatDate(start);
 

@@ -10,7 +10,7 @@
 
         <div ng-show="loading" class="alert alert-info">Loading datas ...</div>
 
-        <div ng-show="date!=false && jobs.length==0" class="alert">No job found for this period</div>
+        <div ng-show="date!=false && jobs.length==0 && loading==false" class="alert">No job found for this period</div>
 
         <ng-include src="'/partials/jobs-list.html'"></ng-include>
     </div>

@@ -318,7 +318,7 @@ $app->get(
                 'jobs_view_pending',
                 array(
                     'jobs' => $resqueStat->getJobs($options),
-                    'queues' => $resqueStat->getQueues(),
+                    'queues' => $resqueStat->getQueues(array('pendingjobs')),
                     'resultLimits' => $resultLimits,
                     'pagination' => $pagination
                 )
@@ -433,7 +433,8 @@ $app->get(
                 array(
                     'totalScheduledJobs' => $resqueSchedulerStat->getStats(ResqueBoard\Lib\ResqueStat::JOB_STATUS_SCHEDULED),
                     'futureScheduledJobs' => $resqueSchedulerStat->getScheduledJobsCount(time()),
-                    'pastScheduledJobs' => $resqueSchedulerStat->getScheduledJobsCount(0, time())
+                    'pastScheduledJobs' => $resqueSchedulerStat->getScheduledJobsCount(0, time()),
+                    'ngController' => 'ScheduledJobsCtrl'
                 )
             );
 
@@ -603,6 +604,68 @@ $app->get(
 
             $app->response()->header("Content-Type", "application/json");
             echo json_encode($jobs);
+        } catch (\Exception $e) {
+            $app->error($e);
+        }
+    }
+);
+
+$app->get(
+    '/api/stats',
+    function () use ($app, $settings) {
+        try {
+            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat($settings);
+
+            $args = cleanArgs($app->request()->params());
+            $stats = array();
+
+            if (isset($args['fields'])) {
+                if (in_array('scheduled_full', explode(',', $args['fields']))) {
+                    $stats['scheduled'] = array(
+                        'total' => $resqueSchedulerStat->getStats(ResqueBoard\Lib\ResqueStat::JOB_STATUS_SCHEDULED),
+                        'future' => $resqueSchedulerStat->getScheduledJobsCount(time()),
+                        'past' => $resqueSchedulerStat->getScheduledJobsCount(0, time())
+                    );
+                }
+                if (in_array('scheduled', explode(',', $args['fields']))) {
+                    $stats['scheduled'] = array(
+                        'total' => $resqueSchedulerStat->getStats(ResqueBoard\Lib\ResqueStat::JOB_STATUS_SCHEDULED)
+                    );
+                }
+                if (in_array('pending_full', explode(',', $args['fields']))) {
+                    $queuesStats = $resqueStat->getPendingJobsCount(explode(',', $args['queues']));
+
+                    $results = array();
+                    $total = 0;
+                    foreach ($queuesStats as $queue) {
+                        $total += $queue['stats']['pendingjobs'];
+                        $results[$queue['name']] = $queue['stats']['pendingjobs'];
+                    }
+
+                    $stats['pending'] = array(
+                        'total' => $total,
+                        'queues' => $results
+                    );
+                }
+                if (in_array('pending', explode(',', $args['fields']))) {
+                    $stats['pending']['total'] = 0;
+                    $r = $resqueStat->getPendingJobsCount();
+                    array_walk(
+                        $r,
+                        function ($q) use (&$stats) {
+                            $stats['pending']['total'] += $q;
+                        }
+                    );
+
+                }
+            }
+
+
+
+
+            $app->response()->header("Content-Type", "application/json");
+            echo json_encode($stats);
         } catch (\Exception $e) {
             $app->error($e);
         }

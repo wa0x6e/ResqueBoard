@@ -423,7 +423,7 @@ class ResqueStat
         }
 
         if (!empty($options['date_before'])) {
-            $conditions['t']['$lt'] = new \MongoDate($options['date_before']);
+            $conditions['t']['$lte'] = new \MongoDate($options['date_before']);
         }
 
         $jobsCursor = $jobsCollection->find($conditions);
@@ -475,56 +475,10 @@ class ResqueStat
             $options['date_after'] = strtotime($options['date_after']);
         }
 
-        if (isset($options['status']) && $options['status'] === self::JOB_STATUS_WAITING) {
-            return $this->getPendingJobs($options);
-        }
-
         $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
-        $jobsCollection = $cube->selectCollection('got_events');
+
 
         $conditions = array();
-
-
-        if ($options['workerId'] !== null) {
-            $conditions['d.worker'] = $options['workerId'];
-        }
-
-        if (!empty($options['class'])) {
-            $conditions['d.args.payload.class'] = array('$in' => array_map('trim', explode(',', $options['class'])));
-        }
-
-        if (!empty($options['queue'])) {
-            $conditions['d.args.queue'] = array('$in' => array_map('trim', explode(',', $options['queue'])));
-        }
-
-        if (!empty($options['worker'])) {
-            if (in_array('old', $options['worker'])) {
-                $workers = array_map(
-                    function ($a) {
-                        return $a['host'].':'.$a['process'];
-                    },
-                    $this->getWorkers()
-                );
-                $exclude = array_diff($workers, $options['worker']);
-
-                if (!empty($exclude)) {
-                    $conditions['d.worker'] = array('$nin' => $exclude);
-                }
-            } else {
-                $conditions['d.worker'] = array('$in' => $options['worker']);
-            }
-        }
-
-        if ($options['status'] === self::JOB_STATUS_FAILED) {
-            $cursor = $cube->selectCollection('fail_events')
-                ->find(array(), array('d.job_id'));
-            $ids = array();
-            foreach ($cursor as $c) {
-                $ids[] = $c['d']['job_id'];
-            }
-            $conditions['d.args.payload.id'] = array('$in' => $ids);
-        }
-
 
         if (!empty($options['date_after'])) {
             $conditions['t']['$gte'] = new \MongoDate($options['date_after']);
@@ -536,12 +490,24 @@ class ResqueStat
 
         $results = array();
 
-        $jobsCursor = $jobsCollection->find($conditions, array('t' => true));
-        foreach ($jobsCursor as $job) {
+        $jobsDoneCollection = $cube->selectCollection('done_events');
+        $jobsFailCollection = $cube->selectCollection('fail_events');
+
+        $jobsDoneCursor = $jobsDoneCollection->find($conditions, array('t' => true));
+        foreach ($jobsDoneCursor as $job) {
             if (isset($results[$job['t']->sec])) {
                 $results[$job['t']->sec] += 1;
             } else {
-                $results[$job['t']->sec] = 0;
+                $results[$job['t']->sec] = 1;
+            }
+        }
+
+        $jobsFailCursor = $jobsFailCollection->find($conditions, array('t' => true));
+        foreach ($jobsFailCursor as $job) {
+            if (isset($results[$job['t']->sec])) {
+                $results[$job['t']->sec] += 1;
+            } else {
+                $results[$job['t']->sec] = 1;
             }
         }
 

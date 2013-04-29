@@ -32,14 +32,14 @@
 	    </li>
     </ul>
 
-	<div class="with-sidebar" ng-controller="ScheduledJobsCtrl" ng-cloak>
+	<div class="with-sidebar">
 
 		<div class="ftr-bloc">
 			<h3>Future scheduled jobs activities</h3>
 			<div id="scheduled-jobs-graph"></div>
 		</div>
 
-		<div class="bloc">
+		<div class="bloc" ng-cloak>
 			<div class="knight-unit smaller" ng-show="jobs.length==0 && date==false"><i class="icon-briefcase icon"></i><p class="tagline">Click on the graph to show the associated jobs</p></div>
 
 			<button ng-hide="jobs.length==0 && date==false" ng-click="clear()" type="button" class="close">×</button>
@@ -61,17 +61,17 @@
 			<h3>Quick Stats <i class="icon-bar-chart"></i></h3>
 		</div>
 
-		<ul class="stats unstyled clearfix">
+		<ul class="stats unstyled clearfix" ng-cloak>
 			<li><div>
-				<strong><?php echo number_format($totalScheduledJobs); ?></strong>
+				<strong ng-init="stats.total='<?php echo $totalScheduledJobs; ?>'">{{stats.total|number}}</strong>
 				Total <b>scheduled</b> jobs</div>
 			</li>
 			<li><div>
-				<strong><?php echo number_format($futureScheduledJobs); ?></strong>
+				<strong ng-init="stats.future='<?php echo $futureScheduledJobs; ?>'">{{stats.future|number}}</strong>
 				Jobs <b>waiting</b> to be queued</div>
 			</li>
 			<li><div>
-				<strong><?php echo number_format($pastScheduledJobs); ?></strong>
+				<strong ng-init="stats.past='<?php echo $pastScheduledJobs; ?>'">{{stats.past|number}}</strong>
 				<b>Past</b> jobs</div>
 			</li>
 		</ul>

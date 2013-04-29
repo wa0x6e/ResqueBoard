@@ -87,7 +87,7 @@ class PageHelper
                 </a>
             </li>
             <li>
-                <a href="/jobs/pendings">
+                <a href="/jobs/pending">
                     <strong ng-init="stats.pending='0'">{{stats.pending|number}}</strong>
                     <b>Pending</b> jobs
                 </a>
@@ -95,23 +95,5 @@ class PageHelper
         </ul>
 
         <?php
-    }
-
-    public static function renderQueuesStatsTable()
-    {
-        echo '<div ng-controller="QueuesCtrl" ng-cloak>';
-        echo '<h2>Queues <span class="badge badge-info">{{length}}</span></h2>';
-        echo '<table class="table table-condensed table-greyed"><thead>'.
-            '<tr><th class="name">Name</th><th>Pending jobs</th><th>Total jobs</th><th>Workers</th></tr></thead><tbody>';
-
-        echo '<tr ng-repeat="queue in queues">
-            <td class="name">{{queue.name}}</td>
-            <td><a href="/jobs/pending?queue={{queue.name|urlencode}}">{{queue.stats.pendingjobs|number}}</a></td>
-            <td><a href="/jobs/view?queue={{queue.name|urlencode}}"><div style="position:relative;"><span class="chart-bar" style="width:{{queue.stats.totaljobsperc}}%"></span><b>{{queue.stats.totaljobs|number}}</b></a></div></td>
-            <td>{{queue.stats.workerscount}}</td>
-        </tr>';
-
-
-        echo '</tbody></table></div>';
     }
 }

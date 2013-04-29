@@ -1769,7 +1769,7 @@ ResqueBoard.controller("LatestJobsHeatmapCtrl", ["$scope", "$http", function($sc
 	var cal = new CalHeatMap();
 	cal.init({
 		id : "latest-jobs-heatmap",
-		scale : [1,4,8,12],
+		scale : [10,20,30,40],
 		itemName : ["job", "jobs"],
 		range: 6,
 		cellsize: 10,
@@ -1805,13 +1805,6 @@ ResqueBoard.controller("LatestJobsHeatmapCtrl", ["$scope", "$http", function($sc
 	$scope.clear = function() {
 		$scope.date = false;
 		$scope.jobs = [];
-	};
-
-	$scope.$watch("predicate", function(a, b) {console.log(a);});
-
-	$scope.test = function() {
-console.log("aas");
-
 	};
 
 }]);

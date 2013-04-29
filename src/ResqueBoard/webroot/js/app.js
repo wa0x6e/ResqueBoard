@@ -1561,7 +1561,8 @@ function JobsCtrl($scope, jobsProcessedCounter, jobsFailedCounter) {
 function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, workerStopListener) {
 
 	$scope.stats = {totaljobs: 0};
-	$scope.predicate = "name";
+	$scope.predicate = "stats.totaljobs";
+	$scope.reverse = true;
 
 	var mapKeys = {};
 

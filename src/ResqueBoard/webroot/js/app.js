@@ -1566,7 +1566,7 @@ function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, wo
 
 	var mapKeys = {};
 
-	$http({method: "GET", url: "/api/queues"}).
+	$http({method: "GET", url: "/api/queues?fields=pendingjobs,workers"}).
 		success(function(data, status, headers, config) {
 			$scope.queues = data;
 			$scope.length = Object.keys(data).length;
@@ -1595,10 +1595,18 @@ function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, wo
 		var queues = w[2].split(",");
 
 		for(var q in queues) {
-			if ($scope.queues.hasOwnProperty(queues[q])) {
-				$scope.queues[queues[q]].stats.workerscount++;
+			if (mapKeys.hasOwnProperty(queues[q])) {
+				$scope.queues[mapKeys[queues[q]]].stats.workerscount++;
 			} else {
-				$scope.queues[queues[q]] = {};
+				$scope.queues.push({
+					"name": queues[q],
+					"stats" : {
+						"totaljobs": 0,
+						"pendingsjobs": 0,
+						"workerscount": 1
+					}
+				});
+				mapKeys[queues[q]] = $scope.queues.length-1;
 			}
 		}
 	});

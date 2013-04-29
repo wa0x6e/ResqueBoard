@@ -320,7 +320,7 @@ class ResqueStat
      *
      * @since 1.4.0
      */
-    public function getQueues()
+    public function getQueues($fields = array())
     {
         $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
         $queuesCollection = $cube->selectCollection('got_events');
@@ -358,7 +358,7 @@ class ResqueStat
         // Format results for the API
         $r = array();
         foreach ($results as $name => $count) {
-            $r[] = array(
+            $r[$name] = array(
                 'name' => $name,
                 'stats' => array(
                     'totaljobs' => $count,
@@ -367,6 +367,44 @@ class ResqueStat
                 )
             );
         }
+
+        if (in_array('pendingjobs', $fields)) {
+            $pipeline = $this->getRedis()->multi(\Redis::PIPELINE);
+            foreach ($r as $name => $stats) {
+                $keyName = $this->settings['resquePrefix'] . 'queue:' . $name;
+                $pipeline->llen($keyName);
+            }
+
+            $count = $pipeline->exec();
+            $i = 0;
+            foreach ($r as $name => $stats) {
+                $r[$name]['stats']['pendingjobs'] = $count[$i];
+                $i++;
+            }
+
+        }
+
+        if (in_array('workers', $fields)) {
+            $workers = $this->getWorkers();
+
+            foreach ($workers as $w) {
+                foreach ($w['queues'] as $q) {
+                    if (isset($r[$q])) {
+                        $r[$q]['stats']['workerscount']++;
+                    } else {
+                        $r[$q] = array(
+                            'name' => $q,
+                            'stats' => array(
+                                'totaljobs' => 0,
+                                'pendingjobs' => 0,
+                                'workerscount' => 1
+                            )
+                        );
+                    }
+                }
+            }
+        }
+
         return $r;
     }
 

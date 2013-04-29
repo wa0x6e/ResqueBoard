@@ -26,7 +26,7 @@ if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
 
-define('APPLICATION_VERSION', '2.0.0-beta');
+define('APPLICATION_VERSION', '2.0.0-beta-2');
 
 include ROOT . DS . 'Config' . DS . 'Core.php';
 
@@ -699,8 +699,15 @@ $app->get(
     function () use ($app, $settings) {
 
         try {
+            $params = cleanArgs($app->request()->params());
+            $fields = array();
+            if (isset($params['fields'])) {
+                $fields = explode(',', $params['fields']);
+            }
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
-            echo json_encode($resqueStat->getQueues());
+
+            $app->response()->header("Content-Type", "application/json");
+            echo json_encode(array_values($resqueStat->getQueues($fields)));
         } catch (\Exception $e) {
             $app->error($e);
         }

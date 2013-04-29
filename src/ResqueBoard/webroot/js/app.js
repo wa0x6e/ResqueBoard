@@ -1558,7 +1558,7 @@ function JobsCtrl($scope, jobsProcessedCounter, jobsFailedCounter) {
 	});
 }
 
-function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, workerStopListener) {
+function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, workerStopListener, $timeout) {
 
 	$scope.stats = {totaljobs: 0};
 	$scope.predicate = "stats.totaljobs";
@@ -1566,7 +1566,7 @@ function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, wo
 
 	var mapKeys = {};
 
-	$http({method: "GET", url: "/api/queues?fields=pendingjobs,workers"}).
+	$http({method: "GET", url: "/api/queues?fields=totaljobs,pendingjobs,workers"}).
 		success(function(data, status, headers, config) {
 			$scope.queues = data;
 			$scope.length = Object.keys(data).length;
@@ -1580,8 +1580,6 @@ function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, wo
 		}).
 		error(function(data, status, headers, config) {
 	});
-
-
 
 	jobsProcessedCounter.onmessage(function(message) {
 		var datas = JSON.parse(message.data);
@@ -1610,6 +1608,24 @@ function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, wo
 			}
 		}
 	});
+
+	var refreshRate = 5000;
+
+	var updatePendingJobsCounter = function() {
+
+		$http({method: "GET", url: "/api/queues?fields=pendingjobs&queues=" + Object.keys(mapKeys).join(",")}).
+			success(function(data, status, headers, config) {
+				for (var i in data) {
+					$scope.queues[mapKeys[data[i].name]].stats.pendingjobs = parseInt(data[i].stats.pendingjobs, 10);
+				}
+			}).
+			error(function(data, status, headers, config) {
+		});
+
+		$timeout(updatePendingJobsCounter, refreshRate);
+	};
+
+	$timeout(updatePendingJobsCounter, refreshRate);
 
 	function updateStats() {
 		for (var queue in $scope.queues) {

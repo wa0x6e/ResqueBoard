@@ -19,7 +19,7 @@
  */
 ?>
 <div id="main"<?php if (isset($ngController)) {
-    echo ' ng-controller="logsCtrl"';
+    echo ' ng-controller="' . $ngController . '"';
 } ?>>
     <ul class="menu">
         <?php

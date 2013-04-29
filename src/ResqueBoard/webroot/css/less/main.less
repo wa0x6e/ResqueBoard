@@ -1855,6 +1855,12 @@ th {
 		border-color: darken(@greyBorderColor, 8);
 	}
 	
+	.list-sorter {
+		color: darken(@greyBorderColor, 25);
+		border-bottom-color: darken(@greyBorderColor, 5);
+		.box-shadow(0 1px 0 lighten(@greyBorderColor, 5));
+	}
+	
 	
 }
 
@@ -1922,8 +1928,8 @@ th {
 	list-style: none;
 	margin: 0 0 @gridGutterWidth;
 	padding: 0;
-	border-bottom: 2px solid darken(@greyBorderColor, 2);
-	color: darken(@greyBorderColor, 30);
+	border-bottom: 2px solid @greyBorderColor;
+	color: darken(@greyBorderColor, 20);
 	font-size: 12px;
 	text-align: right;
 	

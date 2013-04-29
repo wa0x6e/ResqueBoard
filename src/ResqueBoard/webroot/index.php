@@ -700,29 +700,7 @@ $app->get(
 
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
-            $queues = $resqueStat->getQueues();
-
-            $result = array();
-
-            if (!empty($queues)) {
-                foreach ($queues as $queueName => $queueStat) {
-                    if ($queueName === ResqueScheduler\ResqueScheduler::QUEUE_NAME) {
-                        continue;
-                    }
-
-                    $result[$queueName] = array(
-                        'name' => $queueName,
-                        'stats' => array(
-                            'pendingjobs' => $queueStat['jobs'],
-                            'totaljobs' => 0,
-                            'workerscount' => 0
-                        )
-                    );
-                }
-            }
-
-            echo json_encode($result);
-
+            echo json_encode($resqueStat->getQueues());
         } catch (\Exception $e) {
             $app->error($e);
         }

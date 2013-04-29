@@ -322,7 +322,52 @@ class ResqueStat
      */
     public function getQueues()
     {
-        return $this->queues;
+        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $queuesCollection = $cube->selectCollection('got_events');
+
+        $lastRefresh = $cube
+            ->selectCollection('map_reduce_stats')
+            ->findOne(array('_id' => 'queue_stats'), array("date", "stats"));
+
+        $now = new \MongoDate();
+
+        $conditions = array();
+
+        if (isset($lastRefresh['date'])) {
+            $conditions['t'] = array('$gt' => $now);
+        }
+
+        $queues = $queuesCollection->distinct('d.args.queue', $conditions);
+
+        $results = isset($lastRefresh['stats']) ? $lastRefresh['stats'] : array();
+        foreach ($queues as $q) {
+            $conditions['d.args.queue'] = $q;
+            $results[$q] = $queuesCollection->count($conditions) + (isset($results[$q]) ? $results[$q] : 0);
+        }
+
+        $cube
+            ->selectCollection('map_reduce_stats')
+            ->save(
+                array(
+                    '_id' => 'queue_stats',
+                    'date' => $now,
+                    'stats' => $results
+                )
+            );
+
+        // Format results for the API
+        $r = array();
+        foreach ($results as $name => $count) {
+            $r[] = array(
+                'name' => $name,
+                'stats' => array(
+                    'totaljobs' => $count,
+                    'pendingjobs' => 0,
+                    'workerscount' => 0
+                )
+            );
+        }
+        return $r;
     }
 
 

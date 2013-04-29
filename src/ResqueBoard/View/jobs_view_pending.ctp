@@ -138,26 +138,26 @@
 
 	<?php
 		$totalJobs = 0;
-		foreach ($queues as $queueName => $stats) {
-			if ($queueName === ResqueScheduler\ResqueScheduler::QUEUE_NAME) {
+		foreach ($queues as $queue) {
+			if ($queue['name'] === ResqueScheduler\ResqueScheduler::QUEUE_NAME) {
 				continue;
 			}
-			$totalJobs += $stats['jobs'];
+			$totalJobs += $queue['stats']['pendingjobs'];
 		}
 	?>
 
-	<div class="sidebar">
+	<div class="sidebar" ng-controller="PendingJobsCtrl">
 		<div class="page-header">
 			<h3>Quick Stats <i class="icon-bar-chart"></i></h3>
 		</div>
 
-		<ul class="stats unstyled clearfix">
+		<ul class="stats unstyled clearfix" ng-cloak>
 			<li class="<?php
 				if (!isset($pagination->uri['queue']) || $pagination->uri['queue'] === '') {
 					echo ' active';
 				}
 					 ?>"><a href="/jobs/pending">
-				<strong><?php echo number_format($totalJobs); ?></strong>
+				<strong ng-init="stats.total='<?php echo $totalJobs; ?>'">{{stats.total}}</strong>
 				Total <b>pending</b> jobs</a>
 			</li>
 		</ul>
@@ -166,19 +166,19 @@
 			<h3>Queues Stats</h3>
 		</div>
 
-		<ul class="stats unstyled clearfix">
-			<?php foreach ($queues as $queueName => $stats) { ?>
-				<li class="<?php if (empty($stats['workers'])) {
+		<ul class="stats unstyled clearfix" ng-cloak>
+			<?php foreach ($queues as $queue) { ?>
+				<li class="<?php if (empty($queue['stats']['workerscount'])) {
 					echo 'error';
 				}
-				if (isset($pagination->uri['queue']) && $pagination->uri['queue'] === $queueName) {
+				if (isset($pagination->uri['queue']) && $pagination->uri['queue'] === $queue['name']) {
 					echo ' active';
 				}
 					 ?>">
-					<a href="/jobs/pending?queue=<?php echo $queueName; ?>" title="View all pending jobs from <?php echo $queueName ?>">
-						<strong>
-							<?php echo number_format($stats['jobs']); ?>
-						</strong> from <b><?php echo $queueName; ?></b>
+					<a href="/jobs/pending?queue=<?php echo $queue['name']; ?>" title="View all pending jobs from <?php echo $queue['name'] ?>">
+						<strong ng-init="stats.queues.<?php echo $queue['name']; ?>='<?php echo $queue['stats']['pendingjobs']; ?>'">
+							{{stats.queues.<?php echo $queue['name']; ?>}}
+						</strong> from <b><?php echo $queue['name']; ?></b>
 					</a>
 				</li>
 			<?php } ?>

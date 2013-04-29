@@ -1541,7 +1541,7 @@ ResqueBoard.factory("workerResumeListener", function($rootScope) {
 });
 
 
-function JobsCtrl($scope, jobsProcessedCounter, jobsFailedCounter) {
+function JobsCtrl($scope, $timeout, $http, jobsProcessedCounter, jobsFailedCounter) {
 	$scope.stats = {
 		"processed" : 0,
 		"failed" : 0,
@@ -1556,6 +1556,23 @@ function JobsCtrl($scope, jobsProcessedCounter, jobsFailedCounter) {
 	jobsFailedCounter.onmessage(function(message) {
 		$scope.stats.failed++;
 	});
+
+	var refreshRate = 5000;
+
+	var updateStats = function() {
+
+		$http({method: "GET", url: "/api/stats?fields=scheduled,pending"}).
+			success(function(data, status, headers, config) {
+				$scope.stats.scheduled = data.scheduled.total;
+				$scope.stats.pending = data.pending.total;
+			}).
+			error(function(data, status, headers, config) {
+		});
+
+		$timeout(updateStats, refreshRate);
+	};
+
+	$timeout(updateStats, refreshRate);
 }
 
 function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, workerStopListener, $timeout) {
@@ -1864,11 +1881,17 @@ function LatestJobsGraphCtrl($scope, $http) {
 	};
 }
 
-function ScheduledJobsCtrl($scope, $http) {
+function ScheduledJobsCtrl($scope, $http, $timeout) {
 
 	$scope.jobs = [];
 	$scope.loading = false;
 	$scope.date = false;
+
+	$scope.stats = {
+		"total" : 0,
+		"future": 0,
+		"past" : 0
+	};
 
 	var cal = new CalHeatMap();
 	cal.init({
@@ -1909,4 +1932,43 @@ function ScheduledJobsCtrl($scope, $http) {
 		$scope.date = false;
 		$scope.jobs = [];
 	};
+
+	var refreshRate = 5000;
+
+	var updateStats = function() {
+
+		$http({method: "GET", url: "/api/stats?fields=scheduled_full"}).
+			success(function(data, status, headers, config) {
+				$scope.stats = data.scheduled;
+			}).
+			error(function(data, status, headers, config) {
+		});
+
+		$timeout(updateStats, refreshRate);
+	};
+
+	$timeout(updateStats, refreshRate);
+}
+
+function PendingJobsCtrl($scope, $http, $timeout) {
+
+	$scope.stats = {
+		"total" : 0
+	};
+
+	var refreshRate = 5000;
+
+	var updateStats = function() {
+
+		$http({method: "GET", url: "/api/stats?fields=pending_full&queues=" + Object.keys($scope.stats.queues).join(",")}).
+			success(function(data, status, headers, config) {
+				$scope.stats = data.pending;
+			}).
+			error(function(data, status, headers, config) {
+		});
+
+		$timeout(updateStats, refreshRate);
+	};
+
+	$timeout(updateStats, refreshRate);
 }

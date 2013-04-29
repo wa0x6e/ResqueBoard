@@ -3,14 +3,14 @@
     <table class="table table-condensed table-greyed" ng-hide="queues.length==0">
         <thead>
             <tr>
-                <th class="name">Name</th>
-                <th>Pending jobs</th>
-                <th>Total jobs</th>
-                <th>Workers</th>
+                <th class="name"><a href="" title="Sort by name" ng-click="predicate='name'; reverse=!reverse">Name</a></th>
+                <th><a href="" title="Sort by pending jobs count" ng-click="predicate='stats.pendingjobs'; reverse=!reverse">Pending jobs</a></th>
+                <th><a href="" title="Sort by total jobs count" ng-click="predicate='stats.totaljobs'; reverse=!reverse">Total jobs</a</th>
+                <th><a href="" title="Sort by workers count" ng-click="predicate='stats.workerscount'; reverse=!reverse">Workers</a</th>
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="queue in queues">
+            <tr ng-repeat="queue in queues | orderBy:predicate:reverse">
                 <td class="name">{{queue.name}}</td>
                 <td>
                     <a href="/jobs/pending?queue={{queue.name|urlencode}}">{{queue.stats.pendingjobs|number}}</a>

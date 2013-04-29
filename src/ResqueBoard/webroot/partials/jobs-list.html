@@ -1,5 +1,13 @@
+<ul class="list-sorter" ng-hide="jobs.length==0">
+    <li>Sort by</li>
+    <li><a href="" ng-class="{active: predicate=='time'}" ng-click="predicate='time'; reverse=!reverse">Date</a></li>
+    <li><a href="" ng-class="{active: predicate=='status'}" ng-click="predicate='status'; reverse=!reverse">Status</a></li>
+    <li><a href="" ng-class="{active: predicate=='class'}" ng-click="predicate='class'; reverse=!reverse">Job class</a></li>
+    <li><a href="" ng-class="{active: predicate=='queue'}" ng-click="predicate='queue'; reverse=!reverse">Queue</a></li>
+</ul>
+
 <ul class="unstyled job-details">
-    <li class="accordion-group" ng-repeat="job in jobs" ng-class="{error: job.status==3}">
+    <li class="accordion-group" ng-repeat="job in jobs | orderBy:predicate:reverse" ng-class="{error: job.status==3}">
         <div class="accordion-heading" data-toggle="collapse" data-target="#_{{job.job_id}}">
             <div class="accordion-toggle">
                 <span class="job-status-icon">

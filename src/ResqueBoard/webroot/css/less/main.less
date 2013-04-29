@@ -1558,6 +1558,10 @@ form label .icon-info-sign
 
 th {
 	border-bottom: 2px solid darken(@greyBorderColor, 20);
+	
+	a, a:visited {
+		color: darken(@colorShadeMinusOne, 15);
+	}
 }
 
 // Jobs matrix legend
@@ -1912,4 +1916,34 @@ th {
 
 .tooltip b {
 	color: yellow;
+}
+
+.list-sorter {
+	list-style: none;
+	margin: 0 0 @gridGutterWidth;
+	padding: 0;
+	border-bottom: 2px solid darken(@greyBorderColor, 2);
+	color: darken(@greyBorderColor, 30);
+	font-size: 12px;
+	text-align: right;
+	
+	
+	li {
+		display: inline;
+		margin-left: @insidePadding / 2;
+		padding: 2px @insidePadding / 2;
+		position: relative;
+		top: 1px;
+		
+	}		
+
+	
+	.active {
+		color: @colorShadeMinusTwo;
+		.box-shadow(0 3px 0 @colorShadeMinusOne);
+	}
+	
+	a:hover {
+		.box-shadow(0 3px 0 @colorShadeMinusTwo);
+	}
 }

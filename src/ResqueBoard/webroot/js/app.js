@@ -1559,26 +1559,33 @@ function JobsCtrl($scope, jobsProcessedCounter, jobsFailedCounter) {
 }
 
 function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, workerStopListener) {
+
+	$scope.stats = {totaljobs: 0};
+	$scope.predicate = "name";
+
+	var mapKeys = {};
+
 	$http({method: "GET", url: "/api/queues"}).
 		success(function(data, status, headers, config) {
 			$scope.queues = data;
 			$scope.length = Object.keys(data).length;
+
+			for (var i in $scope.queues) {
+				$scope.stats.totaljobs += $scope.queues[i].stats.totaljobs;
+				mapKeys[$scope.queues[i].name] = parseInt(i, 10);
+			}
+
+			updateStats();
 		}).
 		error(function(data, status, headers, config) {
 	});
 
-	$scope.stats = {totaljobs: 0};
 
-	for (var i in $scope.queues) {
-		$scope.stats.totaljobs += $scope.queues[i].stats.totaljobs;
-	}
 
 	jobsProcessedCounter.onmessage(function(message) {
 		var datas = JSON.parse(message.data);
-		$scope.queues[datas.data.args.queue].stats.totaljobs++;
+		$scope.queues[mapKeys[datas.data.args.queue]].stats.totaljobs++;
 		$scope.stats.totaljobs++;
-		$scope.queues[datas.data.args.queue].stats.totaljobsperc =
-			$scope.queues[datas.data.args.queue].stats.totaljobs * 100 / $scope.stats.totaljobs;
 	});
 
 	workerStartListener.onmessage(function(message) {
@@ -1594,6 +1601,13 @@ function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, wo
 			}
 		}
 	});
+
+	function updateStats() {
+		for (var queue in $scope.queues) {
+			$scope.queues[queue].stats.totaljobsperc =
+				$scope.queues[queue].stats.totaljobs * 100 / $scope.stats.totaljobs;
+		}
+	}
 }
 
 function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
@@ -1750,6 +1764,7 @@ ResqueBoard.controller("LatestJobsHeatmapCtrl", ["$scope", "$http", function($sc
 	$scope.jobs = [];
 	$scope.loading = false;
 	$scope.date = false;
+	$scope.predicate = "time";
 
 	var cal = new CalHeatMap();
 	cal.init({
@@ -1790,6 +1805,13 @@ ResqueBoard.controller("LatestJobsHeatmapCtrl", ["$scope", "$http", function($sc
 	$scope.clear = function() {
 		$scope.date = false;
 		$scope.jobs = [];
+	};
+
+	$scope.$watch("predicate", function(a, b) {console.log(a);});
+
+	$scope.test = function() {
+console.log("aas");
+
 	};
 
 }]);

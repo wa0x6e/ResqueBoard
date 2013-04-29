@@ -51,12 +51,20 @@ class JobHelper
                             <span title="Job <?php echo self::$jobStatus[$job['status']] ?>" class="job-status-icon">
                             <img src="/img/job_<?php echo self::$jobStatus[$job['status']] ?>.png" title="Job <?php echo self::$jobStatus[$job['status']] ?>" height=24 width=24 /></span>
 
+                            <?php
+                if (isset($job['worker']) && !empty($job['worker'])) : ?>
                             <span class="label label-info pull-right"><?php echo $job['worker']?></span>
-                            <time datetime="<?php echo date('c', strtotime($job['time']))?>"><i class="icon-time"></i> <?php echo date('H:i:s', strtotime($job['time'])); ?></time>
+                <?php
+                endif; ?>
+                            <?php
+                if (isset($job['time']) && !empty($job['time'])) : ?>
+                            <time title="<?php echo date('c', strtotime($job['time']))?>" datetime="<?php echo date('c', strtotime($job['time']))?>"><i class="icon-time"></i> <?php echo date('H:i:s', strtotime($job['time'])); ?></time>
+                            <?php
+                endif; ?>
 
-                            <h4>#<?php echo $job['job_id']?></h4>
-                            <small>Performing <code><?php echo $job['class']?></code> in
-                            <span class="label label-success"><?php echo $job['queue']?></span></small>
+                            <h4><?php echo $job['class']?></h4>
+                            <small><code>#<?php echo $job['job_id']?></code> in
+                            <span class="label"><?php echo $job['queue']?></span></small>
 
                         </div>
                     </div>

@@ -796,6 +796,9 @@ mark.light {
 	  	
 	  	&.error, &.error:hover
 		{
+			
+			background-color: lighten(@red, 60);
+			border-color: lighten(@red, 50);
 			border-left: 4px solid @red;
 		}
 		
@@ -1821,6 +1824,7 @@ th {
 .latest-jobs-graph {
 	padding: 1px 10px;
 	background-color: @white;
+	border: 1px solid @greyBorderColor;
 	border-bottom: 4px solid darken(@greyBorderColor, 5);
 	
 	.graph-browse-previous, .graph-browse-next {
@@ -1842,6 +1846,12 @@ th {
 		padding-top: @insidePadding;
 		text-align: center;
 	}
+	
+	.accordion-group {
+		border-color: darken(@greyBorderColor, 8);
+	}
+	
+	
 }
 
 // Placing the nav buttons

@@ -81,15 +81,15 @@ class PageHelper
                 <b>Failed</b> jobs</div>
             </li>
             <li>
-                <a href="/jobs/pending">
-                    <strong ng-init="stats.pending='<?php echo $stats[ResqueStat::JOB_STATUS_SCHEDULED]?>'">{{stats.pending|number}}</strong>
-                    <b>Pending</b> jobs
+                <a href="/jobs/scheduled">
+                    <strong ng-init="stats.scheduled='<?php echo $stats[ResqueStat::JOB_STATUS_SCHEDULED]?>'">{{stats.scheduled|number}}</strong>
+                    <b>Scheduled</b> jobs
                 </a>
             </li>
             <li>
-                <a href="/jobs/scheduled">
-                    <strong ng-init="stats.scheduled='0'">{{stats.scheduled|number}}</strong>
-                    <b>Scheduled</b> jobs
+                <a href="/jobs/pendings">
+                    <strong ng-init="stats.pending='0'">{{stats.pending|number}}</strong>
+                    <b>Pending</b> jobs
                 </a>
             </li>
         </ul>

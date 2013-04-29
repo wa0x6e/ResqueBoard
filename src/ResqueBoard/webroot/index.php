@@ -565,9 +565,7 @@ $app->get(
         try {
             $jobs = array();
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
-            $jobs =  $resqueStat->getJobsCount(array('date_after' => (int)$start, 'date_before' => (int)$end));
-
-
+            $jobs =  $resqueStat->getJobsCount(array('date_after' => (int)$start, 'date_before' => (int)$end+60));
 
             $app->response()->header("Content-Type", "application/json");
             echo json_encode($jobs);
@@ -586,7 +584,7 @@ $app->get(
     function ($start, $end) use ($app, $settings) {
         try {
             $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat($settings);
-            $jobs = $resqueSchedulerStat->getScheduledJobsCount((int)$start, (int)$end, true);
+            $jobs = $resqueSchedulerStat->getScheduledJobsCount((int)$start, (int)$end+60, true);
 
             $app->response()->header("Content-Type", "application/json");
             echo json_encode($jobs);

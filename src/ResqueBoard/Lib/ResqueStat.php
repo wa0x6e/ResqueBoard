@@ -320,52 +320,66 @@ class ResqueStat
      *
      * @since 1.4.0
      */
-    public function getQueues($fields = array())
+    public function getQueues($fields = array(), $queues = array())
     {
         $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
         $queuesCollection = $cube->selectCollection('got_events');
 
-        $lastRefresh = $cube
-            ->selectCollection('map_reduce_stats')
-            ->findOne(array('_id' => 'queue_stats'), array("date", "stats"));
+        if (in_array('totaljobs', $fields) || empty($queues)) {
+            $lastRefresh = $cube
+                ->selectCollection('map_reduce_stats')
+                ->findOne(array('_id' => 'queue_stats'), array("date", "stats"));
 
-        $now = new \MongoDate();
+            $now = new \MongoDate();
 
-        $conditions = array();
+            $conditions = array();
 
-        if (isset($lastRefresh['date'])) {
-            $conditions['t'] = array('$gt' => $now);
-        }
+            if (isset($lastRefresh['date'])) {
+                $conditions['t'] = array('$gt' => $now);
+            }
 
-        $queues = $queuesCollection->distinct('d.args.queue', $conditions);
+            $queues = $queuesCollection->distinct('d.args.queue', $conditions);
 
-        $results = isset($lastRefresh['stats']) ? $lastRefresh['stats'] : array();
-        foreach ($queues as $q) {
-            $conditions['d.args.queue'] = $q;
-            $results[$q] = $queuesCollection->count($conditions) + (isset($results[$q]) ? $results[$q] : 0);
-        }
+            $results = isset($lastRefresh['stats']) ? $lastRefresh['stats'] : array();
+            foreach ($queues as $q) {
+                $conditions['d.args.queue'] = $q;
+                $results[$q] = $queuesCollection->count($conditions) + (isset($results[$q]) ? $results[$q] : 0);
+            }
 
-        $cube
-            ->selectCollection('map_reduce_stats')
-            ->save(
-                array(
-                    '_id' => 'queue_stats',
-                    'date' => $now,
-                    'stats' => $results
-                )
-            );
+            $cube
+                ->selectCollection('map_reduce_stats')
+                ->save(
+                    array(
+                        '_id' => 'queue_stats',
+                        'date' => $now,
+                        'stats' => $results
+                    )
+                );
 
-        // Format results for the API
-        $r = array();
-        foreach ($results as $name => $count) {
-            $r[$name] = array(
-                'name' => $name,
-                'stats' => array(
-                    'totaljobs' => $count,
-                    'pendingjobs' => 0,
-                    'workerscount' => 0
-                )
-            );
+            // Format results for the API
+            $r = array();
+            foreach ($results as $name => $count) {
+                $r[$name] = array(
+                    'name' => $name,
+                    'stats' => array(
+                        'totaljobs' => $count,
+                        'pendingjobs' => 0,
+                        'workerscount' => 0
+                    )
+                );
+            }
+        } else {
+            $r = array();
+            foreach ($queues as $name) {
+                $r[$name] = array(
+                    'name' => $name,
+                    'stats' => array(
+                        'totaljobs' => 0,
+                        'pendingjobs' => 0,
+                        'workerscount' => 0
+                    )
+                );
+            }
         }
 
         if (in_array('pendingjobs', $fields)) {

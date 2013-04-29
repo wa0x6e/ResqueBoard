@@ -701,13 +701,17 @@ $app->get(
         try {
             $params = cleanArgs($app->request()->params());
             $fields = array();
+            $queues = array();
             if (isset($params['fields'])) {
                 $fields = explode(',', $params['fields']);
+            }
+            if (isset($params['queues'])) {
+                $queues = explode(',', $params['queues']);
             }
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
 
             $app->response()->header("Content-Type", "application/json");
-            echo json_encode(array_values($resqueStat->getQueues($fields)));
+            echo json_encode(array_values($resqueStat->getQueues($fields, $queues)));
         } catch (\Exception $e) {
             $app->error($e);
         }

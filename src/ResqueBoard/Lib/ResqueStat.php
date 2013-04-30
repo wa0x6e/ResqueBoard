@@ -398,7 +398,7 @@ class ResqueStat
 
         }
 
-        if (in_array('workers', $fields)) {
+        if (in_array('workerscount', $fields)) {
             $workers = $this->getWorkers();
 
             foreach ($workers as $w) {

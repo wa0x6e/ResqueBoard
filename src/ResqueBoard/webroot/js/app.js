@@ -1510,7 +1510,7 @@ function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, wo
 
 	var mapKeys = {};
 
-	$http({method: "GET", url: "/api/queues?fields=totaljobs,pendingjobs,workers"}).
+	$http({method: "GET", url: "/api/queues?fields=totaljobs,pendingjobs,workerscount"}).
 		success(function(data, status, headers, config) {
 			$scope.queues = data;
 
@@ -1544,7 +1544,7 @@ function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, wo
 					"name": queues[q],
 					"stats" : {
 						"totaljobs": 0,
-						"pendingsjobs": 0,
+						"pendingjobs": 0,
 						"workerscount": 1
 					}
 				});
@@ -1553,15 +1553,25 @@ function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, wo
 		}
 	});
 
+	var refreshFields = ["pendingjobs"];
+
+	workerStopListener.onmessage(function(message) {
+		var datas = JSON.parse(message.data);
+		refreshFields.push("workerscount");
+	});
+
 	var refreshRate = 5000;
 
 	var updatePendingJobsCounter = function() {
 
-		$http({method: "GET", url: "/api/queues?fields=pendingjobs&queues=" + Object.keys(mapKeys).join(",")}).
+		$http({method: "GET", url: "/api/queues?fields=" + refreshFields.join(",") + "&queues=" + Object.keys(mapKeys).join(",")}).
 			success(function(data, status, headers, config) {
 				for (var i in data) {
-					$scope.queues[mapKeys[data[i].name]].stats.pendingjobs = parseInt(data[i].stats.pendingjobs, 10);
+					for (var index in refreshFields) {
+						$scope.queues[mapKeys[data[i].name]].stats[refreshFields[index]] = parseInt(data[i].stats[refreshFields[index]], 10);
+					}
 				}
+				refreshFields = ["pendingjobs"];
 			}).
 			error(function(data, status, headers, config) {
 		});
@@ -1695,6 +1705,7 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 		var datas = JSON.parse(message.data);
 		console.log("Stopping worker " + datas.data.worker);
 		delete $scope.workers[datas.data.worker];
+		$scope.length--;
 	});
 
 	workerPauseListener.onmessage(function(message) {

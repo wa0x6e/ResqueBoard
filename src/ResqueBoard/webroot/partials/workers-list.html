@@ -10,7 +10,7 @@
         </ul>
     </div>
 
-    <h2>Workers <span class="badge badge-info">{{length}}</span></h2>
+    <h2>Workers <span class="badge badge-info" ng-hide="length==0">{{length}}</span></h2>
     <div class="workers-list" ng-hide="length==0">
         <div class="workers-list-item" ng-repeat="worker in workers" ng-class="{paused: !worker.active}">
             <div class="worker-list-inner">
@@ -68,6 +68,8 @@
         </div>
     </div>
 
-    <div ng-show="length==0" class="knight-unit smaller"><p class="tagline"><i class="icon-cogs icon"></i> No active workers</p></div>
+    <div ng-show="length == 0 && initFailed == false" class="knight-unit smaller"><p class="tagline"><i class="icon-cogs icon"></i> No active workers</p></div>
+
+    <div ng-show="initFailed" class="knight-unit smaller error"><p class="tagline"><i class="icon-warning-sign icon"></i> An error occured while fetching the list of workers</p></div>
 
 </div>

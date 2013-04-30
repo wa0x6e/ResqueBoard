@@ -1,5 +1,5 @@
 <div ng-controller="QueuesCtrl">
-    <h2>Queues <span class="badge badge-info">{{length}}</span></h2>
+    <h2>Queues <span class="badge badge-info" ng-hide="queues.length==0">{{queues.length}}</span></h2>
     <table class="table table-condensed table-greyed" ng-hide="queues.length==0">
         <thead>
             <tr>
@@ -10,7 +10,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="queue in queues | orderBy:predicate:reverse">
+            <tr ng-repeat="queue in queues | orderBy:predicate:reverse" ng-class="{inactive: queue.stats.workerscount == 0}">
                 <td class="name">{{queue.name}}</td>
                 <td>
                     <a href="/jobs/pending?queue={{queue.name|urlencode}}">{{queue.stats.pendingjobs|number}}</a>
@@ -29,4 +29,7 @@
     </table>
 
     <div ng-show="queues.length==0" class="knight-unit smaller"><p class="tagline"><i class="icon-align-left icon"></i> No queues yet</p></div>
+
+    <div ng-show="initFailed" class="knight-unit smaller error"><p class="tagline"><i class="icon-warning-sign icon"></i> An error occured while fetching the list of queues</p></div>
+
 </div>

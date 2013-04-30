@@ -16,7 +16,6 @@
 	$("[data-event~=tooltip]").tooltip();
 	$("[data-event~=collapse-all]").on("click", function(e){ e.preventDefault(); $(".collapse.in").collapse("hide"); });
 	$("[data-event~=expand-all]").on("click", function(e){ e.preventDefault(); $(".collapse").not(".in").collapse("show"); });
-	$("[data-event~=ajax-pagination]").on("change", "select", function(e){window.location=$(this).val();});
 
 	$(".infinite-scroll").infinitescroll({
 		navSelector	: "ul.pager",
@@ -90,9 +89,7 @@
 			"&limit=" + limit +
 			"&step=" + step[0].code, function(data)
 			{
-				if (data === null) {
-					return displayCubeNoFoundError();
-				}
+
 
 				var
 					margin = {top:25, right:35, bottom: 35, left: 20},
@@ -903,10 +900,6 @@ function initJobsOverview() {
 
 				placeholder.remove();
 
-				if (data === null) {
-					return displayCubeNoFoundError();
-				}
-
 				emptyData = data.map(function(d){return {time: new Date(d.time), value: 0};});
 				data = data.map(function(d){return {time: new Date(d.time), value: d.value};});
 
@@ -960,9 +953,6 @@ function initJobsOverview() {
 			"&stop=" + encodeURIComponent(end) +
 			"&step=" + dataStep, function(data)
 			{
-				if (data === null) {
-					return displayCubeNoFoundError();
-				}
 
 				data = data.map(function(d){return {time:new Date(d.time), value:	d.value};});
 
@@ -1192,70 +1182,6 @@ function parseInteger(str) {
 	}
 	return;
 }
-
-
-/**
- *
- * @param	int x A number
- * @return	string
- */
-function number_format(x)
-{
-	if (typeof x === "integer") {
-		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-	}
-	return;
-}
-
-function displayCubeNoFoundError()
-{
-	var alert = $("<div class=\"alert alert-error page-alert\"><h4>Error</h4>Unable to connect to Cube server</div>").hide();
-	$("#main").prepend(alert);
-	alert.slideDown("slow").delay(2000).slideUp("slow", function(){alert.remove();});
-}
-
-/**
-* PHP-like print_r() & var_dump() equivalent for JavaScript Object
-*
-* @author Faisalman <movedpixel@gmail.com>
-* @license http://www.opensource.org/licenses/mit-license.php
-* @link http://gist.github.com/879208
-*/
-var print_r = function(obj,t){
-
-	// define tab spacing
-	var tab = t || "";
-	// check if it's array
-	var isArr = Object.prototype.toString.call(obj) === "[object Array]" ? true : false;
-	// use {} for object, [] for array
-	var str = isArr ? ("Array\n" + tab + "[\n") : ("Object\n" + tab + "{\n");
-
-	// walk through it"s properties
-	for(var prop in obj){
-		if (obj.hasOwnProperty(prop)) {
-			var val1 = obj[prop];
-			var val2 = "";
-			var type = Object.prototype.toString.call(val1);
-			switch(type){
-				// recursive if object/array
-				case "[object Array]":
-				case "[object Object]":
-					val2 = print_r(val1, (tab + "\t"));
-					break;
-				case "[object String]":
-					val2 = "\"" + val1 + "\"";
-					break;
-				default:
-					val2 = val1;
-			}
-			str += tab + "\t" + prop + " => " + val2 + ",\n";
-		}
-	}
-	// remove extra comma for last property
-	str = str.substring(0, str.length-2) + "\n" + tab;
-	return isArr ? (str + "]") : (str + "}");
-};
-
 
 
 
@@ -1580,13 +1506,13 @@ function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, wo
 	$scope.stats = {totaljobs: 0};
 	$scope.predicate = "stats.totaljobs";
 	$scope.reverse = true;
+	$scope.initFailed = false;
 
 	var mapKeys = {};
 
 	$http({method: "GET", url: "/api/queues?fields=totaljobs,pendingjobs,workers"}).
 		success(function(data, status, headers, config) {
 			$scope.queues = data;
-			$scope.length = Object.keys(data).length;
 
 			for (var i in $scope.queues) {
 				$scope.stats.totaljobs += $scope.queues[i].stats.totaljobs;
@@ -1596,6 +1522,7 @@ function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, wo
 			updateStats();
 		}).
 		error(function(data, status, headers, config) {
+			$scope.initFailed = true;
 	});
 
 	jobsProcessedCounter.onmessage(function(message) {
@@ -1655,6 +1582,7 @@ function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, wo
 function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 	workerStartListener, workerStopListener, workerPauseListener, workerResumeListener) {
 
+	$scope.initFailed = false;
 	$scope.workers = {};
 	$scope.length = 0;
 
@@ -1683,6 +1611,7 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 			}
 		}).
 		error(function(data, status, headers, config) {
+			$scope.initFailed = true;
 	});
 
 	jobsSuccessCounter.onmessage(function(message) {
@@ -1833,7 +1762,6 @@ ResqueBoard.controller("LatestJobsHeatmapCtrl", ["$scope", "$http", function($sc
 					for (var timestamp in data) {
 						for (var job in data[timestamp]) {
 							data[timestamp][job].created = new Date(data[timestamp][job].s_time*1000);
-							data[timestamp][job].args = print_r(data[timestamp][job].args);
 						}
 						$scope.jobs = data;
 					}
@@ -1917,7 +1845,6 @@ function ScheduledJobsCtrl($scope, $http, $timeout) {
 					for (var timestamp in data) {
 						for (var job in data[timestamp]) {
 							data[timestamp][job].created = new Date(data[timestamp][job].s_time*1000);
-							data[timestamp][job].args = print_r(data[timestamp][job].args);
 						}
 						$scope.jobs = data;
 					}

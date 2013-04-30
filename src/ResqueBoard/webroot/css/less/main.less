@@ -48,6 +48,24 @@
 	}
 }
 
+@font-face {
+    font-family: "Fjalla One";
+    src: url("/font/FjallaOne-Regular.ttf");
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: "PT Sans";
+    src: url("/font/PT_Sans-Web-Regular.ttf");
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: "PT Sans";
+    src: url("/font/PT_Sans-Web-Bold.ttf");
+    font-weight: 700;
+}
+
 body
 {
 	padding-bottom: @gridGutterWidth ;
@@ -366,7 +384,7 @@ h3{
 		border-color: darken(@backgroundColor, 10);
 		background: lighten(@backgroundColor, 15);
 		
-		.box-shadow(0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.1) inset);
+		//.box-shadow(0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.1) inset);
 	}
 	
 	.placeholder-color(lighten(@baseColor, 15));
@@ -727,13 +745,6 @@ h4.sep
 	width: @gridColumnWidth * 4 + @gridGutterWidth * 4;
 }
 
-.stats-number
-{
-	font-size: 125%;
-	width: @gridColumnWidth + @gridGutterWidth;
-	font-weight: bold;
-	text-align: right!important;
-}
 
 footer.container p
 {
@@ -1055,6 +1066,9 @@ tr.worker-stats:target td:first-child
 		background: @white;
 	}
 	
+	.inactive {
+		color: lighten(@textColor, 50);
+	}
 }
 
 .table td.inner-wrap
@@ -1396,6 +1410,7 @@ form label .icon-info-sign
 	text-align:center;
 	margin-top: @gridGutterWidth;
 	margin-bottom: @gridGutterWidth;
+	color: lighten(@textColor, 25);
 	
 	h2
 	{
@@ -1405,7 +1420,7 @@ form label .icon-info-sign
 	p 
 	{
 		font-size: 125%;
-		color: lighten(@textColor, 25);
+		
 		margin-bottom: 0;
 	}
 	
@@ -1413,7 +1428,6 @@ form label .icon-info-sign
 	{
 		font-size: 80px;
 		line-height: 1;
-		color: lighten(@textColor, 25);
 		margin-bottom: 30px;
 		display: block;
 	}
@@ -1428,6 +1442,11 @@ form label .icon-info-sign
 			font-size: 200%;
 			margin-bottom: 0;
 		}		
+	}
+	
+	&.error {
+	background: lighten(@red, 55);
+		color: lighten(@red, 30);
 	}
 	
 }

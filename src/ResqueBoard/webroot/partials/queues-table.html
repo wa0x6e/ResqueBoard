@@ -1,6 +1,6 @@
 <div ng-controller="QueuesCtrl">
     <h2>Queues <span class="badge badge-info" ng-hide="queues.length==0">{{queues.length}}</span></h2>
-    <table class="table table-condensed table-greyed" ng-hide="queues.length==0">
+    <table class="table table-hover table-condensed table-greyed" ng-hide="queues.length==0">
         <thead>
             <tr>
                 <th class="name"><a href="" title="Sort by name" ng-click="predicate='name'; reverse=!reverse">Name</a></th>
@@ -10,8 +10,8 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="queue in queues | orderBy:predicate:reverse" ng-class="{inactive: queue.stats.workerscount == 0}">
-                <td class="name">{{queue.name}}</td>
+            <tr ng-repeat="queue in queues | orderBy:predicate:reverse" ng-class="{inactive: queue.stats.workerscount == 0, warning: queue.stats.workerscount == 0 && queue.stats.pendingjobs > 0}">
+                <td class="name"><i class="icon-warning-sign" ng-show="queue.stats.workerscount == 0 && queue.stats.pendingjobs > 0" tooltip-placement="left" tooltip-html-unsafe="This queue has <b>{{queues.length}} pending jobs</b>,<br/> but is not monitored by a worker"></i> {{queue.name}} </td>
                 <td>
                     <a href="/jobs/pending?queue={{queue.name|urlencode}}">{{queue.stats.pendingjobs|number}}</a>
                 </td>
@@ -28,8 +28,6 @@
         </tbody>
     </table>
 
-    <div ng-show="queues.length==0" class="knight-unit smaller"><p class="tagline"><i class="icon-align-left icon"></i> No queues yet</p></div>
-
-    <div ng-show="initFailed" class="knight-unit smaller error"><p class="tagline"><i class="icon-warning-sign icon"></i> An error occured while fetching the list of queues</p></div>
+    <placeholder status="_init" error-code="_errorCode" loading-content-name="list of queues" content-name="queues" icon="icon-align-left" init="init()"></placeholder>
 
 </div>

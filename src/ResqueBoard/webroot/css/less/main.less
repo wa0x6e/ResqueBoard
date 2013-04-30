@@ -84,9 +84,13 @@ a, a:visited {
 	text-decoration: none;
 }
 
-a:hover {
+a:hover, a:focus {
 	color: @linkHoverColor;
 	text-decoration: none;
+}
+
+a:focus {
+	outline: 1px dotted @baseColor;
 }
 
 h1, h2, h3, h4, h5 {
@@ -168,7 +172,7 @@ h3{
 	#gradient .vertical(@baseColor, darken(@baseColor, 5));
 	color: @colorShadeMinusOne;
 	
-	&:hover {
+	&:hover, &:focus {
 		#gradient .vertical(darken(@baseColor, 5), darken(@baseColor, 10));
 		background-position: 0 0;
 	}
@@ -246,12 +250,12 @@ h3{
 			.box-shadow(-5px 0 0 rgba(0,0,0,0.2));
 		}
 		
-		&:hover {
+		&:hover, &:focus {
 			.box-shadow(-5px 0 0 @colorCompPlusOne);
 		}
 		
 				
-		&.brand:hover {
+		&.brand:hover, &.brand:focus {
 			background-color: darken(@baseColor, 2);
 		}
 
@@ -308,7 +312,7 @@ h3{
 		color: @color;
 	}
 	
-	a:hover, & > .open > a {
+	a:hover, a:focus, & > .open > a {
 		color:  @colorCompPlusTwo;
 		background-color: darken(@baseColor, 10);
 	}
@@ -324,7 +328,7 @@ h3{
 		.box-shadow(0 -1px 0 darken(@baseColor, 5));
 		border-top: 1px solid lighten(@baseColor, 5);
 		
-		a:hover {
+		a:hover, a:focus {
 			color:  @colorCompPlusTwo;
 			background: darken(@baseColor, 10);
 		}
@@ -417,7 +421,7 @@ h3{
 			line-height: 1.6;
 			padding: 3px 5px;
 			
-			&:hover {
+			&:hover, &:focus {
 				background: darken(@backgroundColor, 5);
 			}
 		}
@@ -474,7 +478,7 @@ h3{
 				}
 			}
 			
-			a:hover {
+			a:hover, a:focus {
 				.box-shadow(5px 0 0 @backgroundColor);
 				background-color: darken(@backgroundColor, 10);
 			}
@@ -565,7 +569,7 @@ h4.sep
 	.transition(all .1s);
 }
 
-.chart rect:hover 
+.chart rect:hover , .chart rect:focus
 {
 	fill: @baseColor;
 	cursor: pointer;
@@ -674,7 +678,7 @@ h4.sep
 		.clearfix();
 	
 				
-		&:hover
+		&:hover, &:focus 
 		{
 			background-color: lighten(@yellow, 43);
 	
@@ -805,7 +809,7 @@ mark.light {
 	  	background: @white;
 	  	margin-bottom: 4px;
 	  	
-	  	&.error, &.error:hover
+	  	&.error, &.error:hover, &.error:focus
 		{
 			
 			background-color: lighten(@red, 60);
@@ -813,7 +817,7 @@ mark.light {
 			border-left: 4px solid @red;
 		}
 		
-		&:hover {
+		&:hover, &:focus {
 			border: 1px solid darken(@greyBorderColor, 25);
 		}
 	}
@@ -965,7 +969,7 @@ mark.light {
 			display: block;
 			background: lighten(@grayLighter, 5);
 			
-			&:hover {
+			&:hover, &:focus {
 				background: darken(@grayLighter, 5);
 				color: @baseColor;
 			}
@@ -1042,11 +1046,12 @@ tr.worker-stats:target td:first-child
 		padding: 0 5px;
 	}
 	
-	a:hover {
-		.chart-bar {
-			background-color: @colorShadeMinusOne;
-		}
-		
+	.chart-bar {
+		background-color: lighten(@colorShadeMinusOne, 8);
+	}
+	
+	a:hover, a:focus {
+				
 		color: @colorShadePlusOne;
 	}
 	
@@ -1064,12 +1069,27 @@ tr.worker-stats:target td:first-child
 	}
 	
 	&.table-hover tr:hover td {
-		background: @white;
+		background: darken(@bodyBackgroundColor, 3);
 	}
 	
 	.inactive {
 		color: lighten(@textColor, 50);
 	}
+	
+	tbody tr.warning > td, tbody tr.warning:hover > td {
+		background-color: lighten(@red, 30);
+		color: @white;
+		
+		.chart-bar {
+			background-color: @red;
+		}
+		
+		a, .chart-bar + b {
+			color: @white;
+			text-shadow: 0 1px 0 @red;
+		}
+	}
+	
 }
 
 .table td.inner-wrap
@@ -1090,7 +1110,7 @@ tr.worker-stats:target td:first-child
 			visibility: hidden;
 		}
 		
-		&:hover
+		&:hover, &:focus
 		{
 			.btn-group
 			{
@@ -1274,12 +1294,12 @@ span.chart-bar + b, span.chart-bar + a
 		
 		@hoverColor : @colorCompMinusTwo;
 		
-		a:hover {
+		a:hover, a:focus {
 			background-color: rgba(255,255,255,.5);
 			.box-shadow(0 5px 0 lighten(@hoverColor, 25));
 		}
 		
-		a:hover, a:hover strong {
+		a:hover, a:hover strong, a:focus, a:focus strong {
 			color: @linkColor;
 		}
 		
@@ -1746,7 +1766,13 @@ th {
 	}	
 }
 
+a i[class^="icon-"], a i[class*=" icon-"] {
+	cursor: pointer;
+}
 
+i[class^="icon-"], i[class*=" icon-"] {
+	cursor: default;
+}
 
 .dropdown-form .controls-row [class*="span"] + [class*="span"] {
     margin-left: 10px;
@@ -1892,19 +1918,30 @@ th {
 	position: relative;
 }
 
-.graph-browse-previous, .graph-browse-next {
+.domain-nav, .graph-browse-previous, .graph-browse-next {
+	position: relative;
+	font-size: 12px; 
+	line-height: 1;
+}
+
+.graph-browse-previous, .graph-browse-next, .domain-nav a {
 	position: absolute;
-	top: -@gridGutterWidth - (@baseFontSize * 1.75); // 1.75 is the h2 font size, buttons are placed beside h2
 	right: 0;
 	#navButtons .arrowNav();
 }
 
-.graph-browse-previous {
-	right: 22px;
+.graph-browse-previous, .graph-browse-next {
+	top: -@gridGutterWidth - (@baseFontSize * 1.75); // 1.75 is the h2 font size, buttons are placed beside h2
 }
 
-.domain-nav a {
-	#navButtons .arrowNav();
+.graph-browse-previous, .domain-nav [rel=prev] {
+	right: 0px;
+	margin-right: 13 + @insidePadding;
+	.border-radius(3px 0 0 3px);  
+}
+
+.graph-browse-next, .domain-nav [rel=next] {
+	.border-radius(0 3px 3px 0); 
 }
 
 .ftr-bloc .domain-nav {
@@ -1913,20 +1950,12 @@ th {
 
 #navButtons {
 	.arrowNav() {
-		border: 0;
+		border: 0; 
+		width: 10px;
 		text-align: center;
-		padding: @insidePadding/2 @insidePadding/1.25;
-		background: lighten(@grayLighter, 3);
-		
-		&:first-child {
-			.border-radius(3px 0 0 3px);
-			margin-right: 3px;
-		}
-		
-		&:last-child {
-			.border-radius(0 3px 3px 0);
-		}
-		
+		padding: @insidePadding/2 @insidePadding/2;
+		background: @grayLighter;
+
 		&, &:visited {
 			color: lighten(@textColor, 25);
 		}
@@ -1943,8 +1972,14 @@ th {
 	}
 }
 
-.tooltip b {
-	color: yellow;
+.tooltip {
+	font-size: 12px;
+	font-weight: normal;
+	
+	b {
+		color: yellow;
+		text-shadow: none;
+	}
 }
 
 .list-sorter {

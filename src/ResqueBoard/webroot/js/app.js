@@ -13,7 +13,7 @@
  * @license		MIT License (http://www.opensource.org/licenses/mit-license.ctp)
  */
 
-	$("[data-event~=tooltip]").tooltip();
+	$("[data-event~=tooltip]").tooltip({html: true, container: "body"});
 	$("[data-event~=collapse-all]").on("click", function(e){ e.preventDefault(); $(".collapse.in").collapse("hide"); });
 	$("[data-event~=expand-all]").on("click", function(e){ e.preventDefault(); $(".collapse").not(".in").collapse("show"); });
 
@@ -1197,7 +1197,7 @@ function parseInteger(str) {
 
 // Angular.js ========================================================================================
 
-var ResqueBoard = angular.module("ResqueBoard", []);
+var ResqueBoard = angular.module("ResqueBoard", ["ui.bootstrap"]);
 
 ResqueBoard.filter("uptime", function() {
 	return function(input) {
@@ -1209,6 +1209,12 @@ ResqueBoard.filter("urlencode", function() {
 	return function(input) {
 		return encodeURIComponent(input);
 	};
+});
+
+ResqueBoard.directive("bs:popover", function() {
+    return function(linkElement) { console.log(linkElement);
+        linkElement.popover();
+    };
 });
 
 ResqueBoard.directive("iconJob", function() {
@@ -1247,6 +1253,46 @@ ResqueBoard.directive("iconJob", function() {
 		link: function (scope, element, attrs) {
 			element.attr("src", "/img/" + data[scope.status].icon);
 			element.attr("title", data[scope.status].name + " job");
+		}
+	};
+});
+
+ResqueBoard.directive("placeholder", function() {
+
+	return {
+		restrict: "E",
+		template: "<div ng-hide=\"status==1\" class=\"knight-unit smaller\" ng-class=\"{error: status == 3}\">" +
+		"<p class=\"tagline\"><i class=\"{{_placeholder.icon}} icon\"></i> " +
+		"<span ng-bind-html-unsafe=\"_placeholder.message\"></span></p> " +
+		"<button ng-click=\"init()\" ng-show=\"status==3\" class=\"btn btn-small\"><i class=\"icon-refresh\"></i> Retry</button></div>",
+		replace: true,
+		scope: {
+			status: "=",
+			dataName: "@contentName",
+			loadingDataName: "@loadingContentName",
+			icon: "@",
+			errorCode: "=",
+			init: "&"
+		},
+		link: function (scope, element, attrs) {
+
+			scope._placeholder = {
+				message : "",
+				icon : ""
+			};
+
+			scope.$watch("status", function(oldVal, newVal) {
+				if (scope.status === 0) {
+					scope._placeholder.icon = "icon-spinner icon-spin";
+					scope._placeholder.message = "Loading " + scope.loadingDataName;
+				} else if (scope.status === 2) {
+					scope._placeholder.icon = scope.icon;
+					scope._placeholder.message = "No " + scope.dataName;
+				} else if (scope.status === 3) {
+					scope._placeholder.icon = "icon-warning-sign";
+					scope._placeholder.message = "A <b>" + scope.errorCode + "</b> occured while fetching the " + scope.loadingDataName;
+				}
+			});
 		}
 	};
 });
@@ -1307,8 +1353,6 @@ ResqueBoard.directive("graphHorizonChart", function() {
 
 		}
 	};
-
-
 });
 
 ResqueBoard.directive("graphPie", function() {
@@ -1498,32 +1542,46 @@ function JobsCtrl($scope, $timeout, $http, jobsProcessedCounter, jobsFailedCount
 		$timeout(updateStats, refreshRate);
 	};
 
-	$timeout(updateStats, refreshRate);
+	updateStats();
 }
 
 function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, workerStopListener, $timeout) {
 
 	$scope.stats = {totaljobs: 0};
+	$scope.queues = [];
 	$scope.predicate = "stats.totaljobs";
 	$scope.reverse = true;
-	$scope.initFailed = false;
+	$scope._init = 0;
+	$scope._errorCode = 0;
 
 	var mapKeys = {};
 
-	$http({method: "GET", url: "/api/queues?fields=totaljobs,pendingjobs,workerscount"}).
-		success(function(data, status, headers, config) {
-			$scope.queues = data;
+	$scope.init = function() {
+		$scope._init = 0;
+		$http({method: "GET", url: "/api/queues?fields=totaljobs,pendingjobs,workerscount"}).
+			success(function(data, status, headers, config) {
+				$scope.queues = data;
 
-			for (var i in $scope.queues) {
-				$scope.stats.totaljobs += $scope.queues[i].stats.totaljobs;
-				mapKeys[$scope.queues[i].name] = parseInt(i, 10);
-			}
+				for (var i in $scope.queues) {
+					$scope.stats.totaljobs += $scope.queues[i].stats.totaljobs;
+					mapKeys[$scope.queues[i].name] = parseInt(i, 10);
+				}
 
-			updateStats();
-		}).
-		error(function(data, status, headers, config) {
-			$scope.initFailed = true;
-	});
+				if ($scope.queues.length === 0) {
+					$scope._init = 2;
+				} else {
+					$scope._init = 1;
+				}
+
+				updateStats();
+			}).
+			error(function(data, status, headers, config) {
+				$scope._errorCode = status;
+				$scope._init = 3;
+		});
+	};
+
+	$scope.init();
 
 	jobsProcessedCounter.onmessage(function(message) {
 		var datas = JSON.parse(message.data);
@@ -1551,6 +1609,8 @@ function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, wo
 				mapKeys[queues[q]] = $scope.queues.length-1;
 			}
 		}
+
+		$scope._init = 1;
 	});
 
 	var refreshFields = ["pendingjobs"];
@@ -1568,7 +1628,9 @@ function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, wo
 			success(function(data, status, headers, config) {
 				for (var i in data) {
 					for (var index in refreshFields) {
-						$scope.queues[mapKeys[data[i].name]].stats[refreshFields[index]] = parseInt(data[i].stats[refreshFields[index]], 10);
+						if ($scope.queues.hasOwnProperty(mapKeys[data[i].name])) {
+							$scope.queues[mapKeys[data[i].name]].stats[refreshFields[index]] = parseInt(data[i].stats[refreshFields[index]], 10);
+						}
 					}
 				}
 				refreshFields = ["pendingjobs"];
@@ -1592,7 +1654,7 @@ function QueuesCtrl($scope, jobsProcessedCounter, $http, workerStartListener, wo
 function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 	workerStartListener, workerStopListener, workerPauseListener, workerResumeListener) {
 
-	$scope.initFailed = false;
+	$scope._init = 0;
 	$scope.workers = {};
 	$scope.length = 0;
 
@@ -1604,25 +1666,35 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 	$scope.jobsCount = 0;
 
 	// Load initial workers datas
-	$http({method: "GET", url: "/api/workers"}).
-		success(function(data, status, headers, config) {
+	$scope.init = function() {
+		$http({method: "GET", url: "/api/workers"}).
+			success(function(data, status, headers, config) {
 
-			if (!$.isEmptyObject(data)) {
-				$scope.workers = data;
+				if (!$.isEmptyObject(data)) {
+					$scope.workers = data;
 
-				var keys = Object.keys(data);
-				for(var k in keys) {
-					$scope.jobsCount += $scope.workers[keys[k]].stats.processed;
-					$scope.updateStats(keys[k]);
-					$scope.workers[keys[k]].active = true;
+					var keys = Object.keys(data);
+					for(var k in keys) {
+						$scope.jobsCount += $scope.workers[keys[k]].stats.processed;
+						$scope.updateStats(keys[k]);
+						$scope.workers[keys[k]].active = true;
+					}
+
+					$scope.length = keys.length;
+					$scope._init = 1;
+				} else {
+					$scope._init = 2;
 				}
 
-				$scope.length = keys.length;
-			}
-		}).
-		error(function(data, status, headers, config) {
-			$scope.initFailed = true;
-	});
+
+			}).
+			error(function(data, status, headers, config) {
+				$scope._errorCode = status;
+				$scope._init = 3;
+		});
+	};
+
+	$scope.init();
 
 	jobsSuccessCounter.onmessage(function(message) {
 		var datas = JSON.parse(message.data);
@@ -1693,6 +1765,7 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 
 		$scope.workers[workerId] = worker;
 		$scope.length++;
+		$scope._init = 1;
 
 		if (tempCounters.hasOwnProperty(workerId)) {
 			$scope.workers[workerId].stats.processed += tempCounters[workerId].stats.processed;
@@ -1706,6 +1779,10 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 		console.log("Stopping worker " + datas.data.worker);
 		delete $scope.workers[datas.data.worker];
 		$scope.length--;
+
+		if ($scope.length === 0) {
+			$scope._init = 2;
+		}
 	});
 
 	workerPauseListener.onmessage(function(message) {

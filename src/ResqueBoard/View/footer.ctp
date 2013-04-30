@@ -35,6 +35,7 @@
 		<script type="text/javascript" src="/js/cubism.v1.2.2.min.js"></script>
 		<script type="text/javascript" src="/js/bootstrap-2.3.1.min.js"></script>
 		<script type="text/javascript" src="/js/angular.min.js?v=1.0.6"></script>
+		<script type="text/javascript" src="/js/ui-bootstrap-tpls-0.3.0.min.js"></script>
 		<script type="text/javascript" src="/js/infinite-scroll-2.0.min.js"></script>
 		<script type="text/javascript" src="/js/highlightjs-7.3.min.js"></script>
 		<script type="text/javascript" src="/js/cal-heatmap.min.js"></script>

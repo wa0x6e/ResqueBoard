@@ -75,10 +75,9 @@ body
 }
 
 * {
+	// Do not use transition on height, due to bug on chrome when using bootstrap accordion
 	.transition(~"color,background-color,border,box-shadow,text-shadow,width" .2s);
 }
-
-
 
 a, a:visited {
 	color: @linkColor;
@@ -536,13 +535,13 @@ a.brand
 }
 
 .console {
-	background: @colorShadePlusTwo;
+	background: @colorShadePlusOne;
 	padding: @insidePadding;
-	color: @colorShadeMinusTwo;
+	color: @textColorLight;
 	.border-radius(3px);
 
 	.error {
-		color: darken(yellow, 10);
+		color: @yellow;
 	}	
 }
 
@@ -830,12 +829,13 @@ mark.light {
 			border: 0;
 			padding: 0;
 			font-size: 11px;
-			border-left: 4px solid @colorShadeMinusOne;
+			border-left: 4px solid @colorShadeMinusTwo;
 			white-space: wrap;
 						
 			code {
 				padding: @insidePadding;
-				background: transparent;
+				background: @baseColor;
+				.border-radius(0 3px 3px 0);
 			}	
 		}
 	}

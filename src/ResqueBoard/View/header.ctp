@@ -27,6 +27,7 @@
 		<link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 		<link href="/css/main.css?v=<?php echo APPLICATION_VERSION ?>" rel="stylesheet" type="text/css">
 		<link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/default.min.css">
+		<script type="text/javascript" src="/js/jquery-2.0.0.min.js"></script>
 	</head>
 	<body>
 		<script type="text/javascript">CUBE_URL = '<?php echo CUBE_URL ?>'</script>

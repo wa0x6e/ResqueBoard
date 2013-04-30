@@ -28,7 +28,7 @@
 			</p>
 		</footer>
 
-		<script type="text/javascript" src="/js/jquery-2.0.0.min.js"></script>
+
 		<script type="text/javascript" src="/js/moment-2.0.0.min.js"></script>
 		<script type="text/javascript" src="/js/jquery.cookie-1.1.min.js"></script>
 		<script type="text/javascript" src="/js/d3.v3.0.4.min.js"></script>

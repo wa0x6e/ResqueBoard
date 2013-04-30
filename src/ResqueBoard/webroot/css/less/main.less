@@ -279,6 +279,7 @@ h3{
 	
 	
 	& > li {
+		
 	
 		&:first-child {
 			border-top: 0;
@@ -293,7 +294,7 @@ h3{
 		list-style: none;
 		
 		a {
-		
+			color: @color;
 			font-size: 0.85em;
 			
 			i {
@@ -308,7 +309,7 @@ h3{
 		color: @color;
 	}
 	
-	a:hover {
+	a:hover, & > .open > a {
 		color:  @colorCompPlusTwo;
 		background-color: darken(@baseColor, 10);
 	}

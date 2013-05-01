@@ -665,7 +665,11 @@ class ResqueStat
      */
     public function getPendingJobsCount($queue = null)
     {
-        $queuesList = $queue === null ? $this->getAllQueues() : array($queue);
+        $queuesList = $queue === null ? $this->getAllQueues() : $queue;
+        if (!is_array($queuesList)) {
+            $queuesList = array($queuesList);
+        }
+
         $pipeline = $this->getRedis()->multi(\Redis::PIPELINE);
         foreach ($queuesList as $queueName) {
             $pipeline->llen($this->settings['resquePrefix'] . 'queue:' . $queueName);

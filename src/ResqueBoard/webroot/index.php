@@ -638,9 +638,9 @@ $app->get(
 
                     $results = array();
                     $total = 0;
-                    foreach ($queuesStats as $queue) {
-                        $total += $queue['stats']['pendingjobs'];
-                        $results[$queue['name']] = $queue['stats']['pendingjobs'];
+                    foreach ($queuesStats as $name => $count) {
+                        $total += $count;
+                        $results[$name] = $count;
                     }
 
                     $stats['pending'] = array(

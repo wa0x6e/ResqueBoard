@@ -1857,6 +1857,9 @@ ResqueBoard.controller("LatestJobsHeatmapCtrl", ["$scope", "$http", function($sc
 				}).
 				error(function(data, status, headers, config) {
 			});
+		},
+		onComplete: function() {
+			$(".latest-jobs-graph a").tooltip({container: "body"});
 		}
 	});
 
@@ -1864,10 +1867,9 @@ ResqueBoard.controller("LatestJobsHeatmapCtrl", ["$scope", "$http", function($sc
 		$scope.date = false;
 		$scope.jobs = [];
 	};
-
 }]);
 
-function LatestJobsGraphCtrl($scope, $http) {
+ResqueBoard.controller("LatestJobsGraphCtrl", ["$scope", "$http", function($scope, $http) {
 	$scope.jobs = [];
 	listenToJobsActivities($scope, $http);
 
@@ -1895,9 +1897,9 @@ function LatestJobsGraphCtrl($scope, $http) {
 			error(function(data, status, headers, config) {
 		});
 	};
-}
+}]);
 
-function ScheduledJobsCtrl($scope, $http, $timeout) {
+ResqueBoard.controller("ScheduledJobsCtrl", ["$scope", "$http", "$timeout", function($scope, $http, $timeout) {
 
 	$scope.jobs = [];
 	$scope.loading = false;
@@ -1940,6 +1942,9 @@ function ScheduledJobsCtrl($scope, $http, $timeout) {
 				}).
 				error(function(data, status, headers, config) {
 			});
+		},
+		onComplete: function() {
+			$("#scheduled-jobs-graph a").tooltip({container: "body"});
 		}
 	});
 
@@ -1963,9 +1968,9 @@ function ScheduledJobsCtrl($scope, $http, $timeout) {
 	};
 
 	$timeout(updateStats, refreshRate);
-}
+}]);
 
-function PendingJobsCtrl($scope, $http, $timeout) {
+ResqueBoard.controller("PendingJobsCtrl", ["$scope", "$http", "$timeout", function($scope, $http, $timeout) {
 
 	$scope.stats = {
 		"total" : 0
@@ -1986,4 +1991,4 @@ function PendingJobsCtrl($scope, $http, $timeout) {
 	};
 
 	$timeout(updateStats, refreshRate);
-}
+}]);

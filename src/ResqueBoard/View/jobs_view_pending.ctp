@@ -60,7 +60,7 @@
 			<div class="breadcrumb clearfix">
 				<div class="pull-right">
 				<?php if (isset($pagination)) { ?>
-					<form class="form-inline" data-event="ajax-pagination">
+					<form class="form-inline navigator">
 						<label>Display
 						<select class="span1">
 							<?php

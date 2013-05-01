@@ -24,7 +24,7 @@
 
 @bodyBackgroundColor : darken(@white, 5);
 
-@greyBorderColor: darken(@white, 10);
+@greyBorderColor: darken(@white, 13);
 
 
 @textColor : lighten(@baseColor, 5);
@@ -439,7 +439,8 @@ h3{
 	
 	.btn {
 		#gradient .vertical(darken(@backgroundColor, 5), darken(@backgroundColor, 10));
-		color: @white
+		color: @white;
+		border-color: darken(@backgroundColor, 15);
 	}
 	
 	.page-header {
@@ -715,7 +716,7 @@ h4.sep
 
 	li.filter-event
 	{
-		background-color: lighten(@greyBorderColor, 7);
+		background-color: lighten(@greyBorderColor, 10);
 		text-align: center;
 		font-size: 0.85em;
 		border-top: 1px solid @white;
@@ -938,6 +939,17 @@ mark.light {
 		float: left;
 		width: @gridColumnWidth * 4 + @gridGutterWidth * 2 - 2; // 2 is the border size
 		
+		a:hover, a:focus {
+			background-color: lighten(@grayLighter, 3);
+			.box-shadow(0 5px 0 lighten(@colorCompMinusTwo, 25));
+			color: @linkColor;
+			text-shadow: 0 1px 0 @white;
+			
+			b {
+				color: @linkColor;
+			}
+		}
+
 	}
 	
 	.worker-list-footer {
@@ -1059,7 +1071,7 @@ tr.worker-stats:target td:first-child
 	th {
 		background: transparent;
 		color: @textColor;
-		border-bottom: 2px solid darken(@greyBorderColor, 20);
+		border-bottom: 2px solid darken(@greyBorderColor, 5);
 		text-shadow: 0 1px 0 @white;
 	}
 	
@@ -1310,6 +1322,13 @@ span.chart-bar + b, span.chart-bar + a
 			display: block;
 		}
 	}
+}
+
+.stats-number{
+	font-size:125%;
+	width:80px;
+	font-weight:bold;
+	text-align:right!important
 }
 
 .jobs-stats
@@ -1881,14 +1900,14 @@ i[class^="icon-"], i[class*=" icon-"] {
 	border-bottom: 4px solid darken(@greyBorderColor, 5);
 	
 	.graph-browse-previous, .graph-browse-next {
-		background-color: darken(@greyBorderColor, 5);
+		background-color: @greyBorderColor;
 	}
 }
 
 // The jobs list under the heatmap
 .latest-jobs-list {
 	border: 1px solid darken(@greyBorderColor, 5);
-	background: @greyBorderColor;
+	background: darken(@bodyBackgroundColor, 5);
 	padding: 0 @insidePadding;
 	margin-bottom: @gridGutterWidth;
 	.border-radius(0 0 4px 4px);
@@ -2011,3 +2030,4 @@ i[class^="icon-"], i[class*=" icon-"] {
 		.box-shadow(0 3px 0 @colorShadeMinusTwo);
 	}
 }
+

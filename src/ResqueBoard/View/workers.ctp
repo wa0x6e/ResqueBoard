@@ -67,8 +67,8 @@
             </small></td>
             <td class="stats-number inner-wrap"><div class="padd-fixer">
             <span class="chart-bar" style="width:{{worker.stats.jobperc}}%;"></span>
-            <b>{{worker.stats.processed}}</b></div></td>
-            <td class="stats-number inner-wrap"><div class="padd-fixer"><b>{{worker.stats.failed}}</b></div></td>
+            <b>{{worker.stats.processed|number}}</b></div></td>
+            <td class="stats-number inner-wrap"><div class="padd-fixer"><b>{{worker.stats.failed|number}}</b></div></td>
             <td class="inner-wrap" ng-switch on="$index">
             	<div class="padd-fixer" ng-switch-when="0">
                     <graph-horizon-chart class="graph"  workers="workers" length="length"></graph-horizon-chart>

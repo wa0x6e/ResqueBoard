@@ -1,9 +1,9 @@
 <ul class="list-sorter" ng-hide="jobs.length==0">
     <li>Sort by</li>
-    <li><a href="" ng-class="{active: predicate=='time'}" ng-click="predicate='time'; reverse=!reverse">Date</a></li>
-    <li><a href="" ng-class="{active: predicate=='status'}" ng-click="predicate='status'; reverse=!reverse">Status</a></li>
-    <li><a href="" ng-class="{active: predicate=='class'}" ng-click="predicate='class'; reverse=!reverse">Job class</a></li>
-    <li><a href="" ng-class="{active: predicate=='queue'}" ng-click="predicate='queue'; reverse=!reverse">Queue</a></li>
+    <li><a href="" ng-class="{active: predicate=='time'}" ng-click="predicate='time'; reverse=!reverse" title="Sort by date">Date</a></li>
+    <li><a href="" ng-class="{active: predicate=='status'}" ng-click="predicate='status'; reverse=!reverse" title="Sort by status">Status</a></li>
+    <li><a href="" ng-class="{active: predicate=='class'}" ng-click="predicate='class'; reverse=!reverse" title="Sort by job class">Job class</a></li>
+    <li><a href="" ng-class="{active: predicate=='queue'}" ng-click="predicate='queue'; reverse=!reverse" title="Sort by queue name">Queue</a></li>
 </ul>
 
 <ul class="unstyled job-details">

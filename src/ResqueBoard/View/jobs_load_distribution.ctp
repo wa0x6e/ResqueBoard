@@ -126,7 +126,7 @@ $timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
 					if ($matrix['value'] > 0) {
 						echo '<a href="/jobs/view?date_after=' .
 						$date->format('Y-m-d') . ' ' . str_pad($currentHour, 2, '0', STR_PAD_LEFT) . ':00:00&date_before=' .
-						$date->format('Y-m-d') . ' ' . str_pad($currentHour, 2, '0', STR_PAD_LEFT) . ':59:59" data-event="tooltip" title="<b>' . $matrix['value'] . ' jobs</b> on <br/>' . $date->format('l d M Y \a\t H\h') . '">';
+						$date->format('Y-m-d') . ' ' . str_pad($currentHour, 2, '0', STR_PAD_LEFT) . ':59:59" data-event="tooltip" title="<b>' . number_format($matrix['value']) . ' jobs</b> on <br/>' . $date->format('l d M Y \a\t H\h') . '">';
 					}
 					echo '<i>'.$matrix['value'].'</i> ';
 					if ($matrix['value'] > 0) {

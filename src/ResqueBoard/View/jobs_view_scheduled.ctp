@@ -63,16 +63,18 @@
 
 		<ul class="stats unstyled clearfix" ng-cloak>
 			<li><div>
-				<strong ng-init="stats.total='<?php echo $totalScheduledJobs; ?>'">{{stats.total|number}}</strong>
+				<strong>{{stats.total|number}}</strong>
 				Total <b>scheduled</b> jobs</div>
 			</li>
 			<li><div>
-				<strong ng-init="stats.future='<?php echo $futureScheduledJobs; ?>'">{{stats.future|number}}</strong>
+				<strong>{{stats.future|number}}</strong>
 				Jobs <b>waiting</b> to be queued</div>
 			</li>
-			<li><div>
-				<strong ng-init="stats.past='<?php echo $pastScheduledJobs; ?>'">{{stats.past|number}}</strong>
-				<b>Past</b> jobs</div>
+			<li><div><i class="icon-exclamation-sign discret-icon pull-right" popover-placement="left" popover-title="Expired job help"
+				popover="Expired scheduled jobs are jobs that are still waiting in the scheduled queue, instead
+				of being moved to a regular queue to be executed. Check that the scheduler worker is started." popover-trigger="mouseenter"></i>
+				<strong>{{stats.past|number}}</strong>
+				<b>Expired</b> jobs</div>
 			</li>
 		</ul>
 	</div>

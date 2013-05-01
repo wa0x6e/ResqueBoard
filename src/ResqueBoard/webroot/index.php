@@ -424,16 +424,10 @@ $app->get(
     '/jobs/scheduled',
     function () use ($app, $settings) {
         try {
-
-            $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat($settings);
-
             render(
                 $app,
                 'jobs_view_scheduled',
                 array(
-                    'totalScheduledJobs' => $resqueSchedulerStat->getStats(ResqueBoard\Lib\ResqueStat::JOB_STATUS_SCHEDULED),
-                    'futureScheduledJobs' => $resqueSchedulerStat->getScheduledJobsCount(time()),
-                    'pastScheduledJobs' => $resqueSchedulerStat->getScheduledJobsCount(0, time()),
                     'ngController' => 'ScheduledJobsCtrl'
                 )
             );

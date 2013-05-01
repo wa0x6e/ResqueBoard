@@ -491,6 +491,14 @@ h3{
 			.box-shadow(5px 0 0 rgba(0,0,0,0.2));
 		}
 	}
+	
+	.discret-icon {
+		color: darken(@backgroundColor, 15);
+		
+		&:hover, &:focus {
+			color: darken(@backgroundColor, 25);
+		}
+	}
 }
 
 a.brand
@@ -1423,15 +1431,50 @@ span.chart-bar + b, span.chart-bar + a
 	}
 }
 
+.popover {
+	color: lighten(@textColor, 10);
+	font-size: 13px;
+	line-height: 1.25em;
+	background-color: @bodyBackgroundColor;
+	.border-radius(4px);
+}
 
-// To fix bug where hover not working for popover
-.pop-over
-{
-	outline: 1px solid transparent;
+h3.popover-title {
+	color: @baseColor;
+	font-weight: bold;
+	text-shadow: 0 1px 0 @white;
+	
+	border-bottom-color: @greyBorderColor;
+	background-color: darken(@white, 2);
+	.box-shadow(0 1px 0 rgba(255,255,255,0.8));
 }
 
 .popover {
-    z-index: 2060 !important;
+ &.top .arrow {
+   &:after {
+      border-top-color: @bodyBackgroundColor;
+    }
+  }
+  &.right .arrow {
+    
+    &:after {
+           border-right-color: @bodyBackgroundColor;
+    }
+  }
+  &.bottom .arrow {
+   
+    &:after {
+      border-bottom-color: @bodyBackgroundColor;
+    }
+  }
+
+  &.left .arrow {
+    &:after {
+      border-left-color: @bodyBackgroundColor;
+
+    }
+  }
+
 }
 
 form label .icon-info-sign

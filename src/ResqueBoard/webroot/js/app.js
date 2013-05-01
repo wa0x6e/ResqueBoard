@@ -1967,7 +1967,7 @@ ResqueBoard.controller("ScheduledJobsCtrl", ["$scope", "$http", "$timeout", func
 		$timeout(updateStats, refreshRate);
 	};
 
-	$timeout(updateStats, refreshRate);
+	updateStats();
 }]);
 
 ResqueBoard.controller("PendingJobsCtrl", ["$scope", "$http", "$timeout", function($scope, $http, $timeout) {

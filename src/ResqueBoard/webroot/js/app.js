@@ -1813,6 +1813,10 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 			}).
 			error(function(data, status, headers, config) {
 				alert(data.message);
+				if (data.message === "Worker is already paused") {
+					$scope.workers[index].active = false;
+					$scope.workers[index].status = "paused";
+				}
 		});
 
 		console.log("Sending PAUSE command to worker " + $scope.workers[index].id);
@@ -1826,6 +1830,10 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 			}).
 			error(function(data, status, headers, config) {
 				alert(data.message);
+				if (data.message === "Worker is already running") {
+					$scope.workers[index].active = true;
+					$scope.workers[index].status = null;
+				}
 		});
 		console.log("Sending RESUME command to worker " + $scope.workers[index].id);
 	};
@@ -1838,6 +1846,16 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 			}).
 			error(function(data, status, headers, config) {
 				alert(data.message);
+				if (data.message === "Worker not found") {
+					$scope.workers[index].active = true;
+
+					delete $scope.workers[index];
+					$scope.length--;
+
+					if ($scope.length === 0) {
+						$scope._init = 2;
+					}
+				}
 		});
 		console.log("Sending STOP command to worker " + $scope.workers[index].id);
 	};

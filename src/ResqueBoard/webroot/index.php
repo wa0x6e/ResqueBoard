@@ -789,7 +789,7 @@ $app->get(
             echo json_encode(array('message' => 'Worker not found'));
         } catch (ResqueBoard\Lib\Resque\WorkerNotPausedException $e) {
             $app->response()->header("Status", "404");
-            echo json_encode(array('message' => 'Worker is alread running'));
+            echo json_encode(array('message' => 'Worker is already running'));
         }
     }
 );

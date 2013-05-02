@@ -39,14 +39,12 @@ $app->get(
     function () use ($app, $settings) {
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
-            $resqueApi = new ResqueBoard\Lib\ResqueApi($settings['resqueConfig']);
 
             render(
                 $app,
                 'index',
                 array(
-                    'stats' => $resqueStat->getStats(),
-                    'schedulerWorkers' => $resqueStat->getSchedulerWorkers()
+                    'stats' => $resqueStat->getStats()
                 )
             );
 
@@ -74,7 +72,6 @@ $app->get(
                 'logLevels' => $logLevels,
                 'logTypes' => $logTypes,
                 'mutedLevels' => $mutedLevels,
-               // 'ngController' => 'logsCtrl'
             )
         );
     }
@@ -82,19 +79,9 @@ $app->get(
 
 $app->get(
     '/workers',
-    function () use ($app, $settings) {
+    function () use ($app) {
         try {
-            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
-
-            render(
-                $app,
-                'workers',
-                array(
-                    'workers' => $resqueStat->getWorkers(),
-                    'readOnly' => $settings['readOnly']
-                )
-            );
-
+            render($app, 'workers');
         } catch (\Exception $e) {
             $app->error($e);
         }
@@ -718,36 +705,92 @@ $app->get(
 );
 
 $app->get(
-    '/api/workers/stop/:workerId',
-    function ($workerId) use ($app, $settings) {
+    '/api/workers/stop/:worker',
+    function ($worker) use ($app, $settings) {
 
         $app->response()->header("Content-Type", "application/json");
 
         if ($settings['readOnly']) {
-            echo json_encode(array('status' => false, 'message' => 'You don\'t have permission to stop workers'));
+            $app->response()->header("Status", "403");
             return;
         }
 
-        $resqueApi = new ResqueBoard\Lib\ResqueApi($settings['resqueConfig']);
-        $stop = $resqueApi->stop($workerId);
+        try {
+            $resqueApi = new ResqueBoard\Lib\Resque\Api();
+            $response = $resqueApi->stop($worker);
 
-        echo json_encode(array('status' => true));
+            if ($response !== true) {
+                echo json_encode(array('message' => $response));
+            }
+        } catch (ResqueBoard\Lib\Resque\InvalidWorkerNameException $e) {
+            $app->response()->header("Status", "400");
+            echo json_encode(array('message' => 'Invalid worker name'));
+        } catch (ResqueBoard\Lib\Resque\WorkerNotExistException $e) {
+            $app->response()->header("Status", "404");
+            echo json_encode(array('message' => 'Worker not found'));
+        }
     }
 );
 
 $app->get(
-    '/api/workers/pause/:workerId',
-    function ($workerId) use ($app, $settings) {
+    '/api/workers/pause/:worker',
+    function ($worker) use ($app, $settings) {
 
+        $app->response()->header("Content-Type", "application/json");
 
+        if ($settings['readOnly']) {
+            $app->response()->header("Status", "403");
+            return;
+        }
+
+        try {
+            $resqueApi = new ResqueBoard\Lib\Resque\Api();
+            $response = $resqueApi->pause($worker);
+
+            if ($response !== true) {
+                echo json_encode(array('message' => $response));
+            }
+        } catch (ResqueBoard\Lib\Resque\InvalidWorkerNameException $e) {
+            $app->response()->header("Status", "400");
+            echo json_encode(array('message' => 'Invalid worker name'));
+        } catch (ResqueBoard\Lib\Resque\WorkerNotExistException $e) {
+            $app->response()->header("Status", "404");
+            echo json_encode(array('message' => 'Worker not found'));
+        } catch (ResqueBoard\Lib\Resque\WorkerAlreadyPausedException $e) {
+            $app->response()->header("Status", "404");
+            echo json_encode(array('message' => 'Worker is already paused'));
+        }
     }
 );
 
 $app->get(
-    '/api/workers/resume/:workerId',
-    function ($workerId) use ($app, $settings) {
+    '/api/workers/resume/:worker',
+    function ($worker) use ($app, $settings) {
 
+        $app->response()->header("Content-Type", "application/json");
 
+        if ($settings['readOnly']) {
+            $app->response()->header("Status", "403");
+            return;
+        }
+
+        try {
+            $resqueApi = new ResqueBoard\Lib\Resque\Api();
+            $response = $resqueApi->resume($worker);
+
+            if ($response !== true) {
+                echo json_encode(array('message' => $response));
+            }
+        } catch (ResqueBoard\Lib\Resque\InvalidWorkerNameException $e) {
+            $app->response()->header("Status", "400");
+            echo json_encode(array('message' => 'Invalid worker name'));
+        } catch (ResqueBoard\Lib\Resque\WorkerNotExistException $e) {
+            $app->response()->header("Status", "404");
+            echo json_encode(array('message' => 'Worker not found'));
+        } catch (ResqueBoard\Lib\Resque\WorkerNotPausedException $e) {
+            $app->response()->header("Status", "404");
+            echo json_encode(array('message' => 'Worker is alread running'));
+        }
     }
 );
 
@@ -757,14 +800,9 @@ $app->get(
 
         try {
             $params = cleanArgs($app->request()->params());
-            $fields = array();
-            $queues = array();
-            if (isset($params['fields'])) {
-                $fields = explode(',', $params['fields']);
-            }
-            if (isset($params['queues'])) {
-                $queues = explode(',', $params['queues']);
-            }
+            $fields = isset($params['fields']) ? explode(',', $params['fields']) : array();
+            $queues = isset($params['queues']) ? explode(',', $params['queues']) : array();
+
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
 
             $app->response()->header("Content-Type", "application/json");
@@ -867,7 +905,7 @@ function cleanArgs($args)
     return $args;
 }
 
-function render($app, $template, $args)
+function render($app, $template, $args = array())
 {
     $args['navs'] = $app->runtime['nav'];
     $args['readOnly'] = $app->runtime['readOnly'];

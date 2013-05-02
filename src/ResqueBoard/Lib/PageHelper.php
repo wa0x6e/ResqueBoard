@@ -82,7 +82,7 @@ class PageHelper
             </li>
             <li>
                 <a href="/jobs/scheduled">
-                    <strong ng-init="stats.scheduled='<?php echo $stats[ResqueStat::JOB_STATUS_SCHEDULED]?>'">{{stats.scheduled|number}}</strong>
+                    <strong>{{stats.scheduled|number}}</strong>
                     <b>Scheduled</b> jobs
                 </a>
             </li>

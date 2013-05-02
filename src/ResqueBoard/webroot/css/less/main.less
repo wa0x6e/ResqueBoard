@@ -877,6 +877,13 @@ mark.light {
 	background: @white;
 	padding: 0;
 	
+	.badge {
+		position: relative;
+		top: -3px;
+		text-transform: uppercase;
+		padding-top: 3px;
+	}
+	
 	&.paused {
 		background-color: @grayLighter;
 		border-color: darken(@greyBorderColor, 10);
@@ -896,12 +903,7 @@ mark.light {
 			.gradientBar(darken(@greyBorderColor, 15), darken(@greyBorderColor, 25));
 		}
 		
-		.badge {
-			position: relative;
-			top: -3px;
-			text-transform: uppercase;
-			padding-top: 3px;
-		}
+		
 	}
 	
 	.chart {
@@ -971,7 +973,7 @@ mark.light {
 		
 		li {
 			color: darken(@greyBorderColor, 20);
-			font-size: 0.85em;
+			font-size: 12px;
 			line-height: 1;
 			border-left: 1px solid @greyBorderColor;
 			display: block;
@@ -983,15 +985,23 @@ mark.light {
 			}
 		}
 		
-		a {
-			color: @textColorLight;	
+		button {
+			color: lighten(@linkColor, 15);	
 			padding: @insidePadding;
-			display: block;
+			font-size: 12px;
+			line-height: 1;
+			border: 0;
+
 			background: lighten(@grayLighter, 5);
 			
 			&:hover, &:focus {
-				background: darken(@grayLighter, 5);
-				color: @baseColor;
+				background: @linkColor;
+				color: @white;
+			}
+			
+			&[disabled=disabled], &[disabled=disabled]:hover, &[disabled=disabled]:focus {
+				color: lighten(@textColorLight, 15);
+				background-color: lighten(@grayLighter, 5);
 			}
 		}
 		

@@ -1755,6 +1755,8 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 			"queues": w[2].split(","),
 			"start": datas.time,
 			"active": true,
+			"status": null,
+			"working": false,
 			"stats": {
 				"processed": 0,
 				"failed": 0,
@@ -1788,31 +1790,56 @@ function WorkersCtrl($scope, $http, jobsSuccessCounter, jobsFailedCounter,
 	workerPauseListener.onmessage(function(message) {
 		var datas = JSON.parse(message.data);
 		$scope.workers[datas.data.worker].active = false;
+		$scope.workers[datas.data.worker].status = "paused";
+		$scope.workers[datas.data.worker].working = false;
 		console.log("Pausing worker " + datas.data.worker);
 	});
 
 	workerResumeListener.onmessage(function(message) {
 		var datas = JSON.parse(message.data);
+		$scope.workers[datas.data.worker].status = null;
 		$scope.workers[datas.data.worker].active = true;
+		$scope.workers[datas.data.worker].working = false;
 		console.log("Resuming worker " + datas.data.worker);
 	});
 
-	$scope.pause = function(index, $event) {
-		$event.preventDefault();
-		$scope.workers[index].active = false;
-		console.log("Pausing worker " + $scope.workers[index].id);
+
+
+	$scope.pause = function(index) {
+		$http({method: "GET", url: "/api/workers/pause/" + $scope.workers[index].fullname}).
+			success(function(data, status, headers, config) {
+				$scope.workers[index].status = "pausing …";
+				$scope.workers[index].working = true;
+			}).
+			error(function(data, status, headers, config) {
+				alert(data.message);
+		});
+
+		console.log("Sending PAUSE command to worker " + $scope.workers[index].id);
 	};
 
-	$scope.resume = function(index, $event) {
-		$event.preventDefault();
-		$scope.workers[index].active = true;
-		console.log("Resuming worker " + $scope.workers[index].id);
+	$scope.resume = function(index) {
+		$http({method: "GET", url: "/api/workers/resume/" + $scope.workers[index].fullname}).
+			success(function(data, status, headers, config) {
+				$scope.workers[index].status = "resuming …";
+				$scope.workers[index].working = true;
+			}).
+			error(function(data, status, headers, config) {
+				alert(data.message);
+		});
+		console.log("Sending RESUME command to worker " + $scope.workers[index].id);
 	};
 
-	$scope.stop = function(index, $event) {
-		$event.preventDefault();
-		delete $scope.workers[index];
-		$scope.length--;
+	$scope.stop = function(index) {
+		$http({method: "GET", url: "/api/workers/stop/" + $scope.workers[index].fullname}).
+			success(function(data, status, headers, config) {
+				$scope.workers[index].status = "stopping …";
+				$scope.workers[index].working = true;
+			}).
+			error(function(data, status, headers, config) {
+				alert(data.message);
+		});
+		console.log("Sending STOP command to worker " + $scope.workers[index].id);
 	};
 
 }
@@ -1973,7 +2000,8 @@ ResqueBoard.controller("ScheduledJobsCtrl", ["$scope", "$http", "$timeout", func
 ResqueBoard.controller("PendingJobsCtrl", ["$scope", "$http", "$timeout", function($scope, $http, $timeout) {
 
 	$scope.stats = {
-		"total" : 0
+		"total" : 0,
+		"queues": []
 	};
 
 	var refreshRate = 5000;

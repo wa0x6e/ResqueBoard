@@ -21,7 +21,7 @@
 
                 <div class="worker-list-inner-data">
 
-                    <span class="pull-right badge" ng-hide="worker.active">paused</span>
+                    <span class="pull-right badge" ng-class="{'label-warning': worker.working==true}" ng-hide="worker.status==null"><i class="icon-spinner icon-spin" ng-show="worker.working"></i> {{worker.status}}</span>
                     <h3>{{worker.host}}:{{worker.process}}</h3>
 
                     <small><strong><i class="icon-list-alt"></i> Queues : </strong>
@@ -45,19 +45,19 @@
 
             <ul class="worker-list-footer">
                 <li>
-                    <a href="#" title="Stop worker" ng-click="stop(worker.id, $event)">
+                    <button ng-disabled="worker.working" title="Stop worker" ng-click="stop(worker.id)">
                         <i class="icon-off"></i> Stop
-                    </a>
+                    </button>
                 </li>
                 <li>
-                    <a href="#" ng-show="worker.active" title="Pause worker" ng-click="pause(worker.id, $event)">
+                    <button ng-disabled="worker.working" ng-show="worker.active" title="Pause worker" ng-click="pause(worker.id)">
                         <i class="icon-pause"></i> Pause
-                    </a>
+                    </button>
                 </li>
                 <li>
-                    <a href="#" ng-hide="worker.active" title="Resume worker" ng-click="resume(worker.id, $event)">
+                    <button ng-disabled="worker.working" ng-hide="worker.active" title="Resume worker" ng-click="resume(worker.id)">
                         <i class="icon-play"></i> Resume
-                    </a>
+                    </button>
                 </li>
                 <li class="text">
                     <i class="icon-time"></i>

@@ -55,7 +55,7 @@ if (!defined('DS')) {
                 'port' => 1081
             ),
             /*'resquePrefix' => 'resque',*/
-            'readOnly' => true,
+            'readOnly' => false,
             'resqueConfig' => __DIR__ . DIRECTORY_SEPARATOR . './resque.ini',
             /*'timezone' => 'America/Montreal'*/
     );

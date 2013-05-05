@@ -712,6 +712,7 @@ $app->get(
 
         if ($settings['readOnly']) {
             $app->response()->header("Status", "403");
+            echo json_encode(array('message' => 'You don\'t have permission to stop worker'));
             return;
         }
 
@@ -740,6 +741,7 @@ $app->get(
 
         if ($settings['readOnly']) {
             $app->response()->header("Status", "403");
+            echo json_encode(array('message' => 'You don\'t have permission to pause worker'));
             return;
         }
 
@@ -771,6 +773,7 @@ $app->get(
 
         if ($settings['readOnly']) {
             $app->response()->header("Status", "403");
+            echo json_encode(array('message' => 'You don\'t have permission to resume worker'));
             return;
         }
 

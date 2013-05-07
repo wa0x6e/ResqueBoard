@@ -28,7 +28,7 @@ if (!defined('DS')) {
 
 define('APPLICATION_VERSION', '2.0.0-beta-2');
 
-include ROOT . DS . 'Config' . DS . 'Core.php';
+include ROOT . DS . 'Config' . DS . 'Bootstrap.php';
 
 $app = new Slim\Slim($config);
 

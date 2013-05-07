@@ -45,7 +45,7 @@ $settings = array(
             'port' => 1081
         ),
         'cubePublic' => array(
-            'host' => '127.0.0.1',
+            'host' => $_SERVER['SERVER_NAME'],
             'port' => 1081
         ),
         /*'resquePrefix' => 'resque',*/

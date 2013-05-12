@@ -34,6 +34,7 @@ class ResqueStat
 {
     protected $stats = array();
     protected $workers = array();
+    protected $schedulerWorkers = array();
     protected $queues = array();
 
     const JOB_STATUS_WAITING = 1;
@@ -745,8 +746,6 @@ class ResqueStat
         }
 
         $results = array();
-        $pageCount = array();
-
 
         $jobsCollection = $cube->selectCollection($options['event_type'] . '_events');
 
@@ -827,23 +826,23 @@ class ResqueStat
             $this->settings['cube']['port'].'/1.0/metric?expression=sum(got)&start=' . urlencode($start->format('Y-m-d\TH:i:sO')) .
             '&stop=' . urlencode($end->format('Y-m-d\TH:i:sO')) . '&step=36e5';
 
-        $this->httpConnection = curl_init($link);
+        $httpConnection = curl_init($link);
 
-        if (!$this->httpConnection) {
+        if (!$httpConnection) {
             throw new DatabaseConnectionException(
                 'Unable to connect to Cube Server on ' .
                 $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']
             );
         }
 
-        curl_setopt($this->httpConnection, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($httpConnection, CURLOPT_RETURNTRANSFER, true);
         curl_setopt(
-            $this->httpConnection,
+            $httpConnection,
             CURLOPT_HTTPHEADER,
             array(  'Content-Type: application/json')
         );
 
-        $response = curl_exec($this->httpConnection);
+        $response = curl_exec($httpConnection);
         if (!$response) {
             throw new DatabaseConnectionException(
                 'Unable to connect to Cube server on ' .
@@ -1084,23 +1083,23 @@ class ResqueStat
             (isset($options['step']) ? ('&step=' . $options['step']) : '') .
             (isset($options['limit']) ? ('&limit=' . $options['limit']) : '');
 
-        $this->httpConnection = curl_init($string);
+        $httpConnection = curl_init($string);
 
-        if (!$this->httpConnection) {
+        if (!$httpConnection) {
             throw new DatabaseConnectionException('Unable to connect to ' . $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']);
         }
 
-        curl_setopt($this->httpConnection, CURLOPT_TIMEOUT, 5);
-        curl_setopt($this->httpConnection, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($httpConnection, CURLOPT_TIMEOUT, 5);
+        curl_setopt($httpConnection, CURLOPT_RETURNTRANSFER, true);
         curl_setopt(
-            $this->httpConnection,
+            $httpConnection,
             CURLOPT_HTTPHEADER,
             array(  'Content-Type: application/json')
         );
 
-        $response = json_decode(curl_exec($this->httpConnection), true);
+        $response = json_decode(curl_exec($httpConnection), true);
 
-        $responseCode = curl_getinfo($this->httpConnection, CURLINFO_HTTP_CODE);
+        $responseCode = curl_getinfo($httpConnection, CURLINFO_HTTP_CODE);
 
         if ($responseCode === 404 || $responseCode === 0) {
             throw new DatabaseConnectionException(

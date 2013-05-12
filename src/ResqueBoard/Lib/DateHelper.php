@@ -49,19 +49,19 @@ class DateHelper
     {
         $interval = date_create('now')->diff($datetime);
         $suffix = '';
-        if ($v = $interval->y >= 1) {
+        if ($interval->y >= 1) {
             return self::pluralize($interval->y, 'year') . $suffix;
         }
-        if ($v = $interval->m >= 1) {
+        if ($interval->m >= 1) {
             return self::pluralize($interval->m, 'month') . $suffix;
         }
-        if ($v = $interval->d >= 1) {
+        if ($interval->d >= 1) {
             return self::pluralize($interval->d, 'day') . $suffix;
         }
-        if ($v = $interval->h >= 1) {
+        if ($interval->h >= 1) {
             return self::pluralize($interval->h, 'hour') . $suffix;
         }
-        if ($v = $interval->i >= 1) {
+        if ($interval->i >= 1) {
             return self::pluralize($interval->i, 'minute') . $suffix;
         }
         return self::pluralize($interval->s, 'second') . $suffix;
@@ -180,7 +180,6 @@ class DateHelper
     public static function humanize($ms)
     {
         $time = self::explodeMilliseconds($ms);
-        $string = '';
 
         // Display milliseconds only if total ms is less than 1 min
         // We don't need milliseconds precision with big values

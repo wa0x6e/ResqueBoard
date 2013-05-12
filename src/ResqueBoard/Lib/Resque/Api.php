@@ -29,6 +29,8 @@ namespace ResqueBoard\Lib\Resque;
  */
 class Api
 {
+    public $workerStatus = null;
+
     public function __construct()
     {
         $this->workerStatus = new WorkerStatus();

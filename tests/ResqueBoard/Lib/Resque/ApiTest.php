@@ -86,9 +86,9 @@ class ApiTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ResqueBoard\Lib\Resque\Api::resume
-     * @expectedException   ResqueBoard\Lib\Resque\InvalidWorkerNameException
+     * @expectedException   ResqueBoard\Lib\Resque\WorkerNotPausedException
      */
-    public function testResumeWorkerWithInvalidWorkerId()
+    public function testResumeWorkerWithNotPausedWorker()
     {
         $this->mock->resume($this->invalidWorkerId);
     }

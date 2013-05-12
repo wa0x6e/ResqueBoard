@@ -529,7 +529,7 @@ $app->get(
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
             $jobs = array_values($resqueStat->getJobs(array('date_after' => (int)$start, 'date_before' => (int)$end)));
             $app->response()->header("Content-Type", "application/json");
-             echo json_encode($jobs);
+            echo json_encode($jobs);
         } catch (\Exception $e) {
             $app->error($e);
         }
@@ -662,8 +662,6 @@ $app->get(
 
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
-            $resqueApi = new ResqueBoard\Lib\ResqueApi($settings['resqueConfig']);
-
             $workers = $resqueStat->getWorkers();
 
             $results = array();

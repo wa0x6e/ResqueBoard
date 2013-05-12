@@ -44,7 +44,7 @@ class Api
      */
     public function stop($worker)
     {
-        return $this->sendSignal($this->getProcessId($worker), 'SIGQUIT');
+        return $this->sendSignal($this->getProcessId($worker), 'QUIT');
     }
 
 
@@ -109,7 +109,7 @@ class Api
     protected function sendSignal($process, $signal)
     {
         $output = array();
-        $message = exec('kill ' . $signal . ' ' . $process . ' 2>&1', $output, $code);
+        $message = exec('/bin/kill ' . $signal . ' ' . $process . ' 2>&1', $output, $code);
         return $code === 0 ? true : $message;
     }
 

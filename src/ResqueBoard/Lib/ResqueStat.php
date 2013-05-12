@@ -196,7 +196,10 @@ class ResqueStat
             $this->mongo = new \Mongo($this->settings['mongo']['host'] . ':' . $this->settings['mongo']['port']);
             return $this->mongo;
         } catch (\MongoConnectionException $e) {
-            throw new DatabaseConnectionException('Could not connect to Mongo Server');
+            throw new DatabaseConnectionException(
+                'Could not connect to Mongo Server on ' .
+                $this->settings['mongo']['host'] . ':' . $this->settings['mongo']['port']
+            );
         }
     }
 
@@ -217,8 +220,11 @@ class ResqueStat
             $this->redis->connect($this->settings['redis']['host'], $this->settings['redis']['port']);
             $this->redis->select($this->settings['redis']['database']);
             return $this->redis;
-        } catch (\RedisException $e) {
-            throw new DatabaseConnectionException('Could not connect to Redis Server');
+        } catch (\Exception $e) {
+            throw new DatabaseConnectionException(
+                'Could not connect to Redis Server on ' .
+                $this->settings['redis']['host'] . ':' . $this->settings['redis']['port']
+            );
         }
     }
 
@@ -543,9 +549,10 @@ class ResqueStat
     }
 
     /**
-     *
+     * Get the number of jobs at a specific time
      *
      * @since 2.0.0
+     * @return  Array
      */
     public function getJobsCount($options = array())
     {
@@ -823,7 +830,10 @@ class ResqueStat
         $this->httpConnection = curl_init($link);
 
         if (!$this->httpConnection) {
-            throw new \Exception('Unable to connect to ' . $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']);
+            throw new DatabaseConnectionException(
+                'Unable to connect to Cube Server on ' .
+                $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']
+            );
         }
 
         curl_setopt($this->httpConnection, CURLOPT_RETURNTRANSFER, true);
@@ -835,7 +845,10 @@ class ResqueStat
 
         $response = curl_exec($this->httpConnection);
         if (!$response) {
-            throw new \Exception('Unable to connect to Cube server');
+            throw new DatabaseConnectionException(
+                'Unable to connect to Cube server on ' .
+                $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']
+            );
         }
 
         return json_decode($response, true);
@@ -1074,7 +1087,7 @@ class ResqueStat
         $this->httpConnection = curl_init($string);
 
         if (!$this->httpConnection) {
-            throw new \Exception('Unable to connect to ' . $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']);
+            throw new DatabaseConnectionException('Unable to connect to ' . $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']);
         }
 
         curl_setopt($this->httpConnection, CURLOPT_TIMEOUT, 5);
@@ -1089,8 +1102,11 @@ class ResqueStat
 
         $responseCode = curl_getinfo($this->httpConnection, CURLINFO_HTTP_CODE);
 
-        if ($responseCode === 404) {
-            throw new \Exception('Unable to connect to ' . $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']);
+        if ($responseCode === 404 || $responseCode === 0) {
+            throw new DatabaseConnectionException(
+                'Unable to connect to Cube Server on ' .
+                $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']
+            );
         } else if ($responseCode !== 200) {
             throw new \Exception('Cube server return an error : ' . $response['error']);
         }

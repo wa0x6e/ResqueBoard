@@ -1,9 +1,10 @@
 #ResqueBoard [![Build Status](https://travis-ci.org/kamisama/ResqueBoard.png?branch=dev)](https://travis-ci.org/kamisama/ResqueBoard) [![Coverage Status](https://coveralls.io/repos/kamisama/ResqueBoard/badge.png)](https://coveralls.io/r/kamisama/ResqueBoard)
 
-ResqueBoard is a web interface to monitor your php-resque activities.
+ResqueBoard is an analytics software for PHP Resque. Monitor your workers health and job activities in realtime.
 
-It's different from the other web interface, like the one shipped with the [original resque](https://github.com/defunkt/resque/#the-front-end), that display only what's happening right now, and then forget it.  
-ResqueBoard can log *absolutely everything* your workers do, then compute various metrics, in addition to monitoring your workers and jobs health in realtime.
+Unlike the [original resque](https://github.com/defunkt/resque/#the-front-end), that display only what's happening right now, ResqueBoard remembers and saves  everything to compute metrics about your jobs and workers health in realtime.
+
+Learn more on the [official website](http://resqueboard.kamisama.me), or take a look at the [demo](http://resque.kamisama.me/).
 
 ##Goals
 ResqueBoard is built for 2 objectives :
@@ -11,4 +12,6 @@ ResqueBoard is built for 2 objectives :
 * see what's happening right now in realtime
 * visualize what's happened in the past with various charts, to easily benchmarks and balance your workers
 
-Learn more on the [official website](http://resqueboard.kamisama.me), or take a look at the [demo](http://resque.kamisama.me/).
+##Minimum requirements
+
+Although ResqueBoard is easy to install and run, you should not run it on a very basic webserver. It requires a minimum of processing power and memory for the various computation, and data storage.

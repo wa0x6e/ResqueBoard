@@ -1,4 +1,4 @@
-#ResqueBoard [![Build Status](https://travis-ci.org/kamisama/ResqueBoard.png?branch=dev)](https://travis-ci.org/kamisama/ResqueBoard)
+#ResqueBoard [![Build Status](https://travis-ci.org/kamisama/ResqueBoard.png?branch=dev)](https://travis-ci.org/kamisama/ResqueBoard) [![Coverage Status](https://coveralls.io/repos/kamisama/ResqueBoard/badge.png)](https://coveralls.io/r/kamisama/ResqueBoard)
 
 ResqueBoard is a web interface to monitor your php-resque activities.
 

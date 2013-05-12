@@ -1,7 +1,7 @@
 {
 	"name": "ResqueBoard/ResqueBoard",
-	"description" : "A web interface to monitor php resque activities",
-	"keywords": ["php-resque", "resque", "web interface", "admin"],
+	"description" : "ResqueBoard is an analytics software for PHP Resque. Monitor your workers health and job activities in realtime",
+	"keywords": ["php-resque", "resque", "web interface", "analytics", "realtime", "admin"],
 	"homepage": "http://kamisama.github.com/ResqueBoard/",
 	"license": "MIT",
 	"authors": [
@@ -18,6 +18,9 @@
 		"kamisama/php-resque-ex": ">=1.2.1",
 		"kamisama/php-resque-ex-scheduler": ">=1.1.0"
 	},
+	"require-dev": {
+        "satooshi/php-coveralls": "dev-master"
+    },
 	"autoload": {
 		"psr-0": {"ResqueBoard": "src/"}
 	},

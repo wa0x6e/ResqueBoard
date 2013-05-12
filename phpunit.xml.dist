@@ -12,6 +12,7 @@
             <directory suffix=".php">src/ResqueBoard/</directory>
         </whitelist>
     </filter>
-
-    <log type="coverage-clover" target="build/logs/clover.xml"/>
+    <logging>
+      <log type="coverage-clover" target="build/logs/clover.xml"/>
+    </logging>
 </phpunit>

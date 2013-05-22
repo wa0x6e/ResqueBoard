@@ -46,6 +46,8 @@ class Api
      */
     public function stop($worker)
     {
+        list($host, $pid, $queue) = explode(':', $worker);
+        $this->ResqueStatus->removeWorker($pid);
         return $this->sendSignal($this->getProcessId($worker), 'QUIT');
     }
 
@@ -72,7 +74,6 @@ class Api
         $res = $this->sendSignal($id, '-USR2');
         if ($res === true) {
             $this->ResqueStatus->setPausedWorker($worker);
-            return true;
         }
         return $res;
 
@@ -95,7 +96,7 @@ class Api
         $res = $this->sendSignal($this->getProcessId($worker), '-CONT');
 
         if ($res === true) {
-            $this->ResqueStatus->setActiveWorker($worker);
+            $this->ResqueStatus->setPausedWorker($worker, false);
         }
         return $res;
     }

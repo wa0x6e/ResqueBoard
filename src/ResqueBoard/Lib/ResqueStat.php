@@ -86,7 +86,7 @@ class ResqueStat
                 );
                 return array('fullname' => $name, 'host' => $host, 'process' => $process, 'queues' => $q);
             },
-            Service::Redis()->smembers($this->settings['resquePrefix'] . 'workers')
+            Service::Redis()->smembers('workers')
         );
 
         // Assign all active queues as active
@@ -98,7 +98,7 @@ class ResqueStat
         );
 
         // Get all queues and compute complete list of active and inactive queues
-        $allQueues = Service::Redis()->smembers($this->settings['resquePrefix'] . 'queues');
+        $allQueues = Service::Redis()->smembers('queues');
         foreach ($allQueues as $queue) {
             if (!isset($this->queues[$queue])) {
                 $this->queues[$queue] = array('workers' => 0, 'active' => false);
@@ -108,7 +108,7 @@ class ResqueStat
         // Populate queues pending jobs counter
         $redisPipeline = Service::Redis()->multi(\Redis::PIPELINE);
         foreach ($this->queues as $name => $stats) {
-            $redisPipeline->llen($this->settings['resquePrefix'] . 'queue:' . $name);
+            $redisPipeline->llen('queue:' . $name);
         }
 
         $result = $redisPipeline->exec();
@@ -128,9 +128,9 @@ class ResqueStat
         $redisPipeline = Service::Redis()->multi(\Redis::PIPELINE);
         foreach ($this->workers as $worker) {
             $redisPipeline
-            ->get($this->settings['resquePrefix'] . 'worker:' . $worker['fullname'] . ':started')
-            ->get($this->settings['resquePrefix'] . 'stat:processed:' . $worker['fullname'])
-            ->get($this->settings['resquePrefix'] . 'stat:failed:' . $worker['fullname']);
+            ->get('worker:' . $worker['fullname'] . ':started')
+            ->get('stat:processed:' . $worker['fullname'])
+            ->get('stat:failed:' . $worker['fullname']);
         }
 
         $result = $redisPipeline->exec();
@@ -165,8 +165,8 @@ class ResqueStat
                     return (int) $s;
                 },
                 Service::Redis()->multi(\Redis::PIPELINE)
-                    ->get($this->settings['resquePrefix'] . 'stat:processed')
-                    ->get($this->settings['resquePrefix'] . 'stat:failed')
+                    ->get('stat:processed')
+                    ->get('stat:failed')
                     ->exec()
             )
         );
@@ -212,13 +212,39 @@ class ResqueStat
 
 
     /**
-     * Return active workers stats
+     * Return list of active workers with their full stats
      *
      * @since 1.0.0
-     * @return multitype:
+     * @return array Array of workers
      */
     public function getWorkers()
     {
+        $this->workers = array_map(
+            function ($name) {
+                list($host, $process, $q) = explode(':', $name);
+                $q = explode(',', $q);
+                return array('fullname' => $name, 'host' => $host, 'process' => $process, 'queues' => $q);
+            },
+            Service::Redis()->smembers('workers')
+        );
+
+        $redisPipeline = Service::Redis()->multi(\Redis::PIPELINE);
+        foreach ($this->workers as $worker) {
+            $redisPipeline
+            ->get('worker:' . $worker['fullname'] . ':started')
+            ->get('stat:processed:' . $worker['fullname'])
+            ->get('stat:failed:' . $worker['fullname']);
+        }
+
+        $result = $redisPipeline->exec();
+        unset($redisPipeline);
+
+        for ($i = 0, $total = count($result), $j = 0; $i < $total; $i += 3) {
+            $this->workers[$j]['start'] = new \DateTime($result[$i]);
+            $this->workers[$j]['processed'] = (int) $result[$i+1];
+            $this->workers[$j++]['failed'] = (int) $result[$i+2];
+        }
+
         return $this->workers;
     }
 
@@ -253,9 +279,9 @@ class ResqueStat
             'host' => $host,
             'process' => $process,
             'queues' => $workerStatsMongo['d']['queues'],
-            'start' => new \DateTime(Service::Redis()->get($this->settings['resquePrefix'] . 'worker:' . $workerFullName . ':started')),
-            'processed' => (int)Service::Redis()->get($this->settings['resquePrefix'] . 'stat:processed:' . $workerFullName),
-            'failed' => (int)Service::Redis()->get($this->settings['resquePrefix'] . 'stat:failed:' . $workerFullName)
+            'start' => new \DateTime(Service::Redis()->get('worker:' . $workerFullName . ':started')),
+            'processed' => (int)Service::Redis()->get('stat:processed:' . $workerFullName),
+            'failed' => (int)Service::Redis()->get('stat:failed:' . $workerFullName)
         );
     }
 
@@ -267,7 +293,7 @@ class ResqueStat
      */
     public function getAllQueues()
     {
-        return Service::Redis()->smembers($this->settings['resquePrefix'] . 'queues');
+        return Service::Redis()->smembers('queues');
     }
 
     /**
@@ -340,7 +366,7 @@ class ResqueStat
         if (in_array('pendingjobs', $fields)) {
             $pipeline = Service::Redis()->multi(\Redis::PIPELINE);
             foreach ($r as $name => $stats) {
-                $keyName = $this->settings['resquePrefix'] . 'queue:' . $name;
+                $keyName = 'queue:' . $name;
                 $pipeline->llen($keyName);
             }
 
@@ -580,7 +606,7 @@ class ResqueStat
         $jobs = array();
         $queues = array();
         foreach ($queuesList as $queueName) {
-            $keyName = $this->settings['resquePrefix'] . 'queue:' . $queueName;
+            $keyName = 'queue:' . $queueName;
             $limit = $options['limit'] === null ? Service::Redis()->llen($keyName)-1 : $options['limit'];
             $queues[$queueName] = Service::Redis()->lrange($keyName, 0, $limit);
         }
@@ -628,7 +654,7 @@ class ResqueStat
 
         $pipeline = Service::Redis()->multi(\Redis::PIPELINE);
         foreach ($queuesList as $queueName) {
-            $pipeline->llen($this->settings['resquePrefix'] . 'queue:' . $queueName);
+            $pipeline->llen('queue:' . $queueName);
         }
 
         return array_combine($queuesList, $pipeline->exec());
@@ -766,12 +792,9 @@ class ResqueStat
      */
     public function getJobsMatrix($start, $end, $step)
     {
-        return json_decode(
-            Service::Cube()->getMetric(
-                'sum(got)&start=' . urlencode($start->format('Y-m-d\TH:i:sO')) .
-                '&stop=' . urlencode($end->format('Y-m-d\TH:i:sO')) . '&step=36e5'
-            ),
-            true
+        return Service::Cube()->getMetric(
+            'sum(got)&start=' . urlencode($start->format('Y-m-d\TH:i:sO')) .
+            '&stop=' . urlencode($end->format('Y-m-d\TH:i:sO')) . '&step=36e5'
         );
     }
 
@@ -879,7 +902,7 @@ class ResqueStat
         $queues = $this->getAllQueues();
         $redisPipeline = Service::Redis()->multi(\Redis::PIPELINE);
         foreach ($queues as $queueName) {
-            $redisPipeline->llen($this->settings['resquePrefix'] . 'queue:' . $queueName);
+            $redisPipeline->llen('queue:' . $queueName);
         }
         $stats->count[self::JOB_STATUS_WAITING] = array_sum($redisPipeline->exec());
 
@@ -963,7 +986,7 @@ class ResqueStat
                 $jobs[$failedJob['d']['job_id']]['status'] = self::JOB_STATUS_FAILED;
                 $jobs[$failedJob['d']['job_id']]['log'] = $failedJob['d']['log'];
                 $jobs[$failedJob['d']['job_id']]['took'] = $failedJob['d']['time'];
-                $redisPipeline->get($this->settings['resquePrefix'] . 'failed:' . $failedJob['d']['job_id']);
+                $redisPipeline->get('failed:' . $failedJob['d']['job_id']);
                 unset($jobIds[array_search($failedJob['d']['job_id'], $jobIds)]);
             }
 

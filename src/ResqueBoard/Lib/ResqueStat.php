@@ -67,7 +67,7 @@ class ResqueStat
         $this->settings = array_merge($this->settings, $settings);
         $this->settings['resquePrefix'] = $this->settings['resquePrefix'] .':';
 
-        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
+
 
         $thisQueues =& $this->queues;
         $this->workers = array_map(
@@ -172,8 +172,8 @@ class ResqueStat
         );
         $this->stats['total']['scheduled'] = \ResqueScheduler\Stat::get();
 
-        $this->stats['total']['processed'] = max($this->stats['total']['processed'], $cube->selectCollection('got_events')->find()->count());
-        $this->stats['total']['failed'] = max($this->stats['total']['failed'], $cube->selectCollection('fail_events')->find()->count());
+        $this->stats['total']['processed'] = max($this->stats['total']['processed'], Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events')->find()->count());
+        $this->stats['total']['failed'] = max($this->stats['total']['failed'], Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'fail_events')->find()->count());
 
         $this->setupIndexes();
     }
@@ -193,7 +193,7 @@ class ResqueStat
             self::JOB_STATUS_SCHEDULED => 'movescheduled'
         );
 
-        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
+
 
         if ($type === null) {
             $stats = array_combine(array_keys($validType), array_fill(0, count($validType), 0));
@@ -204,7 +204,7 @@ class ResqueStat
         }
 
         foreach ($stats as $key => $value) {
-            $stats[$key] = $cube->selectCollection($validType[$key] . '_events')->count();
+            $stats[$key] = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], $validType[$key] . '_events')->count();
         }
 
         return $type === null ? $stats : $stats[$type];
@@ -267,8 +267,8 @@ class ResqueStat
      */
     public function getWorker($workerId)
     {
-        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
-        $collection = $cube->selectCollection('start_events');
+
+        $collection = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'start_events');
         $workerStatsMongo = $collection->findOne(array('d.worker' => $workerId), array('d.queues'));
 
         $workerFullName = $workerId . ':' . implode(',', $workerStatsMongo['d']['queues']);
@@ -303,12 +303,12 @@ class ResqueStat
      */
     public function getQueues($fields = array(), $queues = array())
     {
-        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
-        $queuesCollection = $cube->selectCollection('got_events');
+
+        $queuesCollection = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events');
 
         if (in_array('totaljobs', $fields) || empty($queues)) {
-            $lastRefresh = $cube
-                ->selectCollection('map_reduce_stats')
+            $lastRefresh = Service::Mongo()
+                ->selectCollection(Service::$settings['Mongo']['database'], 'map_reduce_stats')
                 ->findOne(array('_id' => 'queue_stats'), array("date", "stats"));
 
             $now = new \MongoDate();
@@ -327,8 +327,8 @@ class ResqueStat
                 $results[$q] = $queuesCollection->count($conditions) + (isset($results[$q]) ? $results[$q] : 0);
             }
 
-            $cube
-                ->selectCollection('map_reduce_stats')
+            Service::Mongo()
+                ->selectCollection(Service::$settings['Mongo']['database'], 'map_reduce_stats')
                 ->save(
                     array(
                         '_id' => 'queue_stats',
@@ -442,8 +442,8 @@ class ResqueStat
             return $this->getPendingJobs($options);
         }
 
-        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
-        $jobsCollection = $cube->selectCollection('got_events');
+
+        $jobsCollection = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events');
 
         $conditions = array();
 
@@ -484,7 +484,7 @@ class ResqueStat
             }
 
             if ($options['status'] === self::JOB_STATUS_FAILED) {
-                $cursor = $cube->selectCollection('fail_events')
+                $cursor = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'fail_events')
                     ->find(array(), array('d.job_id'))
                     ->sort($options['sort'])
                     ->limit($options['limit']);
@@ -554,7 +554,7 @@ class ResqueStat
             $options['date_after'] = strtotime($options['date_after']);
         }
 
-        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
+
 
 
         $conditions = array();
@@ -569,8 +569,8 @@ class ResqueStat
 
         $results = array();
 
-        $jobsDoneCollection = $cube->selectCollection('done_events');
-        $jobsFailCollection = $cube->selectCollection('fail_events');
+        $jobsDoneCollection = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'done_events');
+        $jobsFailCollection = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'fail_events');
 
         $jobsDoneCursor = $jobsDoneCollection->find($conditions, array('t' => true));
         foreach ($jobsDoneCursor as $job) {
@@ -670,7 +670,7 @@ class ResqueStat
      */
     public function getLogs($options = array())
     {
-        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
+
 
         $eventTypeList = array('check' ,'done', 'fail', 'fork', 'found', 'got', 'kill', 'process', 'prune', 'reconnect', 'shutdown', 'sleep', 'start');
 
@@ -721,7 +721,7 @@ class ResqueStat
 
         $results = array();
 
-        $jobsCollection = $cube->selectCollection($options['event_type'] . '_events');
+        $jobsCollection = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], $options['event_type'] . '_events');
 
         $jobsCursor = $jobsCollection->find($conditions);
         $jobsCursor->sort($options['sort']);
@@ -806,8 +806,8 @@ class ResqueStat
      */
     public function getJobsRepartionStats($limit = 10)
     {
-        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
-        $mapReduceStats = new \MongoCollection($cube, 'map_reduce_stats');
+        $mongoService = Service::Mongo();
+        $mapReduceStats = new \MongoCollection($mongoService::$serviceInstance, 'map_reduce_stats');
         $startDate = $mapReduceStats->findOne(array('_id' => 'job_stats'), array('date'));
         if (!isset($startDate['date']) || empty($startDate['date'])) {
             $startDate = null;
@@ -841,7 +841,7 @@ class ResqueStat
         if ($startDate != null) {
             $conditions['$gte'] = $startDate;
         }
-        $cube->command(
+        Service::Mongo()->command(
             array(
                 'mapreduce' => 'got_events',
                 'map' => $map,
@@ -851,9 +851,9 @@ class ResqueStat
             )
         );
 
-        $cursor = $cube->selectCollection('jobs_repartition_stats')->find()->sort(array('value' => -1))->limit($limit);
+        $cursor = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'jobs_repartition_stats')->find()->sort(array('value' => -1))->limit($limit);
 
-        $stats->total = $cube->selectCollection('got_events')->find()->count();
+        $stats->total = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events')->find()->count();
         $stats->stats = array();
         foreach ($cursor as $c) {
             $c['percentage'] = round($c['value'] / $stats->total * 100, 2);
@@ -872,7 +872,7 @@ class ResqueStat
      */
     public function getJobsStats($options = array())
     {
-        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
+
 
         $filter = array();
 
@@ -885,15 +885,15 @@ class ResqueStat
         }
 
         $stats = new \stdClass();
-        $stats->total = $cube->selectCollection('got_events')->find($filter)->count();
-        $stats->count[self::JOB_STATUS_COMPLETE] = $cube->selectCollection('done_events')->find($filter)->count();
-        $stats->count[self::JOB_STATUS_FAILED] = $cube->selectCollection('fail_events')->find($filter)->count();
+        $stats->total = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events')->find($filter)->count();
+        $stats->count[self::JOB_STATUS_COMPLETE] = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'done_events')->find($filter)->count();
+        $stats->count[self::JOB_STATUS_FAILED] = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'fail_events')->find($filter)->count();
         $stats->perc[self::JOB_STATUS_FAILED] =
             ($stats->total == 0)
                 ? 0
                 : round($stats->count[self::JOB_STATUS_FAILED] / $stats->total * 100, 2);
         $stats->count[self::JOB_STATUS_WAITING] = 0;
-        $stats->count[self::JOB_STATUS_SCHEDULED] = $cube->selectCollection('movescheduled_events')->find($filter)->count();
+        $stats->count[self::JOB_STATUS_SCHEDULED] = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'movescheduled_events')->find($filter)->count();
         $stats->perc[self::JOB_STATUS_SCHEDULED] =
             ($stats->total == 0)
                 ? 0
@@ -912,12 +912,12 @@ class ResqueStat
         $stats->oldest = null;
         $stats->newest = null;
 
-        $cursors = $cube->selectCollection('got_events')->find(array(), array('t'))->sort(array('t' => 1))->limit(1);
+        $cursors = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events')->find(array(), array('t'))->sort(array('t' => 1))->limit(1);
         foreach ($cursors as $cursor) {
             $stats->oldest = new \DateTime('@'.$cursor['t']->sec);
         }
 
-        $cursors = $cube->selectCollection('got_events')->find(array(), array('t'))->sort(array('t' => -1))->limit(1);
+        $cursors = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events')->find(array(), array('t'))->sort(array('t' => -1))->limit(1);
         foreach ($cursors as $cursor) {
             $stats->newest = new \DateTime('@'.$cursor['t']->sec);
         }
@@ -968,10 +968,10 @@ class ResqueStat
     {
         $jobIds = array_keys($jobs);
 
-        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
 
 
-        $jobsCursor = $cube->selectCollection('done_events')->find(array('d.job_id' => array('$in' => $jobIds)));
+
+        $jobsCursor = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'done_events')->find(array('d.job_id' => array('$in' => $jobIds)));
         foreach ($jobsCursor as $successJob) {
             $jobs[$successJob['d']['job_id']]['status'] = self::JOB_STATUS_COMPLETE;
             $jobs[$successJob['d']['job_id']]['took'] = $successJob['d']['time'];
@@ -981,7 +981,7 @@ class ResqueStat
         if (!empty($jobIds)) {
             $redisPipeline = Service::Redis()->multi(\Redis::PIPELINE);
 
-            $jobsCursor = $cube->selectCollection('fail_events')->find(array('d.job_id' => array('$in' => $jobIds)));
+            $jobsCursor = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'fail_events')->find(array('d.job_id' => array('$in' => $jobIds)));
             foreach ($jobsCursor as $failedJob) {
                 $jobs[$failedJob['d']['job_id']]['status'] = self::JOB_STATUS_FAILED;
                 $jobs[$failedJob['d']['job_id']]['log'] = $failedJob['d']['log'];
@@ -1000,7 +1000,7 @@ class ResqueStat
         }
 
         if (!empty($jobIds)) {
-            $jobsCursor = $cube->selectCollection('process_events')->find(array('d.job_id' => array('$in' => $jobIds)));
+            $jobsCursor = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'process_events')->find(array('d.job_id' => array('$in' => $jobIds)));
             foreach ($jobsCursor as $processJob) {
                 $jobs[$processJob['d']['job_id']]['status'] = self::JOB_STATUS_RUNNING;
                 unset($jobIds[array_search($processJob['d']['job_id'], $jobIds)]);
@@ -1033,13 +1033,13 @@ class ResqueStat
      */
     private function setupIndexes()
     {
-        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
-        $cube->selectCollection('got_events')->ensureIndex('d.args.queue');
-        $cube->selectCollection('got_events')->ensureIndex('d.args.payload.class');
-        $cube->selectCollection('got_events')->ensureIndex('d.worker');
-        $cube->selectCollection('fail_events')->ensureIndex('d.job_id');
-        $cube->selectCollection('done_events')->ensureIndex('d.job_id');
-        $cube->selectCollection('shutdown_events')->ensureIndex('d.worker');
-        $cube->selectCollection('start_events')->ensureIndex('d.worker');
+
+        Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events')->ensureIndex('d.args.queue');
+        Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events')->ensureIndex('d.args.payload.class');
+        Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events')->ensureIndex('d.worker');
+        Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'fail_events')->ensureIndex('d.job_id');
+        Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'done_events')->ensureIndex('d.job_id');
+        Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'shutdown_events')->ensureIndex('d.worker');
+        Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'start_events')->ensureIndex('d.worker');
     }
 }

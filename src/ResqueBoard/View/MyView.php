@@ -60,6 +60,11 @@ class MyView extends \Slim\View
         require $this->templatePath;
         if (!isset($raw) || $raw === false) {
             require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->bodyAppend;
+
+            if (DEBUG) {
+                require $this->templatesDirectory . DIRECTORY_SEPARATOR . 'service_helper.ctp';
+            }
+
             if ($template !== 'error.ctp') {
                 require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->footerTemplate;
             }

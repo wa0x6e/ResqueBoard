@@ -27,22 +27,30 @@ namespace ResqueBoard\Lib\Service;
  */
 class Redis
 {
+    use Loggable;
+
     public static $instance = null;
+
+    public static $serviceInstance = null;
+
+    public function __construct($settings)
+    {
+        $redis = new \Redis();
+        $redis->connect($settings['host'], $settings['port']);
+
+        if (isset($settings['prefix'])) {
+            $redis->setOption(\Redis::OPT_PREFIX, $settings['prefix'] . ':');
+        }
+
+        self::$serviceInstance = $redis;
+    }
 
     public static function init($settings)
     {
         if (self::$instance === null) {
-            // create instance
-            self::$instance = new \Redis();
-            self::$instance->connect($settings['host'], $settings['port']);
-
-            if (isset($settings['prefix'])) {
-                self::$instance->setOption(\Redis::OPT_PREFIX, $settings['prefix'] . ':');
-            }
-
-            return self::$instance;
-        } else {
-            return self::$instance;
+            self::$instance = new Redis($settings);
         }
+
+        return self::$instance;
     }
 }

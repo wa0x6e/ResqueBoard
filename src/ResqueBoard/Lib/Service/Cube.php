@@ -27,22 +27,30 @@ namespace ResqueBoard\Lib\Service;
  */
 class Cube
 {
+    use Loggable;
+
     public static $instance = null;
 
+    public static $serviceInstance = null;
+
     protected $settings = array();
+
+    public function __construct($settings)
+    {
+        $this->settings = $settings;
+        self::$serviceInstance = $this;
+    }
 
     public static function init($settings)
     {
         if (self::$instance === null) {
-            $cube = new Cube();
-            $cube->settings = $settings;
-            self::$instance = $cube;
+            self::$instance = new Cube($settings);
         }
 
         return self::$instance;
     }
 
-    public function getMetric($expression)
+    protected function getMetric($expression)
     {
         if (!extension_loaded('curl')) {
             throw new \Exception('The curl extension is needed to use http URLs with the CubeHandler');

@@ -27,16 +27,23 @@ namespace ResqueBoard\Lib\Service;
  */
 class Mongo
 {
+    use Loggable;
+
     public static $instance = null;
+
+    public static $serviceInstance = null;
+
+    public function __construct($settings)
+    {
+        self::$serviceInstance = new \Mongo($settings['host'] . ':' . $settings['port']);
+    }
 
     public static function init($settings)
     {
         if (self::$instance === null) {
-            // create instance
-            self::$instance = new \Mongo($settings['host'] . ':' . $settings['port']);
-            return self::$instance;
-        } else {
-            return self::$instance;
+            self::$instance = new Mongo($settings);
         }
+
+        return self::$instance;
     }
 }

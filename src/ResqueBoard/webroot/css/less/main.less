@@ -2089,3 +2089,39 @@ i[class^="icon-"], i[class*=" icon-"] {
 	}
 }
 
+
+#service-debugger {
+	position: absolute;
+	top:  0;
+	z-index: 999;
+	width: 100%;
+	margin: 0 auto;
+	padding-top: 10px;
+	
+	background-color: rgba(242,242,242,.95);
+	
+	code {
+		border:0;
+		background: none;
+	}
+	
+	th:last-child {
+		width: 30%;
+	}
+	
+	small {
+		display: block;
+		color:  lighten(@textColor, 25);
+	}
+	
+	.debugger-content {
+		margin: @gridGutterWidth;
+		display: none;
+	}
+	
+	&:hover .debugger-content {
+		display: block;	
+	}
+
+	
+}

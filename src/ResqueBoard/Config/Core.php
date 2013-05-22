@@ -49,6 +49,8 @@ date_default_timezone_set(isset($settings['timezone']) ? $settings['timezone'] :
  */
 define('PAGINATION_LIMIT', 15);
 
+define('DEBUG', true);
+
 /**
  * Default application name
  *

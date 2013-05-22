@@ -106,12 +106,11 @@ class ResqueStat
         }
 
         // Populate queues pending jobs counter
-        $redisPipeline = Service::Redis()->multi(\Redis::PIPELINE);
         foreach ($this->queues as $name => $stats) {
-            $redisPipeline->llen('queue:' . $name);
+            $commands[] = array('llen', 'queue:' . $name);
         }
+        $result = Service::Redis()->pipeline($commands);
 
-        $result = $redisPipeline->exec();
         $i = 0;
         foreach ($this->queues as &$queue) {
             $queue['jobs'] = $result[$i];
@@ -124,17 +123,13 @@ class ResqueStat
             }
         }
 
-
-        $redisPipeline = Service::Redis()->multi(\Redis::PIPELINE);
+        $commands = array();
         foreach ($this->workers as $worker) {
-            $redisPipeline
-            ->get('worker:' . $worker['fullname'] . ':started')
-            ->get('stat:processed:' . $worker['fullname'])
-            ->get('stat:failed:' . $worker['fullname']);
+            $commands[] = array('get', 'worker:' . $worker['fullname'] . ':started');
+            $commands[] = array('get', 'stat:processed:' . $worker['fullname']);
+            $commands[] = array('get', 'stat:failed:' . $worker['fullname']);
         }
-
-        $result = $redisPipeline->exec();
-        unset($redisPipeline);
+        $result = Service::Redis()->pipeline($commands);
 
         $this->stats['active'] = array('processed' => 0, 'failed' => 0);
 
@@ -164,10 +159,7 @@ class ResqueStat
                 function ($s) {
                     return (int) $s;
                 },
-                Service::Redis()->multi(\Redis::PIPELINE)
-                    ->get('stat:processed')
-                    ->get('stat:failed')
-                    ->exec()
+                Service::Redis()->pipeline(array(array('get', 'stat:processed'), array('get', 'stat:failed')))
             )
         );
         $this->stats['total']['scheduled'] = \ResqueScheduler\Stat::get();

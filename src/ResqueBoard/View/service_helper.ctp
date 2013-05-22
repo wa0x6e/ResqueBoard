@@ -31,7 +31,24 @@
 		echo '<tr><th>Query</th><th>Took (ms)</th></tr>';
 		foreach($logs['logs'] as $log) {
 			echo '<tr>';
-			echo '<td><code>' .$log['command'] . '</code><small>From ' . $log['trace']['file'] . ' @ ' . $log['trace']['line'] . '</small></td>';
+			echo '<td>';
+			if (is_string($log['command'])) {
+				echo '<code>' . $log['command'] . '</code>';
+			} else {
+				foreach($log['command'] as $command => $subCommand) {
+					echo '<code>' . $command . '</code>';
+
+					if (!empty($subCommand)) {
+						echo '<ul class="unstyled">';
+						foreach ($subCommand as $c) {
+							echo '<li><code>' . $c[0] . ' ' . $c[1] . '</code></li>';
+						}
+						echo '</ul>';
+					}
+				}
+			}
+
+			echo '<small>From ' . $log['trace']['file'] . ' @ ' . $log['trace']['line'] . '</small></td>';
 			echo '<td>' . $log['time'] . '</td>';
 			echo '</tr>';
 		}

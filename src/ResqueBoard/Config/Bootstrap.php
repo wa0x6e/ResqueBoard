@@ -24,6 +24,7 @@ if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
 
+require dirname(dirname(ROOT)) . DS . 'vendor' . DS . 'autoload.php';
 require dirname(__FILE__) . DS . 'Core.php';
 
 /**
@@ -154,4 +155,4 @@ $settings['nav'] = array(
      )
 );
 
-require dirname(dirname(ROOT)) . DS . 'vendor' . DS . 'autoload.php';
+

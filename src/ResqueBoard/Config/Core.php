@@ -40,16 +40,16 @@ $settings = array(
          	'port' => 6379,
          	'database' => 0
         ),*/
-      /* 'cube' => array(
+       'cube' => array(
             'host' => '127.0.0.1',
             'port' => 1081
-        ),*/
+        ),
         'cubePublic' => array(
             'host' => $_SERVER['SERVER_NAME'],
             'port' => 1081
         ),
         /*'resquePrefix' => 'resque',*/
-        'readOnly' => true,
+        'readOnly' => false,
         'resqueConfig' => __DIR__ . DIRECTORY_SEPARATOR . './resque.ini',
         /*'timezone' => 'America/Montreal'*/
 );
@@ -77,3 +77,21 @@ define('APPLICATION_NAME', 'ResqueBoard');
  * @var string
  */
 define('TITLE_SEP', ' | ');
+
+
+
+ResqueBoard\Lib\Service\Service::$settings = array(
+    'Redis' => array(
+        'host' => '127.0.0.1',
+        'port' => 6379
+    ),
+    'Mongo' => array(
+        'host' => 'localhost',
+        'port' => 27017,
+        'database' => 'cube_development'
+    ),
+    'Cube' => array(
+        'host' => '127.0.0.1',
+        'port' => 1081
+    )
+);

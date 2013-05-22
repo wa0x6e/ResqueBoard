@@ -21,6 +21,8 @@
 
 namespace ResqueBoard\Lib;
 
+use ResqueBoard\Lib\Service\Service;
+
 /**
  * ResqueStat class
  *
@@ -50,8 +52,6 @@ class ResqueStat
     const CUBE_STEP_1DAY = '864e5';
 
     protected $settings;
-    private $redis;
-    private $mongo;
 
     /**
      * @since 1.0.0
@@ -70,7 +70,7 @@ class ResqueStat
         $this->settings = array_merge($this->settings, $settings);
         $this->settings['resquePrefix'] = $this->settings['resquePrefix'] .':';
 
-        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
 
         $thisQueues =& $this->queues;
         $this->workers = array_map(
@@ -89,7 +89,7 @@ class ResqueStat
                 );
                 return array('fullname' => $name, 'host' => $host, 'process' => $process, 'queues' => $q);
             },
-            $this->getRedis()->smembers($this->settings['resquePrefix'] . 'workers')
+            Service::Redis()->smembers($this->settings['resquePrefix'] . 'workers')
         );
 
         // Assign all active queues as active
@@ -101,7 +101,7 @@ class ResqueStat
         );
 
         // Get all queues and compute complete list of active and inactive queues
-        $allQueues = $this->getRedis()->smembers($this->settings['resquePrefix'] . 'queues');
+        $allQueues = Service::Redis()->smembers($this->settings['resquePrefix'] . 'queues');
         foreach ($allQueues as $queue) {
             if (!isset($this->queues[$queue])) {
                 $this->queues[$queue] = array('workers' => 0, 'active' => false);
@@ -109,7 +109,7 @@ class ResqueStat
         }
 
         // Populate queues pending jobs counter
-        $redisPipeline = $this->getRedis()->multi(\Redis::PIPELINE);
+        $redisPipeline = Service::Redis()->multi(\Redis::PIPELINE);
         foreach ($this->queues as $name => $stats) {
             $redisPipeline->llen($this->settings['resquePrefix'] . 'queue:' . $name);
         }
@@ -128,7 +128,7 @@ class ResqueStat
         }
 
 
-        $redisPipeline = $this->getRedis()->multi(\Redis::PIPELINE);
+        $redisPipeline = Service::Redis()->multi(\Redis::PIPELINE);
         foreach ($this->workers as $worker) {
             $redisPipeline
             ->get($this->settings['resquePrefix'] . 'worker:' . $worker['fullname'] . ':started')
@@ -167,7 +167,7 @@ class ResqueStat
                 function ($s) {
                     return (int) $s;
                 },
-                $this->getRedis()->multi(\Redis::PIPELINE)
+                Service::Redis()->multi(\Redis::PIPELINE)
                     ->get($this->settings['resquePrefix'] . 'stat:processed')
                     ->get($this->settings['resquePrefix'] . 'stat:failed')
                     ->exec()
@@ -180,55 +180,6 @@ class ResqueStat
 
         $this->setupIndexes();
     }
-
-
-    /**
-     * Return a mongo connection instance
-     *
-     * @since 1.0.0
-     */
-    protected function getMongo()
-    {
-        if ($this->mongo !== null) {
-            return $this->mongo;
-        }
-
-        try {
-            $this->mongo = new \Mongo($this->settings['mongo']['host'] . ':' . $this->settings['mongo']['port']);
-            return $this->mongo;
-        } catch (\MongoConnectionException $e) {
-            throw new DatabaseConnectionException(
-                'Could not connect to Mongo Server on ' .
-                $this->settings['mongo']['host'] . ':' . $this->settings['mongo']['port']
-            );
-        }
-    }
-
-
-    /**
-     * Return a redis connection instance
-     *
-     * @since 1.0.0
-     */
-    protected function getRedis()
-    {
-        if ($this->redis !== null) {
-            return $this->redis;
-        }
-
-        try {
-            $this->redis = new \Redis();
-            $this->redis->connect($this->settings['redis']['host'], $this->settings['redis']['port']);
-            $this->redis->select($this->settings['redis']['database']);
-            return $this->redis;
-        } catch (\Exception $e) {
-            throw new DatabaseConnectionException(
-                'Could not connect to Redis Server on ' .
-                $this->settings['redis']['host'] . ':' . $this->settings['redis']['port']
-            );
-        }
-    }
-
 
     /**
      * Return count of each jobs status
@@ -245,7 +196,7 @@ class ResqueStat
             self::JOB_STATUS_SCHEDULED => 'movescheduled'
         );
 
-        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
 
         if ($type === null) {
             $stats = array_combine(array_keys($validType), array_fill(0, count($validType), 0));
@@ -293,7 +244,7 @@ class ResqueStat
      */
     public function getWorker($workerId)
     {
-        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
         $collection = $cube->selectCollection('start_events');
         $workerStatsMongo = $collection->findOne(array('d.worker' => $workerId), array('d.queues'));
 
@@ -305,9 +256,9 @@ class ResqueStat
             'host' => $host,
             'process' => $process,
             'queues' => $workerStatsMongo['d']['queues'],
-            'start' => new \DateTime($this->getRedis()->get($this->settings['resquePrefix'] . 'worker:' . $workerFullName . ':started')),
-            'processed' => (int)$this->getRedis()->get($this->settings['resquePrefix'] . 'stat:processed:' . $workerFullName),
-            'failed' => (int)$this->getRedis()->get($this->settings['resquePrefix'] . 'stat:failed:' . $workerFullName)
+            'start' => new \DateTime(Service::Redis()->get($this->settings['resquePrefix'] . 'worker:' . $workerFullName . ':started')),
+            'processed' => (int)Service::Redis()->get($this->settings['resquePrefix'] . 'stat:processed:' . $workerFullName),
+            'failed' => (int)Service::Redis()->get($this->settings['resquePrefix'] . 'stat:failed:' . $workerFullName)
         );
     }
 
@@ -319,7 +270,7 @@ class ResqueStat
      */
     public function getAllQueues()
     {
-        return $this->getRedis()->smembers($this->settings['resquePrefix'] . 'queues');
+        return Service::Redis()->smembers($this->settings['resquePrefix'] . 'queues');
     }
 
     /**
@@ -329,7 +280,7 @@ class ResqueStat
      */
     public function getQueues($fields = array(), $queues = array())
     {
-        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
         $queuesCollection = $cube->selectCollection('got_events');
 
         if (in_array('totaljobs', $fields) || empty($queues)) {
@@ -390,7 +341,7 @@ class ResqueStat
         }
 
         if (in_array('pendingjobs', $fields)) {
-            $pipeline = $this->getRedis()->multi(\Redis::PIPELINE);
+            $pipeline = Service::Redis()->multi(\Redis::PIPELINE);
             foreach ($r as $name => $stats) {
                 $keyName = $this->settings['resquePrefix'] . 'queue:' . $name;
                 $pipeline->llen($keyName);
@@ -468,7 +419,7 @@ class ResqueStat
             return $this->getPendingJobs($options);
         }
 
-        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
         $jobsCollection = $cube->selectCollection('got_events');
 
         $conditions = array();
@@ -580,7 +531,7 @@ class ResqueStat
             $options['date_after'] = strtotime($options['date_after']);
         }
 
-        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
 
 
         $conditions = array();
@@ -633,8 +584,8 @@ class ResqueStat
         $queues = array();
         foreach ($queuesList as $queueName) {
             $keyName = $this->settings['resquePrefix'] . 'queue:' . $queueName;
-            $limit = $options['limit'] === null ? $this->getRedis()->llen($keyName)-1 : $options['limit'];
-            $queues[$queueName] = $this->getRedis()->lrange($keyName, 0, $limit);
+            $limit = $options['limit'] === null ? Service::Redis()->llen($keyName)-1 : $options['limit'];
+            $queues[$queueName] = Service::Redis()->lrange($keyName, 0, $limit);
         }
 
 
@@ -678,7 +629,7 @@ class ResqueStat
             $queuesList = array($queuesList);
         }
 
-        $pipeline = $this->getRedis()->multi(\Redis::PIPELINE);
+        $pipeline = Service::Redis()->multi(\Redis::PIPELINE);
         foreach ($queuesList as $queueName) {
             $pipeline->llen($this->settings['resquePrefix'] . 'queue:' . $queueName);
         }
@@ -696,7 +647,7 @@ class ResqueStat
      */
     public function getLogs($options = array())
     {
-        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
 
         $eventTypeList = array('check' ,'done', 'fail', 'fork', 'found', 'got', 'kill', 'process', 'prune', 'reconnect', 'shutdown', 'sleep', 'start');
 
@@ -818,39 +769,13 @@ class ResqueStat
      */
     public function getJobsMatrix($start, $end, $step)
     {
-        if (!extension_loaded('curl')) {
-            throw new \Exception('The curl extension is needed');
-        }
-
-        $link = 'http://'.$this->settings['cube']['host'] . ':' .
-            $this->settings['cube']['port'].'/1.0/metric?expression=sum(got)&start=' . urlencode($start->format('Y-m-d\TH:i:sO')) .
-            '&stop=' . urlencode($end->format('Y-m-d\TH:i:sO')) . '&step=36e5';
-
-        $httpConnection = curl_init($link);
-
-        if (!$httpConnection) {
-            throw new DatabaseConnectionException(
-                'Unable to connect to Cube Server on ' .
-                $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']
-            );
-        }
-
-        curl_setopt($httpConnection, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt(
-            $httpConnection,
-            CURLOPT_HTTPHEADER,
-            array(  'Content-Type: application/json')
+        return json_decode(
+            Service::Cube()->getMetric(
+                'sum(got)&start=' . urlencode($start->format('Y-m-d\TH:i:sO')) .
+                '&stop=' . urlencode($end->format('Y-m-d\TH:i:sO')) . '&step=36e5'
+            ),
+            true
         );
-
-        $response = curl_exec($httpConnection);
-        if (!$response) {
-            throw new DatabaseConnectionException(
-                'Unable to connect to Cube server on ' .
-                $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']
-            );
-        }
-
-        return json_decode($response, true);
     }
 
     /**
@@ -861,7 +786,7 @@ class ResqueStat
      */
     public function getJobsRepartionStats($limit = 10)
     {
-        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
         $mapReduceStats = new \MongoCollection($cube, 'map_reduce_stats');
         $startDate = $mapReduceStats->findOne(array('_id' => 'job_stats'), array('date'));
         if (!isset($startDate['date']) || empty($startDate['date'])) {
@@ -927,7 +852,7 @@ class ResqueStat
      */
     public function getJobsStats($options = array())
     {
-        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
 
         $filter = array();
 
@@ -955,7 +880,7 @@ class ResqueStat
                 : round($stats->count[self::JOB_STATUS_SCHEDULED] / $stats->total * 100, 2);
 
         $queues = $this->getAllQueues();
-        $redisPipeline = $this->getRedis()->multi(\Redis::PIPELINE);
+        $redisPipeline = Service::Redis()->multi(\Redis::PIPELINE);
         foreach ($queues as $queueName) {
             $redisPipeline->llen($this->settings['resquePrefix'] . 'queue:' . $queueName);
         }
@@ -1023,7 +948,7 @@ class ResqueStat
     {
         $jobIds = array_keys($jobs);
 
-        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
 
 
         $jobsCursor = $cube->selectCollection('done_events')->find(array('d.job_id' => array('$in' => $jobIds)));
@@ -1034,7 +959,7 @@ class ResqueStat
         }
 
         if (!empty($jobIds)) {
-            $redisPipeline = $this->getRedis()->multi(\Redis::PIPELINE);
+            $redisPipeline = Service::Redis()->multi(\Redis::PIPELINE);
 
             $jobsCursor = $cube->selectCollection('fail_events')->find(array('d.job_id' => array('$in' => $jobIds)));
             foreach ($jobsCursor as $failedJob) {
@@ -1072,45 +997,13 @@ class ResqueStat
 
     public function getCubeMetric($options)
     {
-        if (!extension_loaded('curl')) {
-            throw new \Exception('The curl extension is needed to use http URLs with the CubeHandler');
-        }
-
-        $string = 'http://'.$this->settings['cube']['host'] . ':' .
-            $this->settings['cube']['port'].'/1.0/metric?expression=' . $options['expression'] .
+        return Service::Cube()->getMetric(
+            $options['expression'] .
             '&start=' . urlencode($options['start']->format('c')) .
             (isset($options['end']) ? ('&stop=' . urlencode($options['end']->format('c'))) : '') .
             (isset($options['step']) ? ('&step=' . $options['step']) : '') .
-            (isset($options['limit']) ? ('&limit=' . $options['limit']) : '');
-
-        $httpConnection = curl_init($string);
-
-        if (!$httpConnection) {
-            throw new DatabaseConnectionException('Unable to connect to ' . $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']);
-        }
-
-        curl_setopt($httpConnection, CURLOPT_TIMEOUT, 5);
-        curl_setopt($httpConnection, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt(
-            $httpConnection,
-            CURLOPT_HTTPHEADER,
-            array(  'Content-Type: application/json')
+            (isset($options['limit']) ? ('&limit=' . $options['limit']) : '')
         );
-
-        $response = json_decode(curl_exec($httpConnection), true);
-
-        $responseCode = curl_getinfo($httpConnection, CURLINFO_HTTP_CODE);
-
-        if ($responseCode === 404 || $responseCode === 0) {
-            throw new DatabaseConnectionException(
-                'Unable to connect to Cube Server on ' .
-                $this->settings['cube']['host'] . ':' . $this->settings['cube']['port']
-            );
-        } else if ($responseCode !== 200) {
-            throw new \Exception('Cube server return an error : ' . $response['error']);
-        }
-
-        return $response;
     }
 
     /**
@@ -1120,7 +1013,7 @@ class ResqueStat
      */
     private function setupIndexes()
     {
-        $cube = $this->getMongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
         $cube->selectCollection('got_events')->ensureIndex('d.args.queue');
         $cube->selectCollection('got_events')->ensureIndex('d.args.payload.class');
         $cube->selectCollection('got_events')->ensureIndex('d.worker');

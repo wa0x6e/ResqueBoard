@@ -6,7 +6,7 @@
  *
  * PHP version 5
  *
- * Licensed under The MIT License
+ * Licensed under The MIT Lice€nse
  * Redistributions of files must retain the above copyright notice.
  *
  * @author        Wan Qi Chen <kami@kamisama.me>
@@ -715,7 +715,7 @@ $app->get(
         }
 
         try {
-            $resqueApi = new ResqueBoard\Lib\Resque\Api();
+            $resqueApi = new ResqueBoard\Lib\Resque\Api(ResqueBoard\Lib\Service\Service::Redis());
             $response = $resqueApi->stop($worker);
 
             if ($response !== true) {
@@ -744,7 +744,7 @@ $app->get(
         }
 
         try {
-            $resqueApi = new ResqueBoard\Lib\Resque\Api();
+            $resqueApi = new ResqueBoard\Lib\Resque\Api(ResqueBoard\Lib\Service\Service::Redis());
             $response = $resqueApi->pause($worker);
 
             if ($response !== true) {
@@ -776,7 +776,7 @@ $app->get(
         }
 
         try {
-            $resqueApi = new ResqueBoard\Lib\Resque\Api();
+            $resqueApi = new ResqueBoard\Lib\Resque\Api(ResqueBoard\Lib\Service\Service::Redis());
             $response = $resqueApi->resume($worker);
 
             if ($response !== true) {

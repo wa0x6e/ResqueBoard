@@ -35,6 +35,11 @@ class Redis
             // create instance
             self::$instance = new \Redis();
             self::$instance->connect($settings['host'], $settings['port']);
+
+            if (isset($settings['prefix'])) {
+                self::$instance->setOption(\Redis::OPT_PREFIX, $settings['prefix'] . ':');
+            }
+
             return self::$instance;
         } else {
             return self::$instance;

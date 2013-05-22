@@ -35,6 +35,7 @@ class Redis
 
     public function __construct($settings)
     {
+        $t = microtime(true);
         $redis = new \Redis();
         $redis->connect($settings['host'], $settings['port']);
 
@@ -43,6 +44,16 @@ class Redis
         }
 
         self::$serviceInstance = $redis;
+
+        $queryTime = round((microtime(true) - $t) * 1000, 2);
+        self::logQuery(
+            array(
+                'command' => 'CONNECTION to ' . $settings['host'] . ':' . $settings['port'],
+                'time' => $queryTime
+            )
+        );
+        self::$_totalTime += $queryTime;
+        self::$_totalQueries++;
     }
 
     public static function init($settings)

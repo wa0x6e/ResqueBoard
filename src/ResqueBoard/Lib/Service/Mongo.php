@@ -35,7 +35,18 @@ class Mongo
 
     public function __construct($settings)
     {
+        $t = microtime(true);
         self::$serviceInstance = new \Mongo($settings['host'] . ':' . $settings['port']);
+
+        $queryTime = round((microtime(true) - $t) * 1000, 2);
+        self::logQuery(
+            array(
+                'command' => 'CONNECTION to ' . $settings['host'] . ':' . $settings['port'],
+                'time' => $queryTime
+            )
+        );
+        self::$_totalTime += $queryTime;
+        self::$_totalQueries++;
     }
 
     public static function init($settings)

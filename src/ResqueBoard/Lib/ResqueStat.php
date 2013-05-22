@@ -806,8 +806,7 @@ class ResqueStat
      */
     public function getJobsRepartionStats($limit = 10)
     {
-        $mongoService = Service::Mongo();
-        $mapReduceStats = new \MongoCollection($mongoService::$serviceInstance, 'map_reduce_stats');
+        $mapReduceStats = new \MongoCollection(Service::Mongo()->selectDB(Service::$settings['Mongo']['database']), 'map_reduce_stats');
         $startDate = $mapReduceStats->findOne(array('_id' => 'job_stats'), array('date'));
         if (!isset($startDate['date']) || empty($startDate['date'])) {
             $startDate = null;
@@ -841,7 +840,7 @@ class ResqueStat
         if ($startDate != null) {
             $conditions['$gte'] = $startDate;
         }
-        Service::Mongo()->command(
+        Service::Mongo()->selectDB(Service::$settings['Mongo']['database'])->command(
             array(
                 'mapreduce' => 'got_events',
                 'map' => $map,

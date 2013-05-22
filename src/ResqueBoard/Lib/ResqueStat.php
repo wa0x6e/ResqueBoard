@@ -59,10 +59,7 @@ class ResqueStat
     public function __construct($settings = array())
     {
         $this->settings = array(
-                'mongo' => array('host' => 'localhost', 'port' => 27017, 'database' => 'cube_development'),
-                'redis' => array('host' => '127.0.0.1', 'port' => 6379, 'database' => 0),
-                'cube'  => array('host' => 'localhost', 'port' => 1081),
-                'resquePrefix' => 'resque'
+            'resquePrefix' => 'resque'
         );
 
         $this->queues = array();
@@ -70,7 +67,7 @@ class ResqueStat
         $this->settings = array_merge($this->settings, $settings);
         $this->settings['resquePrefix'] = $this->settings['resquePrefix'] .':';
 
-        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
 
         $thisQueues =& $this->queues;
         $this->workers = array_map(
@@ -196,7 +193,7 @@ class ResqueStat
             self::JOB_STATUS_SCHEDULED => 'movescheduled'
         );
 
-        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
 
         if ($type === null) {
             $stats = array_combine(array_keys($validType), array_fill(0, count($validType), 0));
@@ -244,7 +241,7 @@ class ResqueStat
      */
     public function getWorker($workerId)
     {
-        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
         $collection = $cube->selectCollection('start_events');
         $workerStatsMongo = $collection->findOne(array('d.worker' => $workerId), array('d.queues'));
 
@@ -280,7 +277,7 @@ class ResqueStat
      */
     public function getQueues($fields = array(), $queues = array())
     {
-        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
         $queuesCollection = $cube->selectCollection('got_events');
 
         if (in_array('totaljobs', $fields) || empty($queues)) {
@@ -419,7 +416,7 @@ class ResqueStat
             return $this->getPendingJobs($options);
         }
 
-        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
         $jobsCollection = $cube->selectCollection('got_events');
 
         $conditions = array();
@@ -531,7 +528,7 @@ class ResqueStat
             $options['date_after'] = strtotime($options['date_after']);
         }
 
-        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
 
 
         $conditions = array();
@@ -647,7 +644,7 @@ class ResqueStat
      */
     public function getLogs($options = array())
     {
-        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
 
         $eventTypeList = array('check' ,'done', 'fail', 'fork', 'found', 'got', 'kill', 'process', 'prune', 'reconnect', 'shutdown', 'sleep', 'start');
 
@@ -786,7 +783,7 @@ class ResqueStat
      */
     public function getJobsRepartionStats($limit = 10)
     {
-        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
         $mapReduceStats = new \MongoCollection($cube, 'map_reduce_stats');
         $startDate = $mapReduceStats->findOne(array('_id' => 'job_stats'), array('date'));
         if (!isset($startDate['date']) || empty($startDate['date'])) {
@@ -852,7 +849,7 @@ class ResqueStat
      */
     public function getJobsStats($options = array())
     {
-        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
 
         $filter = array();
 
@@ -948,7 +945,7 @@ class ResqueStat
     {
         $jobIds = array_keys($jobs);
 
-        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
 
 
         $jobsCursor = $cube->selectCollection('done_events')->find(array('d.job_id' => array('$in' => $jobIds)));
@@ -1013,7 +1010,7 @@ class ResqueStat
      */
     private function setupIndexes()
     {
-        $cube = Service::Mongo()->selectDB($this->settings['mongo']['database']);
+        $cube = Service::Mongo()->selectDB(Service::$settings['Mongo']['database']);
         $cube->selectCollection('got_events')->ensureIndex('d.args.queue');
         $cube->selectCollection('got_events')->ensureIndex('d.args.payload.class');
         $cube->selectCollection('got_events')->ensureIndex('d.worker');

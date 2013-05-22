@@ -30,20 +30,6 @@
  * @var array
  */
 $settings = array(
-        /*'mongo' => array(
-         	'host' => 'localhost',
-            'port' => 27017,
-            'database' => 'cube_development'
-        ),*/
-        /*'redis' => array(
-         	'host' => '127.0.0.1',
-         	'port' => 6379,
-         	'database' => 0
-        ),*/
-       'cube' => array(
-            'host' => '127.0.0.1',
-            'port' => 1081
-        ),
         'cubePublic' => array(
             'host' => $_SERVER['SERVER_NAME'],
             'port' => 1081
@@ -83,7 +69,9 @@ define('TITLE_SEP', ' | ');
 ResqueBoard\Lib\Service\Service::$settings = array(
     'Redis' => array(
         'host' => '127.0.0.1',
-        'port' => 6379
+        'port' => 6379,
+        'database' => 0,
+        'prefix' => 'resque'
     ),
     'Mongo' => array(
         'host' => 'localhost',

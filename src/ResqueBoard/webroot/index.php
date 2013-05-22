@@ -545,11 +545,30 @@ $app->get(
     '/api/jobs/stats/:start/:end',
     function ($start, $end) use ($app, $settings) {
         try {
+            $app->response()->header("Content-Type", "application/json");
+            $cache = dirname(__DIR__) . '/cache/jobs-stats-' . $start.$end;
+
+            if ($start < $end && $end < time()) {
+                if (file_exists($cache)) {
+                    echo file_get_contents($cache);
+                    return true;
+                }
+
+                $jobs = array();
+                $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+                $jobs = $resqueStat->getJobsCount(array('date_after' => (int)$start, 'date_before' => (int)$end+60));
+                $output = json_encode($jobs);
+                file_put_contents($cache, $output);
+
+                echo $output;
+                return true;
+            }
+
             $jobs = array();
             $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
-            $jobs =  $resqueStat->getJobsCount(array('date_after' => (int)$start, 'date_before' => (int)$end+60));
+            $jobs = $resqueStat->getJobsCount(array('date_after' => (int)$start, 'date_before' => (int)$end+60));
 
-            $app->response()->header("Content-Type", "application/json");
+
             echo json_encode($jobs);
         } catch (\Exception $e) {
             $app->error($e);

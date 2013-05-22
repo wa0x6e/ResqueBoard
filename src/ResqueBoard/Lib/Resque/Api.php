@@ -29,11 +29,11 @@ namespace ResqueBoard\Lib\Resque;
  */
 class Api
 {
-    public $workerStatus = null;
+    public $ResqueStatus = null;
 
     public function __construct()
     {
-        $this->workerStatus = new WorkerStatus();
+        $this->ResqueStatus = new \ResqueStatus\ResqueStatus(\ResqueBoard\Lib\Service\Service::Redis());
     }
 
 
@@ -61,17 +61,17 @@ class Api
     {
         $id = $this->getProcessId($worker);
 
-        /* if (!array_key_exists($worker, $this->workerStatus->getWorkers())) {
+        /* if (!array_key_exists($worker, $this->ResqueStatus->getWorkers())) {
             throw new WorkerNotExistException();
         }
         */
-        if (in_array($worker, $this->workerStatus->getPausedWorker())) {
+        if (in_array($worker, $this->ResqueStatus->getPausedWorker())) {
             throw new WorkerAlreadyPausedException();
         }
 
         $res = $this->sendSignal($id, '-USR2');
         if ($res === true) {
-            $this->workerStatus->setPausedWorker($worker);
+            $this->ResqueStatus->setPausedWorker($worker);
             return true;
         }
         return $res;
@@ -88,14 +88,14 @@ class Api
      */
     public function resume($worker)
     {
-        if (!in_array($worker, $this->workerStatus->getPausedWorker())) {
+        if (!in_array($worker, $this->ResqueStatus->getPausedWorker())) {
             throw new WorkerNotPausedException();
         }
 
         $res = $this->sendSignal($this->getProcessId($worker), '-CONT');
 
         if ($res === true) {
-            $this->workerStatus->setActiveWorker($worker);
+            $this->ResqueStatus->setActiveWorker($worker);
         }
         return $res;
     }

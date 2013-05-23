@@ -590,7 +590,7 @@ $app->get(
     '/api/scheduled-jobs/stats/:start/:end',
     function ($start, $end) use ($app) {
         try {
-            $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat($settings);
+            $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat();
             $jobs = $resqueSchedulerStat->getScheduledJobsCount((int)$start, (int)$end+60, true);
 
             $app->response()->header("Content-Type", "application/json");
@@ -605,7 +605,7 @@ $app->get(
     '/api/scheduled-jobs/:start/:end',
     function ($start, $end) use ($app) {
         try {
-            $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat($settings);
+            $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat();
             $jobs = $resqueSchedulerStat->getJobs((int)$start, (int)$end, true);
 
             $app->response()->header("Content-Type", "application/json");
@@ -621,7 +621,7 @@ $app->get(
     function () use ($app) {
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat();
-            $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat($settings);
+            $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat();
 
             $args = cleanArgs($app->request()->params());
             $stats = array();

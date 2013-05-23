@@ -12,6 +12,8 @@
 
 namespace ResqueBoard\Lib;
 
+use ResqueBoard\Lib\Service\Service;
+
 class ResqueSchedulerStat extends ResqueStat
 {
     /**
@@ -24,8 +26,8 @@ class ResqueSchedulerStat extends ResqueStat
     public function getScheduledJobsCount($start = 0, $end = null, $full = false)
     {
         if ($end === null) {
-            $end = $this->getRedis()->zRevRange(
-                $this->settings['resquePrefix'] . \ResqueScheduler\ResqueScheduler::QUEUE_NAME,
+            $end = Service::Redis()->zRevRange(
+                \ResqueScheduler\ResqueScheduler::QUEUE_NAME,
                 0,
                 0
             );
@@ -42,16 +44,16 @@ class ResqueSchedulerStat extends ResqueStat
             return 0;
         }
 
-        $timestamps = $this->getRedis()->zrangebyscore($this->settings['resquePrefix'] . \ResqueScheduler\ResqueScheduler::QUEUE_NAME, $start, $end);
+        $timestamps = Service::Redis()->zrangebyscore(\ResqueScheduler\ResqueScheduler::QUEUE_NAME, $start, $end);
         if (empty($timestamps)) {
             return 0;
         }
 
-        $redisPipeline = $this->getRedis()->multi(\Redis::PIPELINE);
+        $pipelineCommands = array();
         foreach ($timestamps as $key) {
-            $redisPipeline->llen($this->settings['resquePrefix'] . \ResqueScheduler\ResqueScheduler::QUEUE_NAME . ':' . $key);
+            $pipelineCommands[] = array('llen', \ResqueScheduler\ResqueScheduler::QUEUE_NAME . ':' . $key);
         }
-        $timestampLength = $redisPipeline->exec();
+        $timestampLength = Service::Redis()->pipeline($pipelineCommands, \Redis::PIPELINE);
 
         if ($full) {
             return array_combine($timestamps, $timestampLength);
@@ -72,27 +74,27 @@ class ResqueSchedulerStat extends ResqueStat
     {
 
         if ($end === null) {
-            $end = (int) $this->getRedis()->zcard($this->settings['resquePrefix'] . \ResqueScheduler\ResqueScheduler::QUEUE_NAME);
+            $end = (int) Service::Redis()->zcard(\ResqueScheduler\ResqueScheduler::QUEUE_NAME);
         }
 
-        $timestamps = $this->getRedis()->zrangebyscore($this->settings['resquePrefix'] . \ResqueScheduler\ResqueScheduler::QUEUE_NAME, $start, $end);
+        $timestamps = Service::Redis()->zrangebyscore(\ResqueScheduler\ResqueScheduler::QUEUE_NAME, $start, $end);
 
         if (empty($timestamps)) {
             return array();
         }
 
-        $redisPipeline = $this->getRedis()->multi(\Redis::PIPELINE);
+        $pipelineCommands = array();
         foreach ($timestamps as $key) {
-            $redisPipeline->llen($this->settings['resquePrefix'] . \ResqueScheduler\ResqueScheduler::QUEUE_NAME . ':' . $key);
+            $pipelineCommands[] = array('llen', \ResqueScheduler\ResqueScheduler::QUEUE_NAME . ':' . $key);
         }
-        $timestampLength = $redisPipeline->exec();
+        $timestampLength = Service::Redis()->pipeline($pipelineCommands, \Redis::PIPELINE);
 
         $i = 0;
-        $redisPipeline = $this->getRedis()->multi(\Redis::PIPELINE);
+        $pipelineCommands = array();
         foreach ($timestamps as $key) {
-            $redisPipeline->lrange($this->settings['resquePrefix'] . \ResqueScheduler\ResqueScheduler::QUEUE_NAME . ':' . $key, 0, (int)$timestampLength[$i++]);
+            $pipelineCommands[] = array('lrange', array(\ResqueScheduler\ResqueScheduler::QUEUE_NAME . ':' . $key, 0, (int)$timestampLength[$i++]));
         }
-        $jobs = $redisPipeline->exec();
+        $jobs = Service::Redis()->pipeline($pipelineCommands, \Redis::PIPELINE);
 
         $results = array();
 

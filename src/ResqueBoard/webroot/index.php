@@ -36,9 +36,9 @@ $app->runtime = $settings;
 
 $app->get(
     '/',
-    function () use ($app, $settings) {
+    function () use ($app) {
         try {
-            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $resqueStat = new ResqueBoard\Lib\ResqueStat();
 
             render(
                 $app,
@@ -90,9 +90,9 @@ $app->get(
 
 $app->get(
     '/jobs',
-    function () use ($app, $settings) {
+    function () use ($app) {
         try {
-            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $resqueStat = new ResqueBoard\Lib\ResqueStat();
 
             render(
                 $app,
@@ -112,9 +112,9 @@ $app->get(
 
 $app->get(
     '/jobs/distribution/class',
-    function () use ($app, $settings) {
+    function () use ($app) {
         try {
-            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $resqueStat = new ResqueBoard\Lib\ResqueStat();
 
             render(
                 $app,
@@ -132,9 +132,9 @@ $app->get(
 
 $app->get(
     '/jobs/distribution/load(/:year/:month)',
-    function ($year = null, $month = null) use ($app, $settings) {
+    function ($year = null, $month = null) use ($app) {
         try {
-            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $resqueStat = new ResqueBoard\Lib\ResqueStat();
 
             if ($year === null && $month === null) {
                 $start = new \DateTime();
@@ -155,7 +155,7 @@ $app->get(
                 'jobs_load_distribution',
                 array(
                     'jobsMatrix' => $resqueStat->getJobsMatrix($start, $end, ResqueBoard\Lib\ResqueStat::CUBE_STEP_1DAY),
-                    'startDate' => new DateTime(current($firstJob)['time']),
+                    'startDate' => new \DateTime(),
                     'currentDate' => $start
                 )
             );
@@ -168,9 +168,9 @@ $app->get(
 
 $app->map(
     '/jobs/view',
-    function () use ($app, $settings) {
+    function () use ($app) {
         try {
-            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $resqueStat = new ResqueBoard\Lib\ResqueStat();
             $errors  = array();
 
             $activeWorkers = $resqueStat->getWorkers();
@@ -273,9 +273,9 @@ $app->map(
 
 $app->get(
     '/jobs/pending',
-    function () use ($app, $settings) {
+    function () use ($app) {
         try {
-            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $resqueStat = new ResqueBoard\Lib\ResqueStat();
 
             $resultLimits = array(15, 50, 100);
             $args = cleanArgs($app->request()->params());
@@ -319,10 +319,10 @@ $app->get(
 
 $app->get(
     '/jobs/overview/:range(/:start)',
-    function ($range, $start = 'now') use ($app, $settings) {
+    function ($range, $start = 'now') use ($app) {
         try {
 
-            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $resqueStat = new ResqueBoard\Lib\ResqueStat();
 
             $rangeWhitelist = array(
                 'hour' => array('step' => ResqueBoard\Lib\ResqueStat::CUBE_STEP_10SEC),
@@ -380,7 +380,12 @@ $app->get(
             $jobStats = $resqueStat->getJobsStats(
                 array(
                     'start' => $rangeWhitelist[$range]['start']->format('c'),
-                    'end' => $rangeWhitelist[$range]['end']->format('c')
+                    'end' => $rangeWhitelist[$range]['end']->format('c'),
+                    'fields' => array(
+                        'total',
+                        ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED,
+                        ResqueBoard\Lib\ResqueStat::JOB_STATUS_SCHEDULED
+                    )
                 )
             );
 
@@ -409,7 +414,7 @@ $app->get(
 
 $app->get(
     '/jobs/scheduled',
-    function () use ($app, $settings) {
+    function () use ($app) {
         try {
             render(
                 $app,
@@ -427,9 +432,9 @@ $app->get(
 
 $app->map(
     '/logs/browse',
-    function () use ($app, $settings, $logLevels, $logTypes) {
+    function () use ($app, $logLevels, $logTypes) {
         try {
-            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+
             $errors  = array();
 
             $resultLimits = array(25, 50, 100);
@@ -487,13 +492,14 @@ $app->map(
 
 
             if (empty($errors) && cleanArgs($app->request()->params()) != array()) {
+                $resqueStat = new ResqueBoard\Lib\ResqueStat();
                 $logs = $resqueStat->getLogs($conditions);
+                $pagination->totalResult = $resqueStat->getLogs(array_merge($conditions, array('type' => 'count')));
             } else {
                 $logs = null;
+                $pagination->totalResult = 0;
             }
 
-
-            $pagination->totalResult = $resqueStat->getLogs(array_merge($conditions, array('type' => 'count')));
             $pagination->totalPage = ceil($pagination->totalResult / $pagination->limit);
             $pagination->uri = cleanArgs($app->request()->params());
 
@@ -524,9 +530,9 @@ $app->map(
  */
 $app->get(
     '/api/jobs/:start/:end',
-    function ($start, $end) use ($app, $settings) {
+    function ($start, $end) use ($app) {
         try {
-            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $resqueStat = new ResqueBoard\Lib\ResqueStat();
             $jobs = array_values($resqueStat->getJobs(array('date_after' => (int)$start, 'date_before' => (int)$end)));
             $app->response()->header("Content-Type", "application/json");
             echo json_encode($jobs);
@@ -543,7 +549,7 @@ $app->get(
  */
 $app->get(
     '/api/jobs/stats/:start/:end',
-    function ($start, $end) use ($app, $settings) {
+    function ($start, $end) use ($app) {
         try {
             $app->response()->header("Content-Type", "application/json");
             $cache = dirname(__DIR__) . '/cache/jobs-stats-' . $start.$end;
@@ -555,7 +561,7 @@ $app->get(
                 }
 
                 $jobs = array();
-                $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+                $resqueStat = new ResqueBoard\Lib\ResqueStat();
                 $jobs = $resqueStat->getJobsCount(array('date_after' => (int)$start, 'date_before' => (int)$end+60));
                 $output = json_encode($jobs);
                 file_put_contents($cache, $output);
@@ -565,7 +571,7 @@ $app->get(
             }
 
             $jobs = array();
-            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $resqueStat = new ResqueBoard\Lib\ResqueStat();
             $jobs = $resqueStat->getJobsCount(array('date_after' => (int)$start, 'date_before' => (int)$end+60));
 
 
@@ -582,7 +588,7 @@ $app->get(
  */
 $app->get(
     '/api/scheduled-jobs/stats/:start/:end',
-    function ($start, $end) use ($app, $settings) {
+    function ($start, $end) use ($app) {
         try {
             $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat($settings);
             $jobs = $resqueSchedulerStat->getScheduledJobsCount((int)$start, (int)$end+60, true);
@@ -597,7 +603,7 @@ $app->get(
 
 $app->get(
     '/api/scheduled-jobs/:start/:end',
-    function ($start, $end) use ($app, $settings) {
+    function ($start, $end) use ($app) {
         try {
             $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat($settings);
             $jobs = $resqueSchedulerStat->getJobs((int)$start, (int)$end, true);
@@ -612,9 +618,9 @@ $app->get(
 
 $app->get(
     '/api/stats',
-    function () use ($app, $settings) {
+    function () use ($app) {
         try {
-            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $resqueStat = new ResqueBoard\Lib\ResqueStat();
             $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat($settings);
 
             $args = cleanArgs($app->request()->params());
@@ -677,10 +683,10 @@ $app->get(
  */
 $app->get(
     '/api/workers',
-    function () use ($app, $settings) {
+    function () use ($app) {
 
         try {
-            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $resqueStat = new ResqueBoard\Lib\ResqueStat();
             $workers = $resqueStat->getWorkers();
 
             $results = array();
@@ -711,7 +717,7 @@ $app->get(
 
 $app->get(
     '/api/workers/getinfo/:workerId',
-    function ($workerId) use ($app, $settings) {
+    function ($workerId) use ($app) {
 
         $resqueApi = new ResqueBoard\Lib\ResqueApi($settings['resqueConfig']);
         $infos = $resqueApi->getInfos($workerId);
@@ -723,7 +729,7 @@ $app->get(
 
 $app->get(
     '/api/workers/stop/:worker',
-    function ($worker) use ($app, $settings) {
+    function ($worker) use ($app) {
 
         $app->response()->header("Content-Type", "application/json");
 
@@ -752,7 +758,7 @@ $app->get(
 
 $app->get(
     '/api/workers/pause/:worker',
-    function ($worker) use ($app, $settings) {
+    function ($worker) use ($app) {
 
         $app->response()->header("Content-Type", "application/json");
 
@@ -784,7 +790,7 @@ $app->get(
 
 $app->get(
     '/api/workers/resume/:worker',
-    function ($worker) use ($app, $settings) {
+    function ($worker) use ($app) {
 
         $app->response()->header("Content-Type", "application/json");
 
@@ -816,14 +822,14 @@ $app->get(
 
 $app->get(
     '/api/queues',
-    function () use ($app, $settings) {
+    function () use ($app) {
 
         try {
             $params = cleanArgs($app->request()->params());
             $fields = isset($params['fields']) ? explode(',', $params['fields']) : array();
             $queues = isset($params['queues']) ? explode(',', $params['queues']) : array();
 
-            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $resqueStat = new ResqueBoard\Lib\ResqueStat();
 
             $app->response()->header("Content-Type", "application/json");
             echo json_encode(array_values($resqueStat->getQueues($fields, $queues)));
@@ -835,10 +841,10 @@ $app->get(
 
 $app->get(
     '/render/worker/:layout/:workerId',
-    function ($layout, $workerId) use ($app, $settings) {
+    function ($layout, $workerId) use ($app) {
 
         try {
-            $resqueStat = new ResqueBoard\Lib\ResqueStat($settings);
+            $resqueStat = new ResqueBoard\Lib\ResqueStat();
 
             switch($layout) {
                 case 'table':
@@ -869,7 +875,7 @@ $app->error(
 
 $app->map(
     '/api/workers/start',
-    function () use ($app, $settings) {
+    function () use ($app) {
 
         if ($settings['readOnly']) {
             echo json_encode(array('status' => false));

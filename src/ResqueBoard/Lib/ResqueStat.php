@@ -58,7 +58,7 @@ class ResqueStat
      */
     public function __construct($settings = array())
     {
-        $this->settings = array(
+        /* $this->settings = array(
             'resquePrefix' => 'resque'
         );
 
@@ -167,7 +167,7 @@ class ResqueStat
         $this->stats['total']['processed'] = max($this->stats['total']['processed'], Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events')->find()->count());
         $this->stats['total']['failed'] = max($this->stats['total']['failed'], Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'fail_events')->find()->count());
 
-        $this->setupIndexes();
+        $this->setupIndexes();*/
     }
 
     /**
@@ -220,15 +220,14 @@ class ResqueStat
             Service::Redis()->smembers('workers')
         );
 
-        $redisPipeline = Service::Redis()->multi(\Redis::PIPELINE);
+        $pipelineCommands = array();
         foreach ($this->workers as $worker) {
-            $redisPipeline
-            ->get('worker:' . $worker['fullname'] . ':started')
-            ->get('stat:processed:' . $worker['fullname'])
-            ->get('stat:failed:' . $worker['fullname']);
+            $pipelineCommands[] = array('get', 'worker:' . $worker['fullname'] . ':started');
+            $pipelineCommands[] = array('get', 'stat:processed:' . $worker['fullname']);
+            $pipelineCommands[] = array('get', 'stat:failed:' . $worker['fullname']);
         }
 
-        $result = $redisPipeline->exec();
+        $result = Service::Redis()->pipeline($pipelineCommands);
         unset($redisPipeline);
 
         for ($i = 0, $total = count($result), $j = 0; $i < $total; $i += 3) {
@@ -356,13 +355,12 @@ class ResqueStat
         }
 
         if (in_array('pendingjobs', $fields)) {
-            $pipeline = Service::Redis()->multi(\Redis::PIPELINE);
+            $pipelineCommands = array();
             foreach ($r as $name => $stats) {
-                $keyName = 'queue:' . $name;
-                $pipeline->llen($keyName);
+                $pipelineCommands[] = array('llen', 'queue:' . $name);
             }
 
-            $count = $pipeline->exec();
+            $count = Service::Redis()->pipeline($pipelineCommands);
             $i = 0;
             foreach ($r as $name => $stats) {
                 $r[$name]['stats']['pendingjobs'] = $count[$i];
@@ -644,12 +642,12 @@ class ResqueStat
             $queuesList = array($queuesList);
         }
 
-        $pipeline = Service::Redis()->multi(\Redis::PIPELINE);
+        $pipelineCommands = array();
         foreach ($queuesList as $queueName) {
-            $pipeline->llen('queue:' . $queueName);
+            $pipelineCommands[] = array('llen', 'queue:' . $queueName);
         }
 
-        return array_combine($queuesList, $pipeline->exec());
+        return array_combine($queuesList, Service::Redis()->pipeline($pipelineCommands));
     }
 
 
@@ -876,41 +874,59 @@ class ResqueStat
         }
 
         $stats = new \stdClass();
-        $stats->total = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events')->find($filter)->count();
-        $stats->count[self::JOB_STATUS_COMPLETE] = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'done_events')->find($filter)->count();
-        $stats->count[self::JOB_STATUS_FAILED] = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'fail_events')->find($filter)->count();
-        $stats->perc[self::JOB_STATUS_FAILED] =
-            ($stats->total == 0)
-                ? 0
-                : round($stats->count[self::JOB_STATUS_FAILED] / $stats->total * 100, 2);
-        $stats->count[self::JOB_STATUS_WAITING] = 0;
-        $stats->count[self::JOB_STATUS_SCHEDULED] = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'movescheduled_events')->find($filter)->count();
-        $stats->perc[self::JOB_STATUS_SCHEDULED] =
-            ($stats->total == 0)
-                ? 0
-                : round($stats->count[self::JOB_STATUS_SCHEDULED] / $stats->total * 100, 2);
 
-        $queues = $this->getAllQueues();
-        $redisPipeline = Service::Redis()->multi(\Redis::PIPELINE);
-        foreach ($queues as $queueName) {
-            $redisPipeline->llen('queue:' . $queueName);
+        if (in_array('total', $options['fields'])) {
+            $stats->total = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events')->find($filter)->count();
         }
-        $stats->count[self::JOB_STATUS_WAITING] = array_sum($redisPipeline->exec());
+
+        if (in_array(self::JOB_STATUS_COMPLETE, $options['fields'])) {
+            $stats->count[self::JOB_STATUS_COMPLETE] = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'done_events')->find($filter)->count();
+        }
+
+        if (in_array(self::JOB_STATUS_FAILED, $options['fields'])) {
+            $stats->count[self::JOB_STATUS_FAILED] = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'fail_events')->find($filter)->count();
+            $stats->perc[self::JOB_STATUS_FAILED] =
+                ($stats->total == 0)
+                    ? 0
+                    : round($stats->count[self::JOB_STATUS_FAILED] / $stats->total * 100, 2);
+        }
+
+        $stats->count[self::JOB_STATUS_WAITING] = 0;
+
+        if (in_array(self::JOB_STATUS_SCHEDULED, $options['fields'])) {
+            $stats->count[self::JOB_STATUS_SCHEDULED] = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'movescheduled_events')->find($filter)->count();
+            $stats->perc[self::JOB_STATUS_SCHEDULED] =
+                ($stats->total == 0)
+                    ? 0
+                    : round($stats->count[self::JOB_STATUS_SCHEDULED] / $stats->total * 100, 2);
+        }
+
+        if (in_array(self::JOB_STATUS_WAITING, $options['fields'])) {
+            $queues = $this->getAllQueues();
+            $pipelineCommands = array();
+            foreach ($queues as $queueName) {
+                $pipelineCommands[] = array('llen', 'queue:' . $queueName);
+            }
+            $stats->count[self::JOB_STATUS_WAITING] = array_sum(Service::Redis()->pipeline($pipelineCommands));
+        }
 
         $stats->count[self::JOB_STATUS_RUNNING] = 0; // TODO
-        $stats->total_active = $this->stats['active']['processed'];
 
         $stats->oldest = null;
         $stats->newest = null;
 
-        $cursors = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events')->find(array(), array('t'))->sort(array('t' => 1))->limit(1);
-        foreach ($cursors as $cursor) {
-            $stats->oldest = new \DateTime('@'.$cursor['t']->sec);
+        if (in_array('oldest', $options['fields'])) {
+            $cursors = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events')->find(array(), array('t'))->sort(array('t' => 1))->limit(1);
+            foreach ($cursors as $cursor) {
+                $stats->oldest = new \DateTime('@'.$cursor['t']->sec);
+            }
         }
 
-        $cursors = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events')->find(array(), array('t'))->sort(array('t' => -1))->limit(1);
-        foreach ($cursors as $cursor) {
-            $stats->newest = new \DateTime('@'.$cursor['t']->sec);
+        if (in_array('newest', $options['fields'])) {
+            $cursors = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events')->find(array(), array('t'))->sort(array('t' => -1))->limit(1);
+            foreach ($cursors as $cursor) {
+                $stats->newest = new \DateTime('@'.$cursor['t']->sec);
+            }
         }
 
 
@@ -970,18 +986,18 @@ class ResqueStat
         }
 
         if (!empty($jobIds)) {
-            $redisPipeline = Service::Redis()->multi(\Redis::PIPELINE);
 
             $jobsCursor = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'fail_events')->find(array('d.job_id' => array('$in' => $jobIds)));
+            $pipelineCommands = array();
             foreach ($jobsCursor as $failedJob) {
                 $jobs[$failedJob['d']['job_id']]['status'] = self::JOB_STATUS_FAILED;
                 $jobs[$failedJob['d']['job_id']]['log'] = $failedJob['d']['log'];
                 $jobs[$failedJob['d']['job_id']]['took'] = $failedJob['d']['time'];
-                $redisPipeline->get('failed:' . $failedJob['d']['job_id']);
+                $pipelineCommands[] = array('get', 'failed:' . $failedJob['d']['job_id']);
                 unset($jobIds[array_search($failedJob['d']['job_id'], $jobIds)]);
             }
 
-            $failedTrace = array_filter($redisPipeline->exec());
+            $failedTrace = array_filter(Service::Redis()->pipeline($pipelineCommands));
 
             foreach ($failedTrace as $trace) {
                 $trace = unserialize($trace);

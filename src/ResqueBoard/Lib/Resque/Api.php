@@ -46,9 +46,9 @@ class Api
      */
     public function stop($worker)
     {
-        list($host, $pid, $queue) = explode(':', $worker);
+        $pid = $this->getProcessId($worker);
         $this->ResqueStatus->removeWorker($pid);
-        return $this->sendSignal($this->getProcessId($worker), 'QUIT');
+        return $this->sendSignal($pid, 'QUIT');
     }
 
 

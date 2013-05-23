@@ -29,8 +29,10 @@ class ApiTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->mock = $this->getMock('ResqueBoard\Lib\Resque\Api', array('sendSignal'));
+        $this->mock = $this->getMock('ResqueBoard\Lib\Resque\Api', array('sendSignal'), array(), '', false);
         $this->mock->expects($this->any())->method('sendSignal')->will($this->returnValue(true));
+        $this->mock->ResqueStatus = $this->ResqueStatus = $this->getMock('\ResqueStatus\ResqueStatus', array(), array(new \stdClass()));
+
 
         $this->validWorkerId = 'hostname:9999999:queue';
         $this->invalidWorkerId = 'hostname:_78:queue';
@@ -47,6 +49,8 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testStopWorker()
     {
+        $this->ResqueStatus->expects($this->once())->method('removeWorker')->with($this->equalTo('9999999'));
+        $this->mock->expects($this->once())->method('sendSignal')->with($this->equalTo('9999999'), $this->equalTo('QUIT'));
         $this->assertTrue($this->mock->stop($this->validWorkerId));
     }
 
@@ -55,6 +59,9 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testPauseWorker()
     {
+        $this->ResqueStatus->expects($this->once())->method('getPausedWorker')->will($this->returnValue(array()));
+        $this->mock->expects($this->once())->method('sendSignal')->with($this->equalTo('9999999'), $this->equalTo('-USR2'));
+        $this->ResqueStatus->expects($this->once())->method('setPausedWorker')->with($this->equalTo($this->validWorkerId));
         $this->assertTrue($this->mock->pause($this->validWorkerId));
     }
 
@@ -63,6 +70,9 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testResumeWorker()
     {
+        $this->ResqueStatus->expects($this->once())->method('getPausedWorker')->will($this->returnValue(array($this->validWorkerId)));
+        $this->mock->expects($this->once())->method('sendSignal')->with($this->equalTo('9999999'), $this->equalTo('-CONT'));
+        $this->ResqueStatus->expects($this->once())->method('setPausedWorker')->with($this->equalTo($this->validWorkerId), $this->equalTo(false));
         $this->assertTrue($this->mock->resume($this->validWorkerId));
     }
 
@@ -72,6 +82,8 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testStopWorkerWithInvalidWorkerId()
     {
+        $this->ResqueStatus->expects($this->never())->method('removeWorker');
+        $this->mock->expects($this->never())->method('sendSignal');
         $this->mock->stop($this->invalidWorkerId);
     }
 
@@ -81,6 +93,8 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testPauseWorkerWithInvalidWorkerId()
     {
+        $this->ResqueStatus->expects($this->never())->method('removeWorker');
+        $this->mock->expects($this->never())->method('sendSignal');
         $this->mock->pause($this->invalidWorkerId);
     }
 
@@ -90,6 +104,9 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testResumeWorkerWithNotPausedWorker()
     {
+        $this->ResqueStatus->expects($this->once())->method('getPausedWorker')->will($this->returnValue(array()));
+        $this->ResqueStatus->expects($this->never())->method('setPausedWorker');
+        $this->mock->expects($this->never())->method('sendSignal');
         $this->mock->resume($this->invalidWorkerId);
     }
 
@@ -99,7 +116,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetProcessId()
     {
-        $this->assertEquals('125', $this->getProcessIdReflection->invoke(new Api(), 'hostname:125:queue'));
+        $this->assertEquals('125', $this->getProcessIdReflection->invoke($this->mock, 'hostname:125:queue'));
     }
 
     /**
@@ -108,7 +125,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetProcessIdWithInvalidWorkerIdThatHasANumericButNegativeProcessId()
     {
-        $this->getProcessIdReflection->invoke(new Api(), 'hostname:-125');
+        $this->getProcessIdReflection->invoke($this->mock, 'hostname:-125');
     }
 
     /**
@@ -117,7 +134,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetProcessIdWithInvalidWorkerIdThatHasMoreTokensThanExpected()
     {
-        $this->getProcessIdReflection->invoke(new Api(), 'hostname:125:as:25');
+        $this->getProcessIdReflection->invoke($this->mock, 'hostname:125:as:25');
     }
 
     /**
@@ -126,7 +143,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetProcessIdWithInvalidWorkerIdThatHasLessTokensThanExpected()
     {
-        $this->getProcessIdReflection->invoke(new Api(), 'hostname:125');
+        $this->getProcessIdReflection->invoke($this->mock, 'hostname:125');
     }
 
     /**
@@ -134,7 +151,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testsendSignalKillANonExistentProcess()
     {
-        $this->assertRegExp('/kill/', $this->sendSignalReflection->invoke(new Api(), '9999999', 'SIGTERM'));
+        $this->stringContains('kill', $this->sendSignalReflection->invoke($this->mock, '9999999', 'SIGTERM'));
     }
 
     /**
@@ -142,6 +159,6 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testsendSignalKillAProcessWithWrongPermission()
     {
-        $this->assertRegExp('/kill/', $this->sendSignalReflection->invoke(new Api(), '1', 'SIGTERM'));
+        $this->stringContains('kill', $this->sendSignalReflection->invoke($this->mock, '1', 'SIGTERM'));
     }
 }

@@ -70,7 +70,7 @@ class Redis
         $t = microtime(true);
         $redisPipeline = self::$serviceInstance->multi($type);
         foreach ($commands as $command) {
-            call_user_func_array(array($redisPipeline, $command[0]), array($command[1]));
+            call_user_func_array(array($redisPipeline, $command[0]), (array)$command[1]);
         }
         $results = $redisPipeline->exec();
         $queryTime = round((microtime(true) - $t) * 1000, 2);

@@ -45,12 +45,12 @@ $config = array(
  * @var array
  */
 $logLevels = array(
-        100 => array('class' => 'label-success', 'name' => 'debug'),
-        200 => array('class' => 'label-info', 'name' => 'info'),
-        300 => array('class' => 'label-warning', 'name' => 'warning'),
-        400 => array('class' => 'label-important', 'name' => 'error'),
-        500 => array('class' => 'label-inverse', 'name' => 'critical'),
-        550 => array('class' => 'label-inverse', 'name' => 'alert')
+    100 => array('class' => 'label-success', 'name' => 'debug'),
+    200 => array('class' => 'label-info', 'name' => 'info'),
+    300 => array('class' => 'label-warning', 'name' => 'warning'),
+    400 => array('class' => 'label-important', 'name' => 'error'),
+    500 => array('class' => 'label-inverse', 'name' => 'critical'),
+    550 => array('class' => 'label-inverse', 'name' => 'alert')
 );
 
 /**
@@ -154,5 +154,3 @@ $settings['nav'] = array(
             )
      )
 );
-
-

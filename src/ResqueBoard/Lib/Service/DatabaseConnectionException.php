@@ -10,7 +10,7 @@
  * @author           Wan Qi Chen <kami@kamisama.me>
  */
 
-namespace ResqueBoard\Lib;
+namespace ResqueBoard\Lib\Service;
 
 class DatabaseConnectionException extends \Exception
 {

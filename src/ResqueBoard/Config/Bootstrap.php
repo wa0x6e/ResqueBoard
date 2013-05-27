@@ -34,7 +34,7 @@ require dirname(__FILE__) . DS . 'Core.php';
  * @var array
  */
 $config = array(
-    'debug' => false,
+    'debug' => DEBUG,
     'view' => 'ResqueBoard\View\MyView',
     'templates.path' => ROOT . DS .'View'
 );

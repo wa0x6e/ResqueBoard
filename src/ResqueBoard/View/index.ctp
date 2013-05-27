@@ -21,16 +21,20 @@
 
 <?php \ResqueBoard\Lib\PageHelper::renderJobStats($stats); ?>
 
-<div class="ftr-bloc" ng-controller="LatestJobsGraphCtrl">
+<div class="ftr-bloc" ng-controller="lastestJobGraphController">
 	<h3>Last activities</h3>
-	<div id="lastest-jobs"></div>
+	<div id="lastest-jobs" ng-show="_init==1"></div>
+	<placeholder status="_init" error-code="_errorCode" loading-content-name="lastest job activities"
+	content-name="active workers" icon="icon-cogs" init="init()"></placeholder>
 	<div id="job-details" class="modal hide">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal">×</button>
-			<h3>Jobs <span class="badge badge-info">{{jobs.length}}</span></h3>
+			<h3>Jobs <span ng-show="jobs.length>0" class="badge badge-info">{{jobs.length}}</span></h3>
 		</div>
 		<div class="modal-body">
 			<ng-include src="'/partials/jobs-list.html'"></ng-include>
+			<placeholder status="jobmodal._init" error-code="jobmodal._errorCode" loading-content-name="list of jobs"
+			content-name="jobs" icon="icon-cogs" init="fillModal(jobmodal.lastTime)"></placeholder>
 		</div>
 	</div>
 </div>

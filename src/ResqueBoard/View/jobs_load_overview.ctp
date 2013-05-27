@@ -162,14 +162,7 @@ $headers = array(
 
 
 ?>
-
-	<script type="text/javascript">
-	$(document).ready(function() {
-		initJobsOverview();
-	});
-	</script>
-
-	<div class="full-width">
+	<div class="full-width" ng-controller="loadOverviewController">
 		    <ul class="nav nav-tabs page-nav-tab" id="date-range">
 		    	<?php
 		    		foreach ($ranges as $range => $info) {

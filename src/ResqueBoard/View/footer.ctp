@@ -29,7 +29,7 @@
 		</footer>
 
 
-		<script type="text/javascript" src="/js/moment-2.0.0.min.js"></script>
+		<!--<script type="text/javascript" src="/js/moment-2.0.0.min.js"></script>
 		<script type="text/javascript" src="/js/jquery.cookie-1.1.min.js"></script>
 		<script type="text/javascript" src="/js/d3.v3.0.4.min.js"></script>
 		<script type="text/javascript" src="/js/cubism.v1.2.2.min.js"></script>
@@ -40,6 +40,6 @@
 		<script type="text/javascript" src="/js/highlightjs-7.3.min.js"></script>
 		<script type="text/javascript" src="/js/cal-heatmap.min.js"></script>
 		<script type="text/javascript" src="/js/jquery.jsrender-1.0.min.js"></script>
-		<script type="text/javascript" src="/js/app.js?v=<?php echo APPLICATION_VERSION ?>"></script>
+		<script type="text/javascript" src="/js/app.js?v=<?php echo APPLICATION_VERSION ?>"></script>-->
 	</body>
 </html>

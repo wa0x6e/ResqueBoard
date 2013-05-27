@@ -18,15 +18,7 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 ?>
-<script type="text/javascript">
-	$(document).ready(function() {
-		loadLogs();
-	});
-</script>
-
-
-
-	<div class="with-sidebar">
+	<div class="with-sidebar" ng-controller="logActivityController">
 
 
 		<div class="bloc">

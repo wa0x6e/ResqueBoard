@@ -21,7 +21,7 @@
 
 <div id="worker-form" class="modal hide"></div>
 
-<div class="full-width" ng-controller="WorkersCtrl" ng-cloak>
+<div class="full-width" ng-controller="workerController" ng-cloak>
 
     <div class="knight-unit" ng-show="length==0"><i class="icon-cogs icon"></i><h2>No active workers</h2></div>
 

@@ -69,7 +69,7 @@ class PageHelper
     public static function renderJobStats($stats)
     {
         ?>
-        <ul class="stats unstyled clearfix split-four" ng-controller="JobsCtrl" ng-cloak>
+        <ul class="stats unstyled clearfix split-four" ng-controller="jobController" ng-cloak>
             <li id="global-worker-stats">
                 <a href="/jobs/view">
                     <strong ng-init="stats.processed='<?php echo $stats[ResqueStat::JOB_STATUS_COMPLETE] ?>'">{{stats.processed|number}}</strong>

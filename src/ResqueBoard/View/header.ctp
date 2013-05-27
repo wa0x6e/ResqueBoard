@@ -19,7 +19,7 @@
  */
 ?>
 <!DOCTYPE html>
-<html lang="en" ng-app="ResqueBoard">
+<html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<base href="//<?php echo $_SERVER['HTTP_HOST'] ?>" />
@@ -27,7 +27,7 @@
 		<link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 		<link href="/css/main.css?v=<?php echo APPLICATION_VERSION ?>" rel="stylesheet" type="text/css">
 		<link href="/css/highlightjs/zenburn.css" rel="stylesheet" type="text/css">
-		<script type="text/javascript" src="/js/jquery-2.0.0.min.js"></script>
+		<script type="text/javascript" data-main="/js/main" src="/js/libs/require.js"></script>
 	</head>
 	<body>
 		<script type="text/javascript">CUBE_URL = '<?php echo CUBE_URL ?>'</script>

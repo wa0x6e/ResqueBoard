@@ -420,7 +420,7 @@ $app->get(
                 $app,
                 'jobs_view_scheduled',
                 array(
-                    'ngController' => 'ScheduledJobsCtrl'
+                    'ngController' => 'scheduledJobController'
                 )
             );
 

@@ -146,7 +146,7 @@
 		}
 	?>
 
-	<div class="sidebar" ng-controller="PendingJobsCtrl">
+	<div class="sidebar" ng-controller="pendingJobController">
 		<div class="page-header">
 			<h3>Quick Stats <i class="icon-bar-chart"></i></h3>
 		</div>

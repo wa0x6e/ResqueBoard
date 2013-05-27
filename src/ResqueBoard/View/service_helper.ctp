@@ -21,38 +21,42 @@
 <div id="service-debugger">
 	<div class="debugger-content">
 <?php
+	if (empty(ResqueBoard\Lib\Service\Service::$services)) {
+		echo '<h3>No service activities</h3>';
+	} else {
 
-	foreach(ResqueBoard\Lib\Service\Service::$services as $name => $service) {
-		$logs = $service::getLogs();
+		foreach(ResqueBoard\Lib\Service\Service::$services as $name => $service) {
+			$logs = $service::getLogs();
 
-		echo '<h3>' . $name . '</h3>';
+			echo '<h3>' . $name . '</h3>';
 
-		echo '<table class="table table-condensed">';
-		echo '<tr><th>Query</th><th>Took (ms)</th></tr>';
-		foreach($logs['logs'] as $log) {
-			echo '<tr>';
-			echo '<td>';
-			if (is_string($log['command'])) {
-				echo '<code>' . $log['command'] . '</code>';
-			} else {
-				foreach($log['command'] as $command => $subCommand) {
-					echo '<code>' . $command . '</code>';
+			echo '<table class="table table-condensed">';
+			echo '<tr><th>Query</th><th>Took (ms)</th></tr>';
+			foreach($logs['logs'] as $log) {
+				echo '<tr>';
+				echo '<td>';
+				if (is_string($log['command'])) {
+					echo '<code>' . $log['command'] . '</code>';
+				} else {
+					foreach($log['command'] as $command => $subCommand) {
+						echo '<code>' . $command . '</code>';
 
-					if (!empty($subCommand)) {
-						echo '<ul class="unstyled">';
-						foreach ($subCommand as $c) {
-							echo '<li><code>' . $c[0] . ' ' . $c[1] . '</code></li>';
+						if (!empty($subCommand)) {
+							echo '<ul class="unstyled">';
+							foreach ($subCommand as $c) {
+								echo '<li><code>' . $c[0] . ' ' . $c[1] . '</code></li>';
+							}
+							echo '</ul>';
 						}
-						echo '</ul>';
 					}
 				}
-			}
 
-			echo '<small>From ' . $log['trace']['file'] . ' @ ' . $log['trace']['line'] . '</small></td>';
-			echo '<td>' . $log['time'] . '</td>';
-			echo '</tr>';
+				echo '<small>From ' . $log['trace']['file'] . ' @ ' . $log['trace']['line'] . '</small></td>';
+				echo '<td>' . $log['time'] . '</td>';
+				echo '</tr>';
+			}
+			echo '</table>';
 		}
-		echo '</table>';
 	}
 ?>
 	</div>

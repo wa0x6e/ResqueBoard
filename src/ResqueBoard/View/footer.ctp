@@ -27,19 +27,7 @@
 				Powered by <a href="http://resqueboard.kamisama.me" title="ResqueBoard website">ResqueBoard <?php echo APPLICATION_VERSION ?></a>
 			</p>
 		</footer>
-
-
-		<!--<script type="text/javascript" src="/js/moment-2.0.0.min.js"></script>
-		<script type="text/javascript" src="/js/jquery.cookie-1.1.min.js"></script>
-		<script type="text/javascript" src="/js/d3.v3.0.4.min.js"></script>
-		<script type="text/javascript" src="/js/cubism.v1.2.2.min.js"></script>
-		<script type="text/javascript" src="/js/bootstrap-2.3.1.min.js"></script>
-		<script type="text/javascript" src="/js/angular.min.js?v=1.0.6"></script>
-		<script type="text/javascript" src="/js/ui-bootstrap-tpls-0.3.0.min.js"></script>
-		<script type="text/javascript" src="/js/infinite-scroll-2.0.min.js"></script>
-		<script type="text/javascript" src="/js/highlightjs-7.3.min.js"></script>
-		<script type="text/javascript" src="/js/cal-heatmap.min.js"></script>
-		<script type="text/javascript" src="/js/jquery.jsrender-1.0.min.js"></script>
-		<script type="text/javascript" src="/js/app.js?v=<?php echo APPLICATION_VERSION ?>"></script>-->
+		<script type="text/javascript">CUBE_URL = '<?php echo CUBE_URL ?>'</script>
+		<script type="text/javascript" data-main="/js/main" src="/js/libs/require.js"></script>
 	</body>
 </html>

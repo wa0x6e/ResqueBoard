@@ -27,11 +27,8 @@
 		<link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 		<link href="/css/main.css?v=<?php echo APPLICATION_VERSION ?>" rel="stylesheet" type="text/css">
 		<link href="/css/highlightjs/zenburn.css" rel="stylesheet" type="text/css">
-		<script type="text/javascript" data-main="/js/main" src="/js/libs/require.js"></script>
 	</head>
 	<body>
-		<script type="text/javascript">CUBE_URL = '<?php echo CUBE_URL ?>'</script>
-
 		<div class="container">
 			<a class="brand" href="/"><em><?php echo APPLICATION_NAME ?></em>Analytics for Resque PHP</a>
 		</div>

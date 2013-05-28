@@ -114,6 +114,9 @@ require({
 		},
 		"ui.bootstrap": {
 			deps: ["libs/angular"]
+		},
+		jsrender: {
+			deps: ["jquery"]
 		}
 	},
 	paths: {

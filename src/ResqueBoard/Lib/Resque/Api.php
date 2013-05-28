@@ -47,26 +47,34 @@ class Api
     public function stop($worker)
     {
         $pid = $this->getProcessId($worker);
+
+        if (!array_key_exists($pid, $this->ResqueStatus->getWorkers())) {
+            throw new WorkerNotExistException();
+        }
+
         $this->ResqueStatus->removeWorker($pid);
         return $this->sendSignal($pid, 'QUIT');
+
     }
 
 
     /**
      * Pause a worker
      *
-     * @throws ResqueBoard\Lib\Resque\InvalidWorkerIdException
-     * @param  [type] $worker [description]
-     * @return [type]           [description]
+     * @throws ResqueBoard\Lib\Resque\InvalidWorkerIdException when worker name is not valid
+     * @throws ResqueBoard\Lib\Resque\WorkerNotExistException when attempting to pause a non-existent worker
+     * @param String $worker Name of the worker to pause
+     *
+     * @return true|string True if the the worker was paused, else error message
      */
     public function pause($worker)
     {
         $id = $this->getProcessId($worker);
 
-        /* if (!array_key_exists($worker, $this->ResqueStatus->getWorkers())) {
+        if (!array_key_exists($worker, $this->ResqueStatus->getWorkers())) {
             throw new WorkerNotExistException();
         }
-        */
+
         if (in_array($worker, $this->ResqueStatus->getPausedWorker())) {
             throw new WorkerAlreadyPausedException();
         }
@@ -85,6 +93,7 @@ class Api
      *
      * @throws ResqueBoard\Lib\Resque\InvalidWorkerIdException
      * @param  [type] $worker [description]
+     *
      * @return [type]           [description]
      */
     public function resume($worker)

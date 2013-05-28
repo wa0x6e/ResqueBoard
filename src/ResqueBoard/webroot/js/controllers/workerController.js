@@ -162,7 +162,9 @@ angular.module("app").controller("workerController", [
 			}).
 			error(function(data, status, headers, config) {
 				alert(data.message);
-				if (data.message === "Worker is already paused") {
+				if (status === 410) {
+					$scope.cleanupWorker(index);
+				} else if (data.message === "Worker is already paused") {
 					$scope.workers[index].active = false;
 					$scope.workers[index].status = "paused";
 				}
@@ -179,7 +181,9 @@ angular.module("app").controller("workerController", [
 			}).
 			error(function(data, status, headers, config) {
 				alert(data.message);
-				if (data.message === "Worker is already running") {
+				if (status === 410) {
+					$scope.cleanupWorker(index);
+				} else if (data.message === "Worker is already running") {
 					$scope.workers[index].active = true;
 					$scope.workers[index].status = null;
 				}
@@ -195,18 +199,22 @@ angular.module("app").controller("workerController", [
 			}).
 			error(function(data, status, headers, config) {
 				alert(data.message);
-				if (data.message === "Worker not found") {
-					$scope.workers[index].active = true;
-
-					delete $scope.workers[index];
-					$scope.length--;
-
-					if ($scope.length === 0) {
-						$scope._init = 2;
-					}
+				if (status === 410) {
+					$scope.cleanupWorker(index);
 				}
 		});
 		console.log("Sending STOP command to worker " + $scope.workers[index].id);
 	};
+
+	$scope.cleanupWorker = function(index) {
+		$scope.workers[index].active = true;
+
+		delete $scope.workers[index];
+		$scope.length--;
+
+		if ($scope.length === 0) {
+			$scope._init = 2;
+		}
+	}
 
 }]);

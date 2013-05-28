@@ -739,7 +739,7 @@ $app->get(
 
 $app->get(
     '/api/workers/stop/:worker',
-    function ($worker) use ($app) {
+    function ($worker) use ($app, $settings) {
 
         $app->response()->header("Content-Type", "application/json");
 
@@ -760,7 +760,7 @@ $app->get(
             $app->response()->header("Status", "400");
             echo json_encode(array('message' => 'Invalid worker name'));
         } catch (ResqueBoard\Lib\Resque\WorkerNotExistException $e) {
-            $app->response()->header("Status", "404");
+            $app->response()->header("Status", "410");
             echo json_encode(array('message' => 'Worker not found'));
         }
     }
@@ -768,7 +768,7 @@ $app->get(
 
 $app->get(
     '/api/workers/pause/:worker',
-    function ($worker) use ($app) {
+    function ($worker) use ($app, $settings) {
 
         $app->response()->header("Content-Type", "application/json");
 
@@ -789,7 +789,7 @@ $app->get(
             $app->response()->header("Status", "400");
             echo json_encode(array('message' => 'Invalid worker name'));
         } catch (ResqueBoard\Lib\Resque\WorkerNotExistException $e) {
-            $app->response()->header("Status", "404");
+            $app->response()->header("Status", "410");
             echo json_encode(array('message' => 'Worker not found'));
         } catch (ResqueBoard\Lib\Resque\WorkerAlreadyPausedException $e) {
             $app->response()->header("Status", "404");
@@ -800,7 +800,7 @@ $app->get(
 
 $app->get(
     '/api/workers/resume/:worker',
-    function ($worker) use ($app) {
+    function ($worker) use ($app, $settings) {
 
         $app->response()->header("Content-Type", "application/json");
 
@@ -821,7 +821,7 @@ $app->get(
             $app->response()->header("Status", "400");
             echo json_encode(array('message' => 'Invalid worker name'));
         } catch (ResqueBoard\Lib\Resque\WorkerNotExistException $e) {
-            $app->response()->header("Status", "404");
+            $app->response()->header("Status", "410");
             echo json_encode(array('message' => 'Worker not found'));
         } catch (ResqueBoard\Lib\Resque\WorkerNotPausedException $e) {
             $app->response()->header("Status", "404");

@@ -329,13 +329,7 @@ $app->get(
                 'month' => array('step' => ResqueBoard\Lib\ResqueStat::CUBE_STEP_1HOUR)
                 );
 
-
             $start = new DateTime($start);
-
-            if (!array_key_exists($range, $rangeWhitelist)) {
-                throw new Exception('Invalid URL');
-            }
-
 
             $rangeWhitelist = array_merge_recursive(
                 $rangeWhitelist,
@@ -369,7 +363,6 @@ $app->get(
                 )
             );
 
-
             $totalProcessTime = 0;
             foreach ($processTime as $t) {
                 $totalProcessTime += $t['value'];
@@ -386,8 +379,6 @@ $app->get(
                     )
                 )
             );
-
-
 
             render(
                 $app,
@@ -408,7 +399,7 @@ $app->get(
             $app->error($e);
         }
     }
-);
+)->conditions(array('range' => '(hour|day|week|month)'));
 
 $app->get(
     '/jobs/scheduled',
@@ -578,7 +569,7 @@ $app->get(
             $app->error($e);
         }
     }
-);
+)->conditions(array('start' => '\d+', 'end' => '\d+'));
 
 $app->get(
     '/api/jobs/distribution/class(/:limit)',
@@ -618,7 +609,7 @@ $app->get(
             $app->error($e);
         }
     }
-);
+)->conditions(array('start' => '\d+', 'end' => '\d+'));
 
 $app->get(
     '/api/scheduled-jobs/:start/:end',

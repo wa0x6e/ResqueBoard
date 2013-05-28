@@ -95,7 +95,8 @@ require({
 			deps: ["app", "services/socket"]
 		},
 		"app": {
-			deps: ["libs/angular", "libs/angular-resource", "ui.bootstrap", "jquery", "bootstrapjs", "highlightjs"]
+			deps: ["libs/angular", "libs/angular-resource", "ui.bootstrap",
+			"jquery", "bootstrapjs", "highlightjs", "infinitescroll"]
 		},
 		"bootstrap": {
 			deps: ["app"]
@@ -117,18 +118,23 @@ require({
 		},
 		jsrender: {
 			deps: ["jquery"]
+		},
+		infinitescroll: {
+			deps: ["jquery"]
 		}
 	},
+	baseUrl: "/js",
 	paths: {
-		jquery: "/js/libs/jquery-2.0.0.min",
-		d3: "/js/libs/d3",
-		calheatmap: "/js/libs/cal-heatmap",
-		highlightjs: "/js/libs/highlightjs-7.3.min",
-		moment:  "/js/libs/moment-2.0.0.min",
-		cookie: "/js/libs/jquery.cookie-1.1.min",
-		cubism: "/js/libs/cubism.v1.2.2.min",
-		jsrender: "/js/libs/jquery.jsrender-1.0.min",
-		"ui.bootstrap": "/js/libs/ui-bootstrap-tpls-0.3.0.min"
+		jquery: "libs/jquery-2.0.0.min",
+		d3: "libs/d3",
+		calheatmap: "libs/cal-heatmap",
+		highlightjs: "libs/highlightjs-7.3.min",
+		moment:  "libs/moment-2.0.0.min",
+		cookie: "libs/jquery.cookie-1.1.min",
+		cubism: "libs/cubism.v1.2.2.min",
+		jsrender: "libs/jquery.jsrender-1.0.min",
+		"ui.bootstrap": "libs/ui-bootstrap-tpls-0.3.0.min",
+		infinitescroll: "libs/infinite-scroll-2.0.min"
 	}
 }, ["require",
 	"controllers/workerController", "controllers/jobController", "controllers/lastestJobGraphController",

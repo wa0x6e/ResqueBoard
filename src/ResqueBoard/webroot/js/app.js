@@ -29,3 +29,14 @@ var formatISO = function(date) {
  * @type int
  */
 var duration = 1500;
+
+$(".infinite-scroll").infinitescroll({
+    navSelector : "ul.pager",
+    nextSelector : "ul.pager li.next a",
+    itemSelector : ".infinite-scroll li",
+    loading: {
+        finishedMsg: "No more pages to load.",
+        img: "http://www.infinite-scroll.com/loading.gif"
+    },
+    bufferPx: 5000
+});

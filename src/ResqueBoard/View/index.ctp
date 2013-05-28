@@ -21,6 +21,8 @@
 
 <?php \ResqueBoard\Lib\PageHelper::renderJobStats($stats); ?>
 
+<div class="full-width"></div>
+
 <div class="ftr-bloc" ng-controller="lastestJobGraphController">
 	<h3>Last activities</h3>
 	<div id="lastest-jobs" ng-show="_init==1"></div>

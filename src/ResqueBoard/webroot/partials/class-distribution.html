@@ -1,0 +1,33 @@
+<div ng-controller="jobClassDistributionController">
+    <div id="jobRepartition"></div>
+    <table class="table table-hover {{class}}" ng-show="classes.length > 0">
+        <thead>
+            <tr>
+                <th><a href="" title="Sort by rank" ng-click="predicate='rank'; reverse=!reverse">#</a></th>
+                <th class="name"><a href="" title="Sort by classname" ng-click="predicate='name'; reverse=!reverse">Class name</a></th>
+                <th class="stats-nb"><a href="" title="Sort by jobs count" ng-click="predicate='count'; reverse=!reverse">Count</a></th>
+                <th class="stats-nb"><a href="" title="Sort by percentage" ng-click="predicate='count'; reverse=!reverse">Distribution</a></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="class in classes | orderBy:predicate:reverse">
+                <td>{{class.rank}}</td>
+                <td class="name">{{class.name}}</td>
+                <td class="stats-nb">{{class.count | number}}</td>
+                <td class="stats-nb"><div style="position:relative;">
+                    <span class="chart-bar" style="width:{{class.perc}}%;"></span>
+                    <b>{{class.perc | number:0}}%</b>
+                </div></td>
+            </tr>
+        </tbody>
+        <tfooter>
+            <tr class="info">
+                <td></td>
+                <td>Total</td>
+                <td class="stats-nb">{{total | number}}</td>
+                <td class="stats-nb">100%</td>
+            </tr>
+        </tfooter>
+    </table>
+    <placeholder status="_init" error-code="_errorCode" loading-content-name="class distribution" content-name="jobs" icon="icon-align-left" init="init()"></placeholder>
+</div>

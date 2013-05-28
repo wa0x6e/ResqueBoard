@@ -35,6 +35,9 @@ require({
 		"controllers/loadOverviewController": {
 			deps: ["app", "d3"]
 		},
+		"controllers/jobClassDistributionController": {
+			deps: ["app"]
+		},
 		"controllers/logActivityController": {
 			deps: ["app", "moment", "cookie", "jsrender"]
 		},
@@ -128,6 +131,7 @@ require({
 	"controllers/workerController", "controllers/jobController", "controllers/lastestJobGraphController",
 	"controllers/queueController", "controllers/lastestJobHeatmapController", "controllers/scheduledJobController",
 	"controllers/pendingJobController", "controllers/loadOverviewController", "controllers/logActivityController",
+	"controllers/jobClassDistributionController",
 	"filters/uptime", "filters/urlencode", "filters/bspopover",
 	"directives/graphHorizonChart", "directives/graphPie", "directives/iconJob", "directives/placeholder"
 	], function(require) {

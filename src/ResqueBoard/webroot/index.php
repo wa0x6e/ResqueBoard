@@ -98,9 +98,7 @@ $app->get(
                 $app,
                 'jobs',
                 array(
-                    'stats' => $resqueStat->getStats(),
-                    'jobsRepartitionStats' => $resqueStat->getJobsRepartionStats(),
-                    'resultLimits' => array(15, 50, 100)
+                    'stats' => $resqueStat->getStats()
                 )
             );
 
@@ -540,7 +538,7 @@ $app->get(
             $app->error($e);
         }
     }
-);
+)->conditions(array('start' => '\d+', 'end' => '\d+'));
 
 
 /**
@@ -581,6 +579,27 @@ $app->get(
         }
     }
 );
+
+$app->get(
+    '/api/jobs/distribution/class(/:limit)',
+    function ($limit = null) use ($app) {
+        try {
+            $resqueStat = new ResqueBoard\Lib\ResqueStat();
+            $app->response()->header("Content-Type", "application/json");
+
+            $app->view(new ResqueBoard\View\JsonView());
+            $app->render(
+                'jobs_class_distribution.ctp',
+                array(
+                    'class' => $resqueStat->getJobsRepartionStats($limit)
+                )
+            );
+
+        } catch (\Exception $e) {
+            $app->error($e);
+        }
+    }
+)->conditions(array('limit' => '\d+'));
 
 /**
  * Return a list of scheduled jobs count grouped by time

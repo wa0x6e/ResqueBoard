@@ -1,8 +1,6 @@
 <?php
 /**
- * Job class distribution template
- *
- * Website jobs class distribution page
+ * Job class distribution json template
  *
  * PHP version 5
  *
@@ -14,13 +12,21 @@
  * @link          http://resqueboard.kamisama.me
  * @package       resqueboard
  * @subpackage	  resqueboard.template
- * @since         1.0.0
+ * @since         2.0.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-?>
 
-<div class="full-width">
-    <div class="bloc">
-	   <ng-include src="'/partials/class-distribution.html'" ng-cloak></ng-include>
-    </div>
-</div>
+$stats = array(
+	'total' => $class->total,
+	'stats' => array()
+);
+
+foreach($class->stats as $datas) {
+	$stats['stats'][] = array(
+		'name' => $datas['_id'],
+		'count' => $datas['value'],
+        'perc' => $datas['value'] / $class->total * 100
+	);
+}
+
+echo json_encode($stats);

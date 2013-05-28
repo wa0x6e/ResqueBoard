@@ -58,116 +58,7 @@ class ResqueStat
      */
     public function __construct($settings = array())
     {
-        /* $this->settings = array(
-            'resquePrefix' => 'resque'
-        );
 
-        $this->queues = array();
-
-        $this->settings = array_merge($this->settings, $settings);
-        $this->settings['resquePrefix'] = $this->settings['resquePrefix'] .':';
-
-
-
-        $thisQueues =& $this->queues;
-        $this->workers = array_map(
-            function ($name) use (&$thisQueues) {
-                list($host, $process, $q) = explode(':', $name);
-                $q = explode(',', $q);
-                array_walk(
-                    $q,
-                    function ($qu) use (&$thisQueues) {
-                        if (isset($thisQueues[$qu])) {
-                            $thisQueues[$qu]['workers']++;
-                        } else {
-                            $thisQueues[$qu]['workers'] = 1;
-                        }
-                    }
-                );
-                return array('fullname' => $name, 'host' => $host, 'process' => $process, 'queues' => $q);
-            },
-            Service::Redis()->smembers('workers')
-        );
-
-        // Assign all active queues as active
-        array_walk(
-            $this->queues,
-            function (&$queue) {
-                $queue['active'] = true;
-            }
-        );
-
-        // Get all queues and compute complete list of active and inactive queues
-        $allQueues = Service::Redis()->smembers('queues');
-        foreach ($allQueues as $queue) {
-            if (!isset($this->queues[$queue])) {
-                $this->queues[$queue] = array('workers' => 0, 'active' => false);
-            }
-        }
-
-        // Populate queues pending jobs counter
-        foreach ($this->queues as $name => $stats) {
-            $commands[] = array('llen', 'queue:' . $name);
-        }
-        $result = Service::Redis()->pipeline($commands);
-
-        $i = 0;
-        foreach ($this->queues as &$queue) {
-            $queue['jobs'] = $result[$i];
-            $i++;
-        }
-
-        foreach ($this->queues as $queueName => $queueStats) {
-            if ($queueStats['workers'] === $queueStats['jobs'] && $queueStats['jobs'] === 0) {
-                unset($this->queues[$queueName]);
-            }
-        }
-
-        $commands = array();
-        foreach ($this->workers as $worker) {
-            $commands[] = array('get', 'worker:' . $worker['fullname'] . ':started');
-            $commands[] = array('get', 'stat:processed:' . $worker['fullname']);
-            $commands[] = array('get', 'stat:failed:' . $worker['fullname']);
-        }
-        $result = Service::Redis()->pipeline($commands);
-
-        $this->stats['active'] = array('processed' => 0, 'failed' => 0);
-
-        for ($i = 0, $total = count($result), $j = 0; $i < $total; $i += 3) {
-            $this->workers[$j]['start'] = new \DateTime($result[$i]);
-            $this->stats['active']['processed'] += $this->workers[$j]['processed'] = (int) $result[$i+1];
-            $this->stats['active']['failed'] += $this->workers[$j++]['failed'] = (int) $result[$i+2];
-
-        }
-
-        unset($result);
-
-        // Getting Scheduler Worker Stats
-        $this->schedulerWorkers = array();
-        for ($j = count($this->workers)-1; $j >=0; --$j) {
-            if (implode('', $this->workers[$j]['queues']) === \ResqueScheduler\ResqueScheduler::QUEUE_NAME) {
-                $this->workers[$j]['scheduled'] = \ResqueScheduler\ResqueScheduler::getDelayedQueueScheduleSize();
-                $this->schedulerWorkers[] = $this->workers[$j];
-                unset($this->workers[$j]);
-                break;
-            }
-        }
-
-        $this->stats['total'] = array_combine(
-            array('processed', 'failed'),
-            array_map(
-                function ($s) {
-                    return (int) $s;
-                },
-                Service::Redis()->pipeline(array(array('get', 'stat:processed'), array('get', 'stat:failed')))
-            )
-        );
-        $this->stats['total']['scheduled'] = \ResqueScheduler\Stat::get();
-
-        $this->stats['total']['processed'] = max($this->stats['total']['processed'], Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events')->find()->count());
-        $this->stats['total']['failed'] = max($this->stats['total']['failed'], Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'fail_events')->find()->count());
-
-        $this->setupIndexes();*/
     }
 
     /**
@@ -184,8 +75,6 @@ class ResqueStat
             self::JOB_STATUS_COMPLETE => 'done',
             self::JOB_STATUS_SCHEDULED => 'movescheduled'
         );
-
-
 
         if ($type === null) {
             $stats = array_combine(array_keys($validType), array_fill(0, count($validType), 0));

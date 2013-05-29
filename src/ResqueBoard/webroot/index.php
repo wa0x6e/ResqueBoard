@@ -142,19 +142,38 @@ $app->get(
                 $start = new \DateTime($year . '-' . $month . '-01');
             }
 
-            $end = clone $start;
-            $end->modify('last day of ' . $end->format('F') . ' ' . $end->format('Y'));
-            $end->setTime(23, 59, 59);
+            $cacheId = $start->format('Y-m');
+            $cacheDriver = new \Doctrine\Common\Cache\FilesystemCache(CACHE . DS . 'jobs' . DS . 'load-distribution', '.cache');
+
+            if ($cacheDriver->contains($cacheId)) {
+                $jobsMatrix = $cacheDriver->fetch($cacheId);
+            } else {
+                $end = clone $start;
+                $end->modify('last day of ' . $end->format('F') . ' ' . $end->format('Y'));
+                $end->setTime(23, 59, 59);
+                $jobsMatrix = $resqueStat->getJobsMatrix($start, $end, ResqueBoard\Lib\ResqueStat::CUBE_STEP_1DAY);
+
+                $now = new \DateTime();
+                if ($start->format('Ym') < $now->format('Ym')) {
+                    $cacheDriver->save($cacheId, $jobsMatrix);
+                }
+            }
 
             $firstJob = $resqueStat->getJobs(array('limit' => 1, 'sort' => array('t' => 1), 'format' => false));
+            if (!empty($firstJob)) {
+                $startDate = current($firstJob);
+                $startDate = new \DateTime($startDate['time']);
+            } else {
+                $startDate = new \DateTime();
+            }
 
             render(
                 $app,
                 'jobs_load_distribution',
                 array(
-                    'jobsMatrix' => $resqueStat->getJobsMatrix($start, $end, ResqueBoard\Lib\ResqueStat::CUBE_STEP_1DAY),
-                    'startDate' => new \DateTime(),
-                    'currentDate' => $start
+                    'jobsMatrix' => $jobsMatrix,
+                    'currentDate' => $start,
+                    'start' => $startDate
                 )
             );
 
@@ -521,10 +540,22 @@ $app->get(
     '/api/jobs/:start/:end',
     function ($start, $end) use ($app) {
         try {
-            $resqueStat = new ResqueBoard\Lib\ResqueStat();
-            $jobs = array_values($resqueStat->getJobs(array('date_after' => (int)$start, 'date_before' => (int)$end)));
             $app->response()->header("Content-Type", "application/json");
-            echo json_encode($jobs);
+            $cacheId = $start.$end;
+            $cacheDriver = new \Doctrine\Common\Cache\FilesystemCache(CACHE . DS . 'jobs' . DS . 'list', '.cache');
+
+            if ($cacheDriver->contains($cacheId)) {
+                $jobs = $cacheDriver->fetch($cacheId);
+            } else {
+                $resqueStat = new ResqueBoard\Lib\ResqueStat();
+                $jobs = array_values($resqueStat->getJobs(array('date_after' => (int)$start, 'date_before' => (int)$end)));
+                $jobs = json_encode($jobs);
+
+                if ($start < $end && $end < time()) {
+                    $cacheDriver->save($cacheId, $jobs);
+                }
+            }
+            echo $jobs;
         } catch (\Exception $e) {
             $app->error($e);
         }
@@ -541,30 +572,21 @@ $app->get(
     function ($start, $end) use ($app) {
         try {
             $app->response()->header("Content-Type", "application/json");
-            $cache = dirname(__DIR__) . '/cache/jobs-stats-' . $start.$end;
+            $cacheId = $start.$end;
+            $cacheDriver = new \Doctrine\Common\Cache\FilesystemCache(CACHE . DS . 'jobs' . DS . 'stats', '.cache');
 
-            if ($start < $end && $end < time()) {
-                if (file_exists($cache)) {
-                    echo file_get_contents($cache);
-                    return true;
-                }
-
-                $jobs = array();
+            if ($cacheDriver->contains($cacheId)) {
+                $jobs = $cacheDriver->fetch($cacheId);
+            } else {
                 $resqueStat = new ResqueBoard\Lib\ResqueStat();
                 $jobs = $resqueStat->getJobsCount(array('date_after' => (int)$start, 'date_before' => (int)$end+60));
-                $output = json_encode($jobs);
-                file_put_contents($cache, $output);
+                $jobs = json_encode($jobs);
 
-                echo $output;
-                return true;
+                if ($start < $end && $end < time()) {
+                    $cacheDriver->save($cacheId, $jobs);
+                }
             }
-
-            $jobs = array();
-            $resqueStat = new ResqueBoard\Lib\ResqueStat();
-            $jobs = $resqueStat->getJobsCount(array('date_after' => (int)$start, 'date_before' => (int)$end+60));
-
-
-            echo json_encode($jobs);
+            echo $jobs;
         } catch (\Exception $e) {
             $app->error($e);
         }
@@ -600,11 +622,23 @@ $app->get(
     '/api/scheduled-jobs/stats/:start/:end',
     function ($start, $end) use ($app) {
         try {
-            $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat();
-            $jobs = $resqueSchedulerStat->getScheduledJobsCount((int)$start, (int)$end+60, true);
-
             $app->response()->header("Content-Type", "application/json");
-            echo json_encode($jobs);
+            $cacheId = $start.$end;
+            $cacheDriver = new \Doctrine\Common\Cache\FilesystemCache(CACHE . DS . 'scheduled-jobs' . DS . 'stats', '.cache');
+
+            if ($cacheDriver->contains($cacheId)) {
+                $jobs = $cacheDriver->fetch($cacheId);
+            } else {
+                $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat();
+                $jobs = $resqueSchedulerStat->getScheduledJobsCount((int)$start, (int)$end+60, true);
+                $jobs = json_encode($jobs);
+
+                if ($start < $end && $end < time()) {
+                    $cacheDriver->save($cacheId, $jobs);
+                }
+            }
+
+            echo $jobs;
         } catch (\Exception $e) {
             $app->error($e);
         }

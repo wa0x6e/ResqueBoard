@@ -51,6 +51,8 @@ define('PAGINATION_LIMIT', 15);
 
 define('DEBUG', false);
 
+define('CACHE', dirname(__DIR__) . DS . 'cache');
+
 /**
  * Default application name
  *

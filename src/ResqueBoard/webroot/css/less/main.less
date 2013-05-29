@@ -185,13 +185,22 @@ h3{
 	position: relative;
 	margin: 0 auto;
 	width: @gridColumnWidth * 12 + @gridGutterWidth * 13;
+	display: table;
+}
 
-	.clearfix();
+.menu, #body, .sidebar {
+	display: table-cell;
+	vertical-align: top;
+}
+
+// To counter display:table that prevents margin to overflow the div
+// on the right side
+.row {
+	margin-right: @gridGutterWidth * -1;
 }
 
 #body {
 	background-color: @bodyBackgroundColor;
-	float: left;
 	padding: 0;
 	border-top: 1px solid @white;
 	min-height: 400px;
@@ -227,7 +236,6 @@ h3{
 	@width: @gridColumnWidth + @gridGutterWidth;
 	
 	width: @width;
-	float: left;
 	border-top: 1px solid lighten(@baseColor, 5);
 	border-bottom: 1px solid lighten(@baseColor, 5);
 	list-style: none;
@@ -371,9 +379,6 @@ h3{
 	padding: 0;
 	color: @sidebarTextColor;
 	.box-shadow(5px 0 0 darken(@backgroundColor, 5) inset);
-	
-	.clearfix();
-	float:left;
 	
 	h3 {
 		color: @white;	

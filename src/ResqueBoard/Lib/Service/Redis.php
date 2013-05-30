@@ -25,16 +25,14 @@ namespace ResqueBoard\Lib\Service;
  * @since            1.0.0
  * @author           Wan Qi Chen <kami@kamisama.me>
  */
-class Redis
+class Redis extends AbstractService
 {
-    use Loggable;
-
     public static $instance = null;
-
-    public static $serviceInstance = null;
 
     public function __construct($settings)
     {
+        parent::bootstrap();
+
         $t = microtime(true);
         $redis = new \Redis();
         $redis->connect($settings['host'], $settings['port']);
@@ -43,7 +41,7 @@ class Redis
             $redis->setOption(\Redis::OPT_PREFIX, $settings['prefix'] . ':');
         }
 
-        self::$serviceInstance = $redis;
+        parent::$serviceInstance[get_class()] = $redis;
 
         $queryTime = round((microtime(true) - $t) * 1000, 2);
         self::logQuery(
@@ -52,8 +50,8 @@ class Redis
                 'time' => $queryTime
             )
         );
-        self::$_totalTime += $queryTime;
-        self::$_totalQueries++;
+        self::$_totalTime[get_class()] += $queryTime;
+        self::$_totalQueries[get_class()]++;
     }
 
     public static function init($settings)
@@ -68,7 +66,7 @@ class Redis
     public function pipeline($commands, $type = \Redis::PIPELINE)
     {
         $t = microtime(true);
-        $redisPipeline = self::$serviceInstance->multi($type);
+        $redisPipeline = parent::$serviceInstance[get_class()]->multi($type);
         foreach ($commands as $command) {
             call_user_func_array(array($redisPipeline, $command[0]), (array)$command[1]);
         }
@@ -80,8 +78,8 @@ class Redis
                 'time' => $queryTime
             )
         );
-        self::$_totalTime += $queryTime;
-        self::$_totalQueries++;
+        self::$_totalTime[get_class()] += $queryTime;
+        self::$_totalQueries[get_class()]++;
 
         return $results;
     }

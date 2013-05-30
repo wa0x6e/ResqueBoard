@@ -25,28 +25,26 @@ namespace ResqueBoard\Lib\Service;
  * @since            1.0.0
  * @author           Wan Qi Chen <kami@kamisama.me>
  */
-class Mongo
+class Mongo extends AbstractService
 {
-    use Loggable;
-
     public static $instance = null;
-
-    public static $serviceInstance = null;
 
     public function __construct($settings)
     {
+        parent::bootstrap();
+
         $t = microtime(true);
-        self::$serviceInstance = new \Mongo($settings['host'] . ':' . $settings['port']);
+        parent::$serviceInstance[get_class()] = new \Mongo($settings['host'] . ':' . $settings['port']);
 
         $queryTime = round((microtime(true) - $t) * 1000, 2);
-        self::logQuery(
+        parent::logQuery(
             array(
                 'command' => 'CONNECTION to ' . $settings['host'] . ':' . $settings['port'],
                 'time' => $queryTime
             )
         );
-        self::$_totalTime += $queryTime;
-        self::$_totalQueries++;
+        parent::$_totalTime[get_class()] += $queryTime;
+        parent::$_totalQueries[get_class()]++;
     }
 
     public static function init($settings)

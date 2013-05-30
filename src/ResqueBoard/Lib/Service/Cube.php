@@ -25,20 +25,18 @@ namespace ResqueBoard\Lib\Service;
  * @since            1.0.0
  * @author           Wan Qi Chen <kami@kamisama.me>
  */
-class Cube
+class Cube extends AbstractService
 {
-    use Loggable;
-
     public static $instance = null;
-
-    public static $serviceInstance = null;
 
     protected $settings = array();
 
     public function __construct($settings)
     {
+        parent::bootstrap();
+
         $this->settings = $settings;
-        self::$serviceInstance = $this;
+        parent::$serviceInstance[get_class()] = $this;
     }
 
     public static function init($settings)

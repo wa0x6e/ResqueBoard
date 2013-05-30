@@ -1,5 +1,24 @@
 ##Changelog
 
+
+###v2.0.0-beta-3 (2013-05-29)
+
+* ResqueBoard now works if installed in a subfolder
+* Cache all non-realtime datas
+* Load javascript with RequireJS
+* Split javascript code into multiples modules/files
+* Grouping all databases related functions inside a `Service` module
+* Refactoring worker handling API
+* Use only local assets instead of a CDN
+* Various UI fixes and update
+
+> **Upgrade notes**  
+> PHP 5.4 is required for this beta  
+> Just for reference, at least IE9 is required  
+> run `composer update` to install/update new dependencies
+
+
+
 ###v1.5.0 (2013-02-21)
 
 * [new] Scheduled jobs tab :

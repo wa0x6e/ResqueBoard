@@ -21,7 +21,7 @@ angular.module("app").controller("jobController", [
 
 	var updateStats = function() {
 
-		$http({method: "GET", url: "/api/stats?fields=scheduled,pending"}).
+		$http({method: "GET", url: "api/stats?fields=scheduled,pending"}).
 			success(function(data, status, headers, config) {
 				$scope.stats.scheduled = data.scheduled.total;
 				$scope.stats.pending = data.pending.total;

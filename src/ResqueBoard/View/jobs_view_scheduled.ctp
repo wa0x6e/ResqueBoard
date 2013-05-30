@@ -22,13 +22,13 @@
 
 	<ul class="nav nav-tabs page-nav-tab">
 	    <li>
-	    	<a href="/jobs/view">Processed Jobs</a>
+	    	<a href="jobs/view">Processed Jobs</a>
 	    </li>
 	    <li>
-	    	<a href="/jobs/pending">Pending Jobs</a>
+	    	<a href="jobs/pending">Pending Jobs</a>
 	    </li>
 	    <li class="active">
-	    	<a href="/jobs/scheduled" title="View all scheduled jobs">Scheduled Jobs</a>
+	    	<a href="jobs/scheduled" title="View all scheduled jobs">Scheduled Jobs</a>
 	    </li>
     </ul>
 
@@ -49,7 +49,7 @@
 
 	        <div ng-show="date!=false && jobs.length==0" class="alert">No job found for this period</div>
 
-			<ng-include src="'/partials/jobs-list.html'"></ng-include>
+			<ng-include src="'partials/jobs-list.html'"></ng-include>
 		</div>
 	</div>
 

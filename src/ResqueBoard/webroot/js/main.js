@@ -123,7 +123,7 @@ require({
 			deps: ["jquery"]
 		}
 	},
-	baseUrl: "/js",
+	baseUrl: "./js",
 	paths: {
 		jquery: "libs/jquery-2.0.0.min",
 		d3: "libs/d3",

@@ -30,46 +30,21 @@
  * @var array
  */
 $settings = array(
-        'cubePublic' => array(
-            'host' => $_SERVER['SERVER_NAME'],
-            'port' => 1081
-        ),
-        /*'resquePrefix' => 'resque',*/
-        'readOnly' => false,
-        'resqueConfig' => __DIR__ . DIRECTORY_SEPARATOR . './resque.ini',
-        /*'timezone' => 'America/Montreal'*/
+    'cubePublic' => array(
+        'host' => $_SERVER['SERVER_NAME'],
+        'port' => 1081
+    ),
+    'readOnly' => false,
+    'resqueConfig' => __DIR__ . DIRECTORY_SEPARATOR . './resque.ini',
+    //'timezone' => 'America/Montreal'
 );
 
-date_default_timezone_set(isset($settings['timezone']) ? $settings['timezone'] : date_default_timezone_get());
-
 /**
- * Default number of items to display for pagination
+ * Service settings
+ * All database connection settings
  *
- * @var int
+ * @var array
  */
-define('PAGINATION_LIMIT', 15);
-
-define('DEBUG', false);
-
-define('CACHE', dirname(__DIR__) . DS . 'cache');
-
-/**
- * Default application name
- *
- * @used for the website title
- * @var string
- */
-define('APPLICATION_NAME', 'ResqueBoard');
-
-/**
- * Separator between the website name and other text, in the page title
- *
- * @var string
- */
-define('TITLE_SEP', ' | ');
-
-
-
 ResqueBoard\Lib\Service\Service::$settings = array(
     'Redis' => array(
         'host' => '127.0.0.1',
@@ -87,3 +62,39 @@ ResqueBoard\Lib\Service\Service::$settings = array(
         'port' => 1081
     )
 );
+
+/**
+ * Default number of items to display for pagination
+ *
+ * @var int
+ */
+define('PAGINATION_LIMIT', 15);
+
+/**
+ * Debug mode
+ *
+ * @var  bool
+ */
+define('DEBUG', false);
+
+/**
+ * Path to the cache folder
+ *
+ * @var  string
+ */
+define('CACHE', dirname(__DIR__) . DS . 'cache');
+
+/**
+ * Default application name
+ *
+ * @used for the website title
+ * @var string
+ */
+define('APPLICATION_NAME', 'ResqueBoard');
+
+/**
+ * Separator between the website name and other text, in the page title
+ *
+ * @var string
+ */
+define('TITLE_SEP', ' | ');

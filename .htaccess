@@ -1,0 +1,4 @@
+
+   RewriteEngine on
+   RewriteRule    ^$ src/ResqueBoard/webroot/    [L]
+   RewriteRule    (.*) src/ResqueBoard//webroot/$1 [L]

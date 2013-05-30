@@ -27,14 +27,14 @@
 	<div class="row">
 	<div class="bloc">
 		<div class="span5">
-			<h2><a href="/jobs/distribution/class" title="View jobs distribution by classes">Jobs distribution by classes</a></h2>
+			<h2><a href="jobs/distribution/class" title="View jobs distribution by classes">Jobs distribution by classes</a></h2>
 			<ng-include src="'partials/class-distribution.html'" ng-init="class = 'table-condensed table-greyed'; limit = 15" ></ng-include>
 			<a href="jobs/distribution/class">View all</a>
 		</div>
 
 		<div class="span6">
-			<ng-include src="'/partials/queues-table.html'" ng-cloak></ng-include>
-			<ng-include src="'/partials/latest-jobs-heatmap.html'" ng-cloak></ng-include>
+			<ng-include src="'partials/queues-table.html'" ng-cloak></ng-include>
+			<ng-include src="'partials/latest-jobs-heatmap.html'" ng-cloak></ng-include>
 		</div>
 
 	</div>

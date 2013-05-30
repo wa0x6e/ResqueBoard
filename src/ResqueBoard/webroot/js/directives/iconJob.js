@@ -32,7 +32,7 @@ angular.module("app").directive("iconJob", function() {
 			status: "="
 		},
 		link: function (scope, element, attrs) {
-			element.attr("src", "/img/" + data[scope.status].icon);
+			element.attr("src", "img/" + data[scope.status].icon);
 			element.attr("title", data[scope.status].name + " job");
 		}
 	};

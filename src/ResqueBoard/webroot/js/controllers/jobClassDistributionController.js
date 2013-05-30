@@ -5,7 +5,7 @@ angular.module("app").controller("jobClassDistributionController", [
 
     $scope.init = function() {
 
-        var url = "/api/jobs/distribution/class";
+        var url = "api/jobs/distribution/class";
         if (typeof $scope.limit !== "undefined") {
             url += "/" + $scope.limit;
         }

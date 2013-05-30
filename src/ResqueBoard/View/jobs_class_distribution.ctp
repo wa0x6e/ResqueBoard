@@ -21,6 +21,6 @@
 
 <div class="full-width">
     <div class="bloc">
-	   <ng-include src="'/partials/class-distribution.html'" ng-cloak></ng-include>
+	   <ng-include src="'partials/class-distribution.html'" ng-cloak></ng-include>
     </div>
 </div>

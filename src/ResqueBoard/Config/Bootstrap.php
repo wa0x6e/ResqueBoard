@@ -53,6 +53,10 @@ $logLevels = array(
     550 => array('class' => 'label-inverse', 'name' => 'alert')
 );
 
+define('URL_ROOT', $_SERVER['SCRIPT_NAME'] === '/index.php' ? '/' : (pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME) . '/'));
+
+date_default_timezone_set(isset($settings['timezone']) ? $settings['timezone'] : date_default_timezone_get());
+
 /**
  * List of events type
  *
@@ -73,84 +77,84 @@ $settings['nav'] = array(
         'icon' => 'icon-home',
         'name' => 'Home',
         'title' => 'Dashboard',
-        'link' => '/'
+        'link' => URL_ROOT
         ),
     'workers' => array(
         'icon' => 'icon-cogs',
         'name' => 'Workers',
         'title' => 'Workers',
-        'link' => '/workers'
+        'link' => 'workers'
     ),
     'logs' => array(
         'icon' => 'icon-file',
         'name' => 'Logs',
         'title' => 'Logs',
-        'link' => '/logs',
+        'link' => 'logs',
         'submenu' => array(
             'tail' => array(
                 'icon' => 'icon-eye-open',
                 'name' => 'Latest logs',
                 'title' => 'Logs',
-                'link' => '/logs'
+                'link' => 'logs'
             ),
             'browser' => array(
                 'icon' => 'icon-eye-open',
                 'name' => 'Logs browser',
                 'title' => 'Logs browser',
-                'link' => '/logs/browse'
+                'link' => 'logs/browse'
             )
         )
     ),
     'jobs' => array(
-            'icon' => 'icon-briefcase',
-            'name' => 'Jobs',
-            'title' => 'Jobs Dashboard',
-            'link' => '/jobs',
-            'submenu' => array(
-                'dashboard' => array(
-                    'icon' => 'icon-dashboard',
-                    'name' => 'Jobs Dashboard',
-                    'title' => 'Jobs',
-                    'link' => '/jobs'
-                ),
-                '',
-                'view_processed' => array(
-                    'icon' => 'icon-briefcase',
-                    'name' => 'Processed jobs',
-                    'title' => 'Processed jobs',
-                    'link' => '/jobs/view'
-                ),
-                'view_pending' => array(
-                    'icon' => 'icon-briefcase',
-                    'name' => 'Pending jobs',
-                    'title' => 'Pending jobs',
-                    'link' => '/jobs/pending'
-                ),
-                'view_scheduled' => array(
-                    'icon' => 'icon-briefcase',
-                    'name' => 'Scheduled jobs',
-                    'title' => 'Scheduled jobs',
-                    'link' => '/jobs/scheduled'
-                ),
-                '',
-                'class_distribution' => array(
-                    'icon' => 'icon-tasks',
-                    'name' => 'Class distribution',
-                    'title' => 'Class distribution',
-                    'link' => '/jobs/distribution/class'
-                ),
-                'load_distribution' => array(
-                    'icon' => 'icon-table',
-                    'name' => 'Load distribution',
-                    'title' => 'Load distribution',
-                    'link' => '/jobs/distribution/load'
-                ),
-                'load_overview' => array(
-                    'icon' => 'icon-bar-chart',
-                    'name' => 'Load overview',
-                    'title' => 'Load overview',
-                    'link' => '/jobs/overview/hour'
-                )
+        'icon' => 'icon-briefcase',
+        'name' => 'Jobs',
+        'title' => 'Jobs Dashboard',
+        'link' => 'jobs',
+        'submenu' => array(
+            'dashboard' => array(
+                'icon' => 'icon-dashboard',
+                'name' => 'Jobs Dashboard',
+                'title' => 'Jobs',
+                'link' => 'jobs'
+            ),
+            '',
+            'view_processed' => array(
+                'icon' => 'icon-briefcase',
+                'name' => 'Processed jobs',
+                'title' => 'Processed jobs',
+                'link' => 'jobs/view'
+            ),
+            'view_pending' => array(
+                'icon' => 'icon-briefcase',
+                'name' => 'Pending jobs',
+                'title' => 'Pending jobs',
+                'link' => 'jobs/pending'
+            ),
+            'view_scheduled' => array(
+                'icon' => 'icon-briefcase',
+                'name' => 'Scheduled jobs',
+                'title' => 'Scheduled jobs',
+                'link' => 'jobs/scheduled'
+            ),
+            '',
+            'class_distribution' => array(
+                'icon' => 'icon-tasks',
+                'name' => 'Class distribution',
+                'title' => 'Class distribution',
+                'link' => 'jobs/distribution/class'
+            ),
+            'load_distribution' => array(
+                'icon' => 'icon-table',
+                'name' => 'Load distribution',
+                'title' => 'Load distribution',
+                'link' => 'jobs/distribution/load'
+            ),
+            'load_overview' => array(
+                'icon' => 'icon-bar-chart',
+                'name' => 'Load overview',
+                'title' => 'Load overview',
+                'link' => 'jobs/overview/hour'
             )
+        )
      )
 );

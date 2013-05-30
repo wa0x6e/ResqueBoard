@@ -71,7 +71,7 @@ class PageHelper
         ?>
         <ul class="stats unstyled clearfix split-four" ng-controller="jobController" ng-cloak>
             <li id="global-worker-stats">
-                <a href="/jobs/view">
+                <a href="jobs/view">
                     <strong ng-init="stats.processed='<?php echo $stats[ResqueStat::JOB_STATUS_COMPLETE] ?>'">{{stats.processed|number}}</strong>
                     <b>Processed</b> jobs
                 </a>
@@ -81,13 +81,13 @@ class PageHelper
                 <b>Failed</b> jobs</div>
             </li>
             <li>
-                <a href="/jobs/scheduled">
+                <a href="jobs/scheduled">
                     <strong>{{stats.scheduled|number}}</strong>
                     <b>Scheduled</b> jobs
                 </a>
             </li>
             <li>
-                <a href="/jobs/pending">
+                <a href="jobs/pending">
                     <strong ng-init="stats.pending='0'">{{stats.pending|number}}</strong>
                     <b>Pending</b> jobs
                 </a>

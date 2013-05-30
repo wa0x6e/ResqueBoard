@@ -74,7 +74,7 @@
                         if ($options === '') {
                             echo '<li class="divider"></li>';
                         } else {
-                            echo '<li><a href="'.$options['link'].'">';
+                            echo '<li><a href="' . ltrim($options['link'], '/') . '">';
                             echo '<i class="' . $options['icon'] . '"></i>';
                             echo $options['name'].'</a></li>';
                         }

@@ -18,14 +18,14 @@ angular.module("app").controller("lastestJobHeatmapController", [
 			nextLabel : "<i class=\"icon-chevron-right\"></i>",
 			previousLabel : "<i class=\"icon-chevron-left\"></i>"
 		},
-		data: "/api/jobs/stats/{{t:start}}/{{t:end}}",
+		data: "api/jobs/stats/{{t:start}}/{{t:end}}",
 		onClick : function(start, itemNb) {
 			$scope.loading = true;
 
 			var formatDate = d3.time.format("%H:%M, %A %B %e %Y");
 			$scope.date = formatDate(start);
 
-			$http({method: "GET", url: "/api/jobs/" + (+start)/1000 + "/" + ((+start)/1000+60)}).
+			$http({method: "GET", url: "api/jobs/" + (+start)/1000 + "/" + ((+start)/1000+60)}).
 				success(function(data, status, headers, config) {
 					$scope.jobs = [];
 					for (var timestamp in data) {

@@ -42,7 +42,7 @@ $timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
 				echo '<select class="span2">';
 				$i = 0;
 				foreach ($dateRange as $date) {
-					echo '<option value="//'. $_SERVER['HTTP_HOST'] . '/jobs/distribution/load/' . $date->format('Y/m').'"'. ($date->format('Y/m') == $currentDate->format('Y/m') ? ' selected="selected"' : '') .'>'. $date->format('F Y') .'</option>';
+					echo '<option value="jobs/distribution/load/' . $date->format('Y/m').'"'. ($date->format('Y/m') == $currentDate->format('Y/m') ? ' selected="selected"' : '') .'>'. $date->format('F Y') .'</option>';
 				}
 				echo '</select>';
 
@@ -128,7 +128,7 @@ $timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
 
 						$output .= '<td class="'.$class. (($currentHour % 6) == 0 ? ' day-quarter' : '').'">';
 						if ($matrix['value'] > 0) {
-							$output .= '<a href="/jobs/view?date_after=' .
+							$output .= '<a href="jobs/view?date_after=' .
 							$date->format('Y-m-d') . ' ' . str_pad($currentHour, 2, '0', STR_PAD_LEFT) . ':00:00&date_before=' .
 							$date->format('Y-m-d') . ' ' . str_pad($currentHour, 2, '0', STR_PAD_LEFT) . ':59:59" data-event="tooltip" title="<b>' . number_format($matrix['value']) . ' jobs</b> on <br/>' . $date->format('l d M Y \a\t H\h') . '">';
 						}

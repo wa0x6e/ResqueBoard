@@ -16,7 +16,7 @@ angular.module("app").controller("workerController", [
 
 	// Load initial workers datas
 	$scope.init = function() {
-		$http({method: "GET", url: "/api/workers"}).
+		$http({method: "GET", url: "api/workers"}).
 			success(function(data, status, headers, config) {
 
 				if (!$.isEmptyObject(data)) {
@@ -155,7 +155,7 @@ angular.module("app").controller("workerController", [
 
 
 	$scope.pause = function(index) {
-		$http({method: "GET", url: "/api/workers/pause/" + $scope.workers[index].fullname}).
+		$http({method: "GET", url: "api/workers/pause/" + $scope.workers[index].fullname}).
 			success(function(data, status, headers, config) {
 				$scope.workers[index].status = "pausing …";
 				$scope.workers[index].working = true;
@@ -174,7 +174,7 @@ angular.module("app").controller("workerController", [
 	};
 
 	$scope.resume = function(index) {
-		$http({method: "GET", url: "/api/workers/resume/" + $scope.workers[index].fullname}).
+		$http({method: "GET", url: "api/workers/resume/" + $scope.workers[index].fullname}).
 			success(function(data, status, headers, config) {
 				$scope.workers[index].status = "resuming …";
 				$scope.workers[index].working = true;
@@ -192,7 +192,7 @@ angular.module("app").controller("workerController", [
 	};
 
 	$scope.stop = function(index) {
-		$http({method: "GET", url: "/api/workers/stop/" + $scope.workers[index].fullname}).
+		$http({method: "GET", url: "api/workers/stop/" + $scope.workers[index].fullname}).
 			success(function(data, status, headers, config) {
 				$scope.workers[index].status = "stopping …";
 				$scope.workers[index].working = true;

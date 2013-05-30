@@ -29,7 +29,7 @@
 		<script id="log-template" type="text/x-jsrender">
 			<li data-verbosity="{{>levelName}}" data-type="{{>action}}" data-worker="{{>workerClass}}">
 				<span class="label {{>levelClass}}">{{>levelName}}</span>
-				<em class="worker" style="color:{{>color}}"><a href="/workers#{{>workerClass}}" title="{{>worker}}">{{>worker}}</a></em>
+				<em class="worker" style="color:{{>color}}"><a href="workers#{{>workerClass}}" title="{{>worker}}">{{>worker}}</a></em>
 				<div class="log-message"><b class="type">{{>action}}</b> {{:detail}}</div> <time data-event="tooltip" title="{{>time}}" datetime="{{>time}}"><i class="icon-time"></i> {{>hourTime}}</time>
 			</li>
 		</script>

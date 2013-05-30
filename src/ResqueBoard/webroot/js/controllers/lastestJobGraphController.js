@@ -296,7 +296,7 @@ angular.module("app").controller("lastestJobGraphController", [
 
 		$http({
 			method: "GET",
-			url: "/api/jobs/" + encodeURIComponent(startTimeStamp) + "/" + encodeURIComponent(startTimeStamp + step[0].second)
+			url: "api/jobs/" + encodeURIComponent(startTimeStamp) + "/" + encodeURIComponent(startTimeStamp + step[0].second)
 		}).
 			success(function(data, status, headers, config) {
 				$scope.jobs = data;
@@ -308,7 +308,7 @@ angular.module("app").controller("lastestJobGraphController", [
 		});
 	};
 
-	$("#job-details").on("hidden", function() {
+	$("#job-details").on("hide", function() {
 		$scope.jobs = [];
 		$scope.jobmodal = {
 			_init: 0,

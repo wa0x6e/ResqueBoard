@@ -67,7 +67,7 @@
 					<div class="log-message">
 					<b class="type"><?php echo $log['event_type']; ?></b> <?php
 						if (isset($log['job_id'])) {
-							echo 'Job <a href="/jobs/view?job_id='.$log['job_id'].'" rel="contents" title="View job details">#' . $log['job_id'] . '</a>';
+							echo 'Job <a href="jobs/view?job_id='.$log['job_id'].'" rel="contents" title="View job details">#' . $log['job_id'] . '</a>';
 						} else {
 							echo 'Worker #' . $log['worker'];
 						}

@@ -21,13 +21,13 @@
 
     <ul class="nav nav-tabs page-nav-tab">
 	    <li>
-	    	<a href="/jobs/view">Processed Jobs</a>
+	    	<a href="jobs/view">Processed Jobs</a>
 	    </li>
 	    <li class="active">
-	    	<a href="/jobs/pending">Pending Jobs</a>
+	    	<a href="jobs/pending">Pending Jobs</a>
 	    </li>
 	    <li>
-	    	<a href="/jobs/scheduled" title="View all scheduled jobs">Scheduled Jobs</a>
+	    	<a href="jobs/scheduled" title="View all scheduled jobs">Scheduled Jobs</a>
 	    </li>
     </ul>
 
@@ -156,7 +156,7 @@
 				if (!isset($pagination->uri['queue']) || $pagination->uri['queue'] === '') {
 					echo ' active';
 				}
-					 ?>"><a href="/jobs/pending">
+					 ?>"><a href="jobs/pending">
 				<strong ng-init="stats.total='<?php echo $totalJobs; ?>'">{{stats.total}}</strong>
 				Total <b>pending</b> jobs</a>
 			</li>
@@ -175,7 +175,7 @@
 					echo ' active';
 				}
 					 ?>">
-					<a href="/jobs/pending?queue=<?php echo $queue['name']; ?>" title="View all pending jobs from <?php echo $queue['name'] ?>">
+					<a href="jobs/pending?queue=<?php echo $queue['name']; ?>" title="View all pending jobs from <?php echo $queue['name'] ?>">
 						<strong ng-init="stats.queues.<?php echo $queue['name']; ?>='<?php echo $queue['stats']['pendingjobs']; ?>'">
 							{{stats.queues.<?php echo $queue['name']; ?>}}
 						</strong> from <b><?php echo $queue['name']; ?></b>

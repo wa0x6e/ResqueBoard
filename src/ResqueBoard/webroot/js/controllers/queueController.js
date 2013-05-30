@@ -13,7 +13,7 @@ angular.module("app").controller("queueController", [
 
 	$scope.init = function() {
 		$scope._init = 0;
-		$http({method: "GET", url: "/api/queues?fields=totaljobs,pendingjobs,workerscount"}).
+		$http({method: "GET", url: "api/queues?fields=totaljobs,pendingjobs,workerscount"}).
 			success(function(data, status, headers, config) {
 				$scope.queues = data;
 
@@ -79,7 +79,7 @@ angular.module("app").controller("queueController", [
 
 	var updatePendingJobsCounter = function() {
 
-		$http({method: "GET", url: "/api/queues?fields=" + refreshFields.join(",") + "&queues=" + Object.keys(mapKeys).join(",")}).
+		$http({method: "GET", url: "api/queues?fields=" + refreshFields.join(",") + "&queues=" + Object.keys(mapKeys).join(",")}).
 			success(function(data, status, headers, config) {
 				for (var i in data) {
 					for (var index in refreshFields) {

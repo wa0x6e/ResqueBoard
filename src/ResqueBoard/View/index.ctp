@@ -34,7 +34,7 @@
 			<h3>Jobs <span ng-show="jobs.length>0" class="badge badge-info">{{jobs.length}}</span></h3>
 		</div>
 		<div class="modal-body">
-			<ng-include src="'/partials/jobs-list.html'"></ng-include>
+			<ng-include src="'partials/jobs-list.html'"></ng-include>
 			<placeholder status="jobmodal._init" error-code="jobmodal._errorCode" loading-content-name="list of jobs"
 			content-name="jobs" icon="icon-cogs" init="fillModal(jobmodal.lastTime)"></placeholder>
 		</div>
@@ -42,10 +42,10 @@
 </div>
 
 <div class="span5">
- 	<ng-include src="'/partials/workers-list.html'" ng-cloak></ng-include>
+ 	<ng-include src="'partials/workers-list.html'" ng-cloak></ng-include>
 </div>
 
 <div class="span6">
- 	<ng-include src="'/partials/queues-table.html'"ng-cloak></ng-include>
-	<ng-include src="'/partials/latest-jobs-heatmap.html'" ng-cloak></ng-include>
+ 	<ng-include src="'partials/queues-table.html'"ng-cloak></ng-include>
+	<ng-include src="'partials/latest-jobs-heatmap.html'" ng-cloak></ng-include>
 </div>

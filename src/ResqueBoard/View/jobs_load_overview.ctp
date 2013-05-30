@@ -168,7 +168,7 @@ $headers = array(
 		    		foreach ($ranges as $range => $info) {
 		    			echo '<li class="dropdown ' . ($currentRange !== $range ? '' : ' active') . '">';
 		    			echo '<a
-		    			href="/jobs/overview/' . $range . '/' . $uriDate->format('c') . '"
+		    			href="jobs/overview/' . $range . '/' . $uriDate->format('c') . '"
 		    			data-target="#"
 		    			class="dropdown-toggle" data-toggle="dropdown"
 		    			data-start-date="' . $info['start']->format('c') . '"
@@ -178,7 +178,7 @@ $headers = array(
 		    				echo '<li>';
 
 
-		    					echo '<a href="/jobs/overview/' . $range . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart'.$range}(new DateTime())->format('c')) . '">';
+		    					echo '<a href="jobs/overview/' . $range . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart'.$range}(new DateTime())->format('c')) . '">';
 
 		    					echo '<small class="pull-right">'. formatDate($range, new DateTime()) .'</small>';
 
@@ -198,8 +198,8 @@ $headers = array(
 
 
 		    					echo '<li class="divider"></li><li class="btn-links">';
-		    					echo '<a href="/jobs/overview/' . $range . '/' . ResqueBoard\Lib\DateHelper::{'getStart' . $range}($uriDate, '+1')->format('c') . '" class="btn pull-right">Next '.$range.' <i class="icon-chevron-right"></i></a>';
-								echo '<a href="/jobs/overview/' . $range . '/' . ResqueBoard\Lib\DateHelper::{'getStart' . $range}($uriDate, '-1')->format('c') . '" class="btn pull-left"><i class="icon-chevron-left"></i> Previous '.$range.'</a>';
+		    					echo '<a href="jobs/overview/' . $range . '/' . ResqueBoard\Lib\DateHelper::{'getStart' . $range}($uriDate, '+1')->format('c') . '" class="btn pull-right">Next '.$range.' <i class="icon-chevron-right"></i></a>';
+								echo '<a href="jobs/overview/' . $range . '/' . ResqueBoard\Lib\DateHelper::{'getStart' . $range}($uriDate, '-1')->format('c') . '" class="btn pull-left"><i class="icon-chevron-left"></i> Previous '.$range.'</a>';
 		    					echo '</li>';
 
 		    				echo '</li>';
@@ -214,9 +214,9 @@ $headers = array(
 
 		    <div class="domain-nav pull-right">
 		    	<?php
-		    		echo '<a href="/jobs/overview/' . $currentRange . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart' . $currentRange}($uriDate, '-1')->format('c')) . '" data-event="tooltip" rel="prev" title="Previous '.$currentRange.'"><i class="icon-chevron-left"></i></a>';
+		    		echo '<a href="jobs/overview/' . $currentRange . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart' . $currentRange}($uriDate, '-1')->format('c')) . '" data-event="tooltip" rel="prev" title="Previous '.$currentRange.'"><i class="icon-chevron-left"></i></a>';
 
-		    		echo '<a href="/jobs/overview/' . $currentRange . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart' . $currentRange}($uriDate, '+1')->format('c')) . '" data-event="tooltip" rel="next"title="Next '.$currentRange.'"><i class="icon-chevron-right"></i></a>';
+		    		echo '<a href="jobs/overview/' . $currentRange . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart' . $currentRange}($uriDate, '+1')->format('c')) . '" data-event="tooltip" rel="next"title="Next '.$currentRange.'"><i class="icon-chevron-right"></i></a>';
 
 		    	?>
 		    </div>

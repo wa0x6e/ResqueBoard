@@ -13,10 +13,10 @@
             <tr ng-repeat="queue in queues | orderBy:predicate:reverse" ng-class="{inactive: queue.stats.workerscount == 0, warning: queue.stats.workerscount == 0 && queue.stats.pendingjobs > 0}">
                 <td class="name"><i class="icon-warning-sign" ng-show="queue.stats.workerscount == 0 && queue.stats.pendingjobs > 0" tooltip-placement="left" tooltip-html-unsafe="This queue has <b>{{queue.stats.pendingjobs}} pending jobs</b>,<br/> but is not monitored by a worker"></i> {{queue.name}} </td>
                 <td>
-                    <a href="/jobs/pending?queue={{queue.name|urlencode}}">{{queue.stats.pendingjobs|number}}</a>
+                    <a href="jobs/pending?queue={{queue.name|urlencode}}">{{queue.stats.pendingjobs|number}}</a>
                 </td>
                 <td>
-                    <a href="/jobs/view?queue={{queue.name|urlencode}}">
+                    <a href="jobs/view?queue={{queue.name|urlencode}}">
                         <div style="position:relative;">
                             <span class="chart-bar" style="width:{{queue.stats.totaljobsperc}}%"></span>
                             <b>{{queue.stats.totaljobs|number}}</b>

@@ -10,7 +10,7 @@ angular.module("app").controller("pendingJobController", [
 
 	var updateStats = function() {
 
-		$http({method: "GET", url: "/api/stats?fields=pending_full&queues=" + Object.keys($scope.stats.queues).join(",")}).
+		$http({method: "GET", url: "api/stats?fields=pending_full&queues=" + Object.keys($scope.stats.queues).join(",")}).
 			success(function(data, status, headers, config) {
 				$scope.stats = data.pending;
 			}).

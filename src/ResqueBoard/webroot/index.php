@@ -26,7 +26,7 @@ if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
 
-define('APPLICATION_VERSION', '2.0.0-beta-2');
+define('APPLICATION_VERSION', '2.0.0-beta-3');
 
 include ROOT . DS . 'Config' . DS . 'Bootstrap.php';
 

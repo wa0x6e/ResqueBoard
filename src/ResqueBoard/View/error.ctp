@@ -21,6 +21,10 @@
 <div class="container">
 	<div class="hero-unit" id="page-error">
 		<h1>Oups ! Something went wrong</h1>
-		<p><?php echo $message ?></p>
+		<p><?php echo $message ?>
+        <?php if (isset($trace[0]['args'][3])) : ?>
+         in <?php echo $trace[0]['args'][2]; ?> at line <?php echo $trace[0]['args'][3]; ?>
+        <?php endif; ?>
+        </p>
 	</div>
 </div>

@@ -20,12 +20,8 @@
 ?>
 <div class="container">
 	<div class="hero-unit" id="page-error">
-		<h1>Oups ! Something went wrong</h1>
-		<p><?php echo $message; ?>
-        <?php if (isset($trace[0]['args'][3])) : ?>
-         in <?php echo $trace[0]['args'][2]; ?> at line <?php echo $trace[0]['args'][3]; ?>
-        <?php endif; ?>
-        </p>
-        <a href="<?php echo $_SERVER['REQUEST_URI'] ?>" class="btn btn-primary btn-large">Reload</a>
+		<h1><?php echo $pageTitle ?></h1>
+		<p><?php echo $message ?></p>
+        <a href="<?php echo URL_ROOT ?>" class="btn btn-primary btn-large">Go back to home page</a>
 	</div>
 </div>

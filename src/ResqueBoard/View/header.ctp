@@ -48,7 +48,7 @@
 				try {
 					\ResqueBoard\Lib\Service\Service::Mongo();
 					$serviceStatus['Mongo'] = true;
-				} catch (\MongoConnectionException $e) {
+				} catch (\Exception $e) {
 					$serviceStatus['Mongo'] = $e->getMessage();
 				}
 			?>

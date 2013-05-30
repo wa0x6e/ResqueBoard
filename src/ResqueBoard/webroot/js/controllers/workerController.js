@@ -39,6 +39,7 @@ angular.module("app").controller("workerController", [
 			}).
 			error(function(data, status, headers, config) {
 				$scope._errorCode = status;
+				$scope._errorMessage = data.message;
 				$scope._init = 3;
 		});
 	};

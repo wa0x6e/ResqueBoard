@@ -35,7 +35,12 @@ class Redis extends AbstractService
 
         $t = microtime(true);
         $redis = new \Redis();
-        $redis->connect($settings['host'], $settings['port']);
+
+        try {
+            $redis->connect($settings['host'], $settings['port']);
+        } catch (\Exception $e) {
+            throw new \Exception('Unable to connect to Redis server');
+        }
 
         if (isset($settings['prefix'])) {
             $redis->setOption(\Redis::OPT_PREFIX, $settings['prefix'] . ':');

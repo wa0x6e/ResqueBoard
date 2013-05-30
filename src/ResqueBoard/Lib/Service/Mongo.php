@@ -34,7 +34,11 @@ class Mongo extends AbstractService
         parent::bootstrap();
 
         $t = microtime(true);
-        parent::$serviceInstance[get_class()] = new \Mongo($settings['host'] . ':' . $settings['port']);
+        try {
+            parent::$serviceInstance[get_class()] = new \Mongo($settings['host'] . ':' . $settings['port']);
+        } catch (\Exception $e) {
+            throw new \Exception('Unable to connect to Mongo server');
+        }
 
         $queryTime = round((microtime(true) - $t) * 1000, 2);
         parent::logQuery(

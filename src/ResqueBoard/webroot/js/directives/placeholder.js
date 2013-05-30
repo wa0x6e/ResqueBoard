@@ -12,6 +12,7 @@ angular.module("app").directive("placeholder", function() {
 			loadingDataName: "@loadingContentName",
 			icon: "@",
 			errorCode: "=",
+			errorMessage: "=",
 			init: "&"
 		},
 		link: function (scope, element, attrs) {
@@ -30,7 +31,12 @@ angular.module("app").directive("placeholder", function() {
 					scope._placeholder.message = "No " + scope.dataName;
 				} else if (scope.status === 3) {
 					scope._placeholder.icon = "icon-warning-sign";
-					scope._placeholder.message = "A <b>" + scope.errorCode + "</b> occured while fetching the " + scope.loadingDataName;
+
+					if (scope.errorMessage.length > 0) {
+						scope._placeholder.message = scope.errorMessage;
+					} else {
+						scope._placeholder.message = "A <b>" + scope.errorCode + "</b> occured while fetching the " + scope.loadingDataName;
+					}
 				}
 			});
 		}

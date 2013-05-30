@@ -539,8 +539,9 @@ $app->map(
 $app->get(
     '/api/jobs/:start/:end',
     function ($start, $end) use ($app) {
+        $app->response()->header("Content-Type", "application/json");
+
         try {
-            $app->response()->header("Content-Type", "application/json");
             $cacheId = $start.$end;
             $cacheDriver = new \Doctrine\Common\Cache\FilesystemCache(CACHE . DS . 'jobs' . DS . 'list', '.cache');
 
@@ -570,8 +571,9 @@ $app->get(
 $app->get(
     '/api/jobs/stats/:start/:end',
     function ($start, $end) use ($app) {
+        $app->response()->header("Content-Type", "application/json");
+
         try {
-            $app->response()->header("Content-Type", "application/json");
             $cacheId = $start.$end;
             $cacheDriver = new \Doctrine\Common\Cache\FilesystemCache(CACHE . DS . 'jobs' . DS . 'stats', '.cache');
 
@@ -596,9 +598,10 @@ $app->get(
 $app->get(
     '/api/jobs/distribution/class(/:limit)',
     function ($limit = null) use ($app) {
+        $app->response()->header("Content-Type", "application/json");
+
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat();
-            $app->response()->header("Content-Type", "application/json");
 
             $app->view(new ResqueBoard\View\JsonView());
             $app->render(
@@ -621,8 +624,9 @@ $app->get(
 $app->get(
     '/api/scheduled-jobs/stats/:start/:end',
     function ($start, $end) use ($app) {
+        $app->response()->header("Content-Type", "application/json");
+
         try {
-            $app->response()->header("Content-Type", "application/json");
             $cacheId = $start.$end;
             $cacheDriver = new \Doctrine\Common\Cache\FilesystemCache(CACHE . DS . 'scheduled-jobs' . DS . 'stats', '.cache');
 
@@ -648,11 +652,11 @@ $app->get(
 $app->get(
     '/api/scheduled-jobs/:start/:end',
     function ($start, $end) use ($app) {
+        $app->response()->header("Content-Type", "application/json");
+
         try {
             $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat();
             $jobs = $resqueSchedulerStat->getJobs((int)$start, (int)$end, true);
-
-            $app->response()->header("Content-Type", "application/json");
             echo json_encode($jobs);
         } catch (\Exception $e) {
             $app->error($e);
@@ -663,6 +667,8 @@ $app->get(
 $app->get(
     '/api/stats',
     function () use ($app) {
+        $app->response()->header("Content-Type", "application/json");
+
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat();
             $resqueSchedulerStat = new ResqueBoard\Lib\ResqueSchedulerStat();
@@ -711,10 +717,6 @@ $app->get(
                 }
             }
 
-
-
-
-            $app->response()->header("Content-Type", "application/json");
             echo json_encode($stats);
         } catch (\Exception $e) {
             $app->error($e);
@@ -728,6 +730,7 @@ $app->get(
 $app->get(
     '/api/workers',
     function () use ($app) {
+        $app->response()->header("Content-Type", "application/json");
 
         try {
             $resqueStat = new ResqueBoard\Lib\ResqueStat();
@@ -752,7 +755,6 @@ $app->get(
             }
 
             echo json_encode($results);
-
         } catch (\Exception $e) {
             $app->error($e);
         }
@@ -762,11 +764,10 @@ $app->get(
 $app->get(
     '/api/workers/getinfo/:workerId',
     function ($workerId) use ($app) {
+        $app->response()->header("Content-Type", "application/json");
 
         $resqueApi = new ResqueBoard\Lib\ResqueApi($settings['resqueConfig']);
         $infos = $resqueApi->getInfos($workerId);
-
-        $app->response()->header("Content-Type", "application/json");
         echo json_encode($infos);
     }
 );
@@ -867,6 +868,7 @@ $app->get(
 $app->get(
     '/api/queues',
     function () use ($app) {
+        $app->response()->header("Content-Type", "application/json");
 
         try {
             $params = cleanArgs($app->request()->params());
@@ -875,28 +877,7 @@ $app->get(
 
             $resqueStat = new ResqueBoard\Lib\ResqueStat();
 
-            $app->response()->header("Content-Type", "application/json");
             echo json_encode(array_values($resqueStat->getQueues($fields, $queues)));
-        } catch (\Exception $e) {
-            $app->error($e);
-        }
-    }
-);
-
-$app->get(
-    '/render/worker/:layout/:workerId',
-    function ($layout, $workerId) use ($app) {
-
-        try {
-            $resqueStat = new ResqueBoard\Lib\ResqueStat();
-
-            switch($layout) {
-                case 'table':
-                    echo ResqueBoard\Lib\WorkerHelper::renderTable(array($resqueStat->getWorker($workerId)));
-                    break;
-            }
-
-
         } catch (\Exception $e) {
             $app->error($e);
         }
@@ -906,12 +887,28 @@ $app->get(
 
 $app->error(
     function (\Exception $e) use ($app) {
+        $res = $app->response();
+        if (isset($res['Content-Type']) && $res['Content-Type'] === 'application/json') {
+            $app->view(new ResqueBoard\View\JsonView());
+        }
         $app->render(
             'error.ctp',
             array(
                 'pageTitle' => 'Error',
                 'message' => $e->getMessage(),
                 'trace' => $e->getTrace()
+            )
+        );
+    }
+);
+
+$app->notFound(
+    function () use ($app) {
+        $app->render(
+            'error404.ctp',
+            array(
+                'pageTitle' => '404 Page not found',
+                'message' => 'The page you\'re looking for does not exist'
             )
         );
     }

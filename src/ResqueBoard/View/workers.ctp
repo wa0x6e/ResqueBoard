@@ -23,8 +23,8 @@
 
 <div class="full-width" ng-controller="workerController">
 <div ng-cloak>
-    <div class="knight-unit" ng-show="length==0"><i class="icon-cogs icon"></i><h2>No active workers</h2></div>
-
+    <div class="knight-unit" ng-show="length==0 && _init != 3"><i class="icon-cogs icon"></i><h2>No active workers</h2></div>
+    <div class="knight-unit error" ng-show="_init == 3"><i class="icon-warning-sign icon"></i><h2>{{_errorMessage}}</h2></div>
 	<div class="ftr-bloc" ng-hide="length==0">
 		<h2>Active workers <span class="badge badge-info">{{length}}</span></h2>
 

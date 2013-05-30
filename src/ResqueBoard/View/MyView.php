@@ -53,21 +53,21 @@ class MyView extends \Slim\View
         if (!isset($raw) || $raw === false) {
             require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->headerTemplate;
 
-            if ($template !== 'error.ctp') {
+            if (strpos($template, 'error') === false) {
                 require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->bodyPrepend;
             }
         }
         require $this->templatePath;
         if (!isset($raw) || $raw === false) {
-            require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->bodyAppend;
-
             if (DEBUG) {
                 require $this->templatesDirectory . DIRECTORY_SEPARATOR . 'service_helper.ctp';
             }
 
-            if ($template !== 'error.ctp') {
-                require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->footerTemplate;
+            if (strpos($template, 'error') === false) {
+                require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->bodyAppend;
             }
+
+            require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->footerTemplate;
         }
         return ob_get_clean();
     }

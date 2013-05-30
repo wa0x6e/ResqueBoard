@@ -274,6 +274,7 @@ h3{
 		i[class^="icon-"], i[class*=" icon-"] {
 			font-weight: normal;
 			font-size: 2em;
+			display: block;
 		}
 		
 		i.caret {
@@ -2147,4 +2148,43 @@ i[class^="icon-"], i[class*=" icon-"] {
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak
 {
     display: none;
+}
+
+// Service status
+#server-status {
+	float: right;
+	margin-top: 1em;
+	
+	@size: 11px;
+	
+	.title {
+		text-transform: uppercase;
+		font-size: 10px;
+		font-weight: bold;
+		float: left;
+		margin-right: 7px;
+	}
+	
+	.status {
+		width: @size;
+		height: @size;
+		display: block;
+		background-color: @colorShadeMinusTwo;
+		float: left;
+		margin-right: 3px;
+		border-radius: @size;
+		border: 4px solid darken(#33414c, 10);
+		
+		&:hover {
+			border-color: darken(#33414c, 20);
+		}
+	}
+	
+	.status-ok {
+		background-color: @green;
+	}
+	
+	.status-error {
+		background-color: lighten(@red, 15);
+	}
 }

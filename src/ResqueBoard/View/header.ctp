@@ -30,5 +30,41 @@
 	</head>
 	<body>
 		<div class="container">
+			<?php
+
+				$serviceStatus = array(
+					'Redis' => false,
+					'Mongo' => false,
+					'Cube' => false
+				);
+
+				try {
+					\ResqueBoard\Lib\Service\Service::Redis();
+					$serviceStatus['Redis'] = true;
+				} catch (\Exception $e) {
+					$serviceStatus['Redis'] = $e->getMessage();
+				}
+
+				try {
+					\ResqueBoard\Lib\Service\Service::Mongo();
+					$serviceStatus['Mongo'] = true;
+				} catch (\MongoConnectionException $e) {
+					$serviceStatus['Mongo'] = $e->getMessage();
+				}
+			?>
+			<ul id="server-status" class="unstyled">
+				<li class="title">server status</li>
+				<?php foreach ($serviceStatus as $name => $status) {
+					echo '<li data-server="'. strtolower($name) . '" data-placement="bottom" data-trigger="hover" data-event="popover" title="' . $name . ' server" class="status ';
+					if ($status === true) {
+						echo 'status-ok" data-content="The ' . $name . ' server is online">';
+					} elseif ($status !== false) {
+						echo 'status-error" data-content="Unable to connect to the ' . $name . ' server">';
+					} else {
+						echo 'status-unknown" data-content="<i class=\'icon-spinner icon-spin\'></i> Fetching the ' . $name . ' server status">';
+					}
+					echo '</li>';
+				} ?>
+			</ul>
 			<a class="brand" href="<?php echo URL_ROOT ?>"><em><?php echo APPLICATION_NAME ?></em>Analytics for Resque PHP</a>
 		</div>

@@ -9,8 +9,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @package    Resqueboard
- * @subpackage Resqueboard.Test.Lib.Resque
+ * @package    ResqueBoard
+ * @subpackage ResqueBoard.Test.Lib.Resque
  * @author     Wan Qi Chen <kami@kamisama.me>
  * @copyright  2012-2013 Wan Qi Chen
  * @link       http://resqueboard.kamisama.me

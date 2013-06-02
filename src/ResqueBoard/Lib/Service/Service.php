@@ -7,13 +7,13 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @author        Wan Qi Chen <kami@kamisama.me>
- * @copyright     Copyright 2012, Wan Qi Chen <kami@kamisama.me>
- * @link          http://resqueboard.kamisama.me
- * @package       resqueboard
- * @subpackage    resqueboard.lib
- * @since         1.0.0
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @package    ResqueBoard
+ * @subpackage ResqueBoard.Lib.Service
+ * @author     Wan Qi Chen <kami@kamisama.me>
+ * @copyright  2012-2013 Wan Qi Chen
+ * @link       http://resqueboard.kamisama.me
+ * @since      2.0.0
+ * @license    MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
 namespace ResqueBoard\Lib\Service;
@@ -21,9 +21,9 @@ namespace ResqueBoard\Lib\Service;
 /**
  * Redis service class
  *
- * @subpackage      resqueboard.lib.service
- * @since            1.0.0
- * @author           Wan Qi Chen <kami@kamisama.me>
+ * @subpackage ResqueBoard.Lib.Service
+ * @author     Wan Qi Chen <kami@kamisama.me>
+ * @since      2.0.0
  */
 class Service
 {

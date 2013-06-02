@@ -10,13 +10,13 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @author        Wan Qi Chen <kami@kamisama.me>
- * @copyright     Copyright 2012, Wan Qi Chen <kami@kamisama.me>
- * @link          http://resqueboard.kamisama.me
- * @package       resqueboard
- * @subpackage    resqueboard.lib
- * @since         1.0.0
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @package    ResqueBoard
+ * @subpackage ResqueBoard.Lib
+ * @author     Wan Qi Chen <kami@kamisama.me>
+ * @copyright  2012-2013 Wan Qi Chen
+ * @link       http://resqueboard.kamisama.me
+ * @since      1.0.0
+ * @license    MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
 namespace ResqueBoard\Lib;
@@ -28,9 +28,9 @@ use ResqueBoard\Lib\Service\Service;
  *
  * Connect to the backend to retrieve php-resque datas, or metrics
  *
- * @subpackage      resqueboard.lib
- * @since            1.0.0
- * @author           Wan Qi Chen <kami@kamisama.me>
+ * @subpackage ResqueBoard.Lib
+ * @author     Wan Qi Chen <kami@kamisama.me>
+ * @since      1.0.0
  */
 class ResqueStat
 {
@@ -63,6 +63,8 @@ class ResqueStat
 
     /**
      * Return count of each jobs status
+     *
+     * @param string $type Filter stats by this job type
      *
      * @since 1.0.0
      * @return array indexed by job status if more than one job status requested, else int
@@ -143,6 +145,8 @@ class ResqueStat
     /**
      * Return a worker stats
      *
+     * @param int $workerId Process ID of the worker
+     *
      * @since 1.2.0
      */
     public function getWorker($workerId)
@@ -169,7 +173,10 @@ class ResqueStat
     /**
      * Return list of all known queues
      *
+     * Return the list of queues currently polled by at least one queue
+     *
      * @since 1.4.0
+     * @return array Array of queues name
      */
     public function getAllQueues()
     {
@@ -179,7 +186,13 @@ class ResqueStat
     /**
      * Return list of all queues
      *
+     * Return list of all queues, along with their stats
+     *
+     * @param array $fields To filters queues search
+     * @param array $queues Get infos on these queues
+     *
      * @since 1.4.0
+     * @return array Array of queues name with their stats
      */
     public function getQueues($fields = array(), $queues = array())
     {
@@ -286,7 +299,10 @@ class ResqueStat
     /**
      * Return jobs filtered by conditions specified in $options
      *
+     * @param array $options To filter jobs search
+     *
      * @since 1.1.0
+     * @return array An array of jobs
      */
     public function getJobs($options = array())
     {
@@ -405,6 +421,8 @@ class ResqueStat
     /**
      * Get the number of jobs at a specific time
      *
+     * @param array $options To filter the search
+     *
      * @since 2.0.0
      * @return  Array
      */
@@ -521,8 +539,10 @@ class ResqueStat
 
     /**
      * Return the number of pending jobs in a queue
-     * @param  String $queue    Name of the queue, or null to get the count of pending jobs from all queues
-     * @return array            Queue name indexed array of jobs count
+     *
+     * @param String $queue Name of the queue, or null to get the count of pending jobs from all queues
+     *
+     * @return array Queue name indexed array of jobs count
      */
     public function getPendingJobsCount($queue = null)
     {
@@ -545,12 +565,13 @@ class ResqueStat
     /**
      * Return logs filtered by conditions specified in $options
      *
+     * @param array $options To filter the search
+     *
      * @since 1.2.0
+     * @return array Array of logs entries
      */
     public function getLogs($options = array())
     {
-
-
         $eventTypeList = array('check' ,'done', 'fail', 'fork', 'found', 'got', 'kill', 'process', 'prune', 'reconnect', 'shutdown', 'sleep', 'start');
 
         $default = array(
@@ -660,13 +681,14 @@ class ResqueStat
      * Get the number of jobs processed between a $start and an $end date,
      * divided into $step interval
      *
+     * @param DateTime $start Start date
+     * @param DateTime $end   End date
+     * @param const    $step  Cube constant for step
+     *
+     * @throws \Exception       If curl extension is not installed
+     * @throws \Exception       If unable to init the curl session
+     * @throws \Exception       If cube does not return a valid response
      * @since  1.3.0
-     * @param  DateTime $start Start date
-     * @param  DateTime $end   End date
-     * @param  const    $step  Cube constant for step
-     * @throws Exception       If curl extension is not installed
-     * @throws Exception       If unable to init the curl session
-     * @throws Exception       If cube does not return a valid response
      * @return array
      */
     public function getJobsMatrix($start, $end, $step)
@@ -680,8 +702,10 @@ class ResqueStat
     /**
      * Return the distribution of jobs by classes
      *
-     * @since 1.1.0
      * @param int $limit Number of results to return, null to return all results
+     *
+     * @since 1.1.0
+     * @return array
      */
     public function getJobsRepartionStats($limit = 10)
     {
@@ -744,6 +768,8 @@ class ResqueStat
 
     /**
      * Get general jobs statistics, by status
+     *
+     * @param array $options To filter the search
      *
      * @since 1.1.0
      * @return array An array of jobs count, by status
@@ -826,7 +852,8 @@ class ResqueStat
     /**
      * Convert jobs document from MongoDB or Redis entry to a formatted array
      *
-     * @param A traversable object
+     * @param \MongoCursor $cursor A traversable object
+     *
      * @return an array of jobs
      */
     private function formatJobs($cursor)
@@ -856,8 +883,9 @@ class ResqueStat
     /**
      * Assign a status to each jobs
      *
-     * @since 1.0.0
      * @param array $jobs An array of jobs
+     *
+     * @since 1.0.0
      * @return An array of jobs
      */
     private function setJobStatus($jobs)
@@ -926,6 +954,7 @@ class ResqueStat
      * Create Mongo Collection index
      *
      * @since 1.1.0
+     * @return void
      */
     private function setupIndexes()
     {

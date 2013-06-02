@@ -4,23 +4,37 @@
  *
  * Fetch various informations about scheduled jobs
  *
- * @package         resqueboard
- * @subpackage      resqueboard.lib
- * @since           1.5.0
- * @author          Wan Qi Chen <kami@kamisama.me>
+ * PHP version 5
+ *
+ * @package    ResqueBoard
+ * @subpackage ResqueBoard.Lib
+ * @author     Wan Qi Chen <kami@kamisama.me>
+ * @copyright  2012-2013 Wan Qi Chen
+ * @link       http://resqueboard.kamisama.me
+ * @since      1.5.0
+ * @license    MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
 namespace ResqueBoard\Lib;
 
 use ResqueBoard\Lib\Service\Service;
 
+/**
+ * ResqueScheduler class
+ *
+ * @subpackage ResqueBoard.Lib
+ * @author     Wan Qi Chen <kami@kamisama.me>
+ * @since      1.5.0
+ */
 class ResqueSchedulerStat extends ResqueStat
 {
     /**
      * Return the number of scheduled jobs between a start and end date
      *
-     * @param  integer $start Start timestamp
-     * @param  integer $end   Stop timestamp
+     * @param integer $start Start timestamp
+     * @param integer $end   Stop timestamp
+     * @param bool $full
+     *
      * @return integer        Number of scheduled jobs from that date ragne
      */
     public function getScheduledJobsCount($start = 0, $end = null, $full = false)
@@ -66,9 +80,10 @@ class ResqueSchedulerStat extends ResqueStat
     /**
      * Return an array of scheduled jobs
      *
-     * @param  string $start timestamp
-     * @param  string $end   timestamp
-     * @return array         array of jobs
+     * @param string $start timestamp
+     * @param string $end   timestamp
+     *
+     * @return array array of jobs
      */
     public function getJobs($start = 0, $end = null)
     {

@@ -1,5 +1,1 @@
-angular.module("app").filter("urlencode", function() {
-	return function(input) {
-		return encodeURIComponent(input);
-	};
-});
+angular.module("app").filter("urlencode",function(){"use strict";return function(a){return encodeURIComponent(a)}});

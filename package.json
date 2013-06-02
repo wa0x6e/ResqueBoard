@@ -1,6 +1,6 @@
 {
   "name": "ResqueBoard",
-  "version": "2.0.0",
+  "version": "2.0.0-beta-3",
   "description": "A web interface to monitor php resque activities",
   "keywords": [
     "php-resque",
@@ -10,10 +10,10 @@
   ],
   "homepage": "http://kamisama.github.com/ResqueBoard/",
   "author": {
-    "name": "Wan Chen",
+    "name": "Wan Qi Chen",
     "url": "http://kamisama.me"
   },
-  "licence": "MIT",
+  "license": "MIT",
   "dependencies": {
     "cube": ">=0.2.8"
   },
@@ -26,6 +26,12 @@
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-watch": "~0.3.1",
-    "grunt-phpunit": "~0.2.1"
+    "grunt-phpunit": "~0.2.1",
+    "grunt-contrib-requirejs": "~0.4.1",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-bump": "0.0.2",
+    "grunt-contrib-less": "~0.5.2",
+    "grunt-devtools": "~0.1.0-7"
   }
 }

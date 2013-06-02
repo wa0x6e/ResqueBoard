@@ -1,4 +1,1 @@
-angular.module("app").factory("workersStartListener", function($rootScope) {
-	var socketLister = new SocketListener($rootScope, "start");
-	return socketLister;
-});
+angular.module("app").factory("workersStartListener",["$rootScope",function(a){"use strict";var b=new SocketListener(a,"start");return b}]);

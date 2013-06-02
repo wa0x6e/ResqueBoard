@@ -1,1 +1,1 @@
-angular.bootstrap(document, ['app']);
+angular.bootstrap(document,["app"]);

@@ -25,7 +25,7 @@
 		<base href="<?php echo URL_ROOT ?>" />
 		<title><?php echo $pageTitle . TITLE_SEP . APPLICATION_NAME?></title>
 		<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
-		<link href="css/main.css?v=<?php echo APPLICATION_VERSION ?>" rel="stylesheet" type="text/css">
+		<link href="css/main.min.css?v=<?php echo APPLICATION_VERSION ?>" rel="stylesheet" type="text/css">
 		<link href="css/highlightjs/zenburn.css" rel="stylesheet" type="text/css">
 	</head>
 	<body>

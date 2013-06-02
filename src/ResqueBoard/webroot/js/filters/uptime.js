@@ -1,5 +1,1 @@
-angular.module("app").filter("uptime", function() {
-	return function(input) {
-		return moment().from(new Date(input), true);
-	};
-});
+angular.module("app").filter("uptime",function(){"use strict";return function(a){return moment().from(new Date(a),!0)}});

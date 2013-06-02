@@ -1,4 +1,1 @@
-angular.module("app").factory("jobsSuccessCounter", function($rootScope) {
-	var socketLister = new SocketListener($rootScope, "done");
-	return socketLister;
-});
+angular.module("app").factory("jobsSuccessCounter",["$rootScope",function(a){var b=new SocketListener(a,"done");return b}]);

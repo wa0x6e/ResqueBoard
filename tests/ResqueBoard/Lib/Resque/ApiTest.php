@@ -9,14 +9,16 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @author        Wan Qi Chen <kami@kamisama.me>
- * @copyright     Copyright 2013, Wan Qi Chen <kami@kamisama.me>
- * @link          http://resqueboard.kamisama.me
- * @since         2.0.0
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @package    Resqueboard
+ * @subpackage Resqueboard.Test.Lib.Resque
+ * @author     Wan Qi Chen <kami@kamisama.me>
+ * @copyright  2012-2013 Wan Qi Chen
+ * @link       http://resqueboard.kamisama.me
+ * @since      2.0.0
+ * @license    MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-namespace ResqueBoard\Lib\Resque;
+namespace ResqueBoard\Test\Lib\Resque;
 
 /**
  * ApiTest Class
@@ -37,6 +39,10 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $this->validWorkerId = 'hostname:9999999:queue';
         $this->invalidWorkerId = 'hostname:_78:queue';
 
+        $this->workersList = array(
+            '9999999' => array()
+        );
+
         $this->getProcessIdReflection = new \ReflectionMethod('ResqueBoard\Lib\Resque\Api', 'getProcessId');
         $this->getProcessIdReflection->setAccessible(true);
 
@@ -49,6 +55,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testStopWorker()
     {
+        $this->ResqueStatus->expects($this->once())->method('getWorkers')->will($this->returnValue($this->workersList));
         $this->ResqueStatus->expects($this->once())->method('removeWorker')->with($this->equalTo('9999999'));
         $this->mock->expects($this->once())->method('sendSignal')->with($this->equalTo('9999999'), $this->equalTo('QUIT'));
         $this->assertTrue($this->mock->stop($this->validWorkerId));
@@ -59,6 +66,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testPauseWorker()
     {
+        $this->ResqueStatus->expects($this->once())->method('getWorkers')->will($this->returnValue($this->workersList));
         $this->ResqueStatus->expects($this->once())->method('getPausedWorker')->will($this->returnValue(array()));
         $this->mock->expects($this->once())->method('sendSignal')->with($this->equalTo('9999999'), $this->equalTo('-USR2'));
         $this->ResqueStatus->expects($this->once())->method('setPausedWorker')->with($this->equalTo($this->validWorkerId));
@@ -70,6 +78,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testResumeWorker()
     {
+        $this->ResqueStatus->expects($this->once())->method('getWorkers')->will($this->returnValue($this->workersList));
         $this->ResqueStatus->expects($this->once())->method('getPausedWorker')->will($this->returnValue(array($this->validWorkerId)));
         $this->mock->expects($this->once())->method('sendSignal')->with($this->equalTo('9999999'), $this->equalTo('-CONT'));
         $this->ResqueStatus->expects($this->once())->method('setPausedWorker')->with($this->equalTo($this->validWorkerId), $this->equalTo(false));
@@ -104,10 +113,11 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testResumeWorkerWithNotPausedWorker()
     {
+        $this->ResqueStatus->expects($this->once())->method('getWorkers')->will($this->returnValue($this->workersList));
         $this->ResqueStatus->expects($this->once())->method('getPausedWorker')->will($this->returnValue(array()));
         $this->ResqueStatus->expects($this->never())->method('setPausedWorker');
         $this->mock->expects($this->never())->method('sendSignal');
-        $this->mock->resume($this->invalidWorkerId);
+        $this->mock->resume($this->validWorkerId);
     }
 
 

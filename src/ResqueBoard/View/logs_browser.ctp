@@ -30,7 +30,7 @@
 
 				} elseif (empty($logs)) {
 
-					echo '<div class="alert"><i class="icon-search" style="font-size:32px; float:left;margin: 10px 10px 0 0;"></i><h4>No results found</h4>Try searchiung again :)</div>';
+					echo '<div class="knight-unit"><i class="icon-search icon"></i><h2>No results found</h2></div>';
 
 				} else {
 
@@ -121,7 +121,7 @@
 		<div class="sidebar">
 			<div class="bloc">
 			<h3>Search</h3>
-			<form id="log-browser-form" role="form">
+			<form id="log-browser-form" role="form" method="GET" action="logs/browse">
 				<fieldset><legend>Verbosity</legend>
 				<select class="span2" name="event_level[]" multiple="" size="<?php echo count($logLevels)?>">
 					<?php

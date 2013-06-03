@@ -573,6 +573,10 @@ a.brand
 	color: lighten(@textColor, 35);
 }
 
+.page-header + .alert {
+	margin-top: 1em;
+}
+
 .console {
 	background: @colorShadePlusOne;
 	padding: @insidePadding;
@@ -735,9 +739,8 @@ h4.sep
 		background: @greyBorderColor;
 		font-weight: bold;
 		color: @gray;
-		
-		padding-top: 4px;
-		padding-bottom: 2px;
+
+		padding: 4px 2px 4px 10px;
 		
 		border-top: 1px solid lighten(@greyBorderColor, 10);
 		border-bottom: 1px solid darken(@greyBorderColor, 5);

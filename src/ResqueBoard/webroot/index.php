@@ -456,9 +456,11 @@ $app->map(
                 'date_before' => null
             );
 
+            $params = cleanArgs($app->request()->params());
+
             $searchData = array_merge(
                 $defaults,
-                cleanArgs($app->request()->params())
+                $params
             );
             array_walk(
                 $searchData,
@@ -471,10 +473,10 @@ $app->map(
 
             $pagination = new stdClass();
             $pagination->current = $searchData['page'];
-            $pagination->limit = (($app->request()->params('limit') != '') && in_array($app->request()->params('limit'), $resultLimits))
-            ? $app->request()->params('limit')
+            $pagination->limit = (isset($params['limit']) && in_array($params['limit'], $resultLimits))
+            ? $params['limit']
             : PAGINATION_LIMIT;
-            $pagination->baseUrl = '/logs/browse?';
+            $pagination->baseUrl = 'logs/browse?';
 
             $conditions = array();
 
@@ -485,12 +487,10 @@ $app->map(
                 'event_type' => $searchData['event_type'],
                 'date_after' => $searchData['date_after'],
                 'date_before' => $searchData['date_before']
-
             );
 
-
             // Validate search datas
-            $dateTimePattern = '/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])*?$/';
+            $dateTimePattern = '/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])(\s+([0-1][0-9]|2[0-4]):[0-5]\d(:[0-5]\d)?)?$/';
             if (!empty($conditions['date_after']) && preg_match($dateTimePattern, $conditions['date_after']) == 0) {
                 $errors['date_after'] = 'Date is not valid';
             }
@@ -498,8 +498,7 @@ $app->map(
                 $errors['date_before'] = 'Date is not valid';
             }
 
-
-            if (empty($errors) && cleanArgs($app->request()->params()) != array()) {
+            if (empty($errors) && $params != array()) {
                 $resqueStat = new ResqueBoard\Lib\ResqueStat();
                 $logs = $resqueStat->getLogs($conditions);
                 $pagination->totalResult = $resqueStat->getLogs(array_merge($conditions, array('type' => 'count')));
@@ -509,7 +508,7 @@ $app->map(
             }
 
             $pagination->totalPage = ceil($pagination->totalResult / $pagination->limit);
-            $pagination->uri = cleanArgs($app->request()->params());
+            $pagination->uri = $params;
 
             render(
                 $app,
@@ -529,7 +528,7 @@ $app->map(
             $app->error($e);
         }
     }
-)->via('GET', 'POST');
+)->via('GET');
 
 /**
  * Return all the jobs between a start and end date

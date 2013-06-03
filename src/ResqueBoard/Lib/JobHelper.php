@@ -51,7 +51,7 @@ class JobHelper
                     <div class="accordion-heading" data-toggle="collapse" data-target="#<?php echo $job['job_id']?>">
                         <div class="accordion-toggle">
                             <span title="Job <?php echo self::$jobStatus[$job['status']] ?>" class="job-status-icon">
-                            <img src="/img/job_<?php echo self::$jobStatus[$job['status']] ?>.png" title="Job <?php echo self::$jobStatus[$job['status']] ?>" height=24 width=24 /></span>
+                            <img src="img/job_<?php echo self::$jobStatus[$job['status']] ?>.png" title="Job <?php echo self::$jobStatus[$job['status']] ?>" height=24 width=24 /></span>
 
                             <?php
                 if (isset($job['worker']) && !empty($job['worker'])) : ?>

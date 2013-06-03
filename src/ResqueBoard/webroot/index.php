@@ -205,7 +205,9 @@ $app->map(
                     'workers' => ''
                 );
 
-            $searchData = array_merge($defaults, cleanArgs($app->request()->params()));
+            $params = cleanArgs($app->request()->params());
+
+            $searchData = array_merge($defaults, $params);
             array_walk(
                 $searchData,
                 function (&$key) {
@@ -217,18 +219,18 @@ $app->map(
 
             $pagination = new stdClass();
             $pagination->current = $searchData['page'];
-            $pagination->limit = (($app->request()->params('limit') != '') && in_array($app->request()->params('limit'), $resultLimits))
-                ? $app->request()->params('limit')
+            $pagination->limit = (isset($params['limit']) && in_array($params['limit'], $resultLimits))
+                ? $params['limit']
                 : PAGINATION_LIMIT;
-            $pagination->baseUrl = '/jobs/view?';
+            $pagination->baseUrl = 'jobs/view?';
 
             $conditions = array();
             $searchToken = '';
 
             $pagination->totalResult = $resqueStat->getJobs(array_merge($conditions, array('type' => 'count')));
 
-            if ($app->request()->params('job_id') != null) {
-                $jobId = $searchToken = ltrim($app->request()->params('job_id'), '#');
+            if (isset($params['job_id'])) {
+                $jobId = $searchToken = ltrim($params['job_id'], '#');
                 $jobs = $resqueStat->getJobs(array('jobId' => $jobId));
                 $pagination->totalResult = $resqueStat->getJobs(array_merge(array('jobId' => $jobId), array('type' => 'count')));
             } else {
@@ -266,7 +268,7 @@ $app->map(
 
 
             $pagination->totalPage = ceil($pagination->totalResult / $pagination->limit);
-            $pagination->uri = cleanArgs($app->request()->params());
+            $pagination->uri = $params;
 
             render(
                 $app,

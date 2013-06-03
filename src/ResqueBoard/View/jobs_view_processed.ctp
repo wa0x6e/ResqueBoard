@@ -122,7 +122,7 @@
 		<div class="sidebar">
 			<div class="bloc">
 			<h3>Search</h3>
-			<form class="" action="/jobs/view" method="GET">
+			<form class="" action="/jobs/view" method="GET" role="form">
 
 				<input type="text" name="job_id" class="span2" placeholder="Job #Id"/>
 				<button class="btn btn-primary" type="submit">Search</button>
@@ -132,7 +132,7 @@
 			<hr/>
 
 			<h3>Advanced search</h3>
-			<form action="/jobs/view" method="GET">
+			<form action="/jobs/view" method="GET" role="form">
 				<fieldset>
 					<div class="control-group">
 						<label for="job-search-class">Job class</label>

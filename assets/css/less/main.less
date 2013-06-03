@@ -1476,9 +1476,9 @@ span.chart-bar + b, span.chart-bar + a
 }
 
 .popover-title {
-	color: @baseColor;
+	color: @baseColor!important;
 	font-weight: bold;
-	text-shadow: 0 1px 0 @white;
+	text-shadow: 0 1px 0 @white!important;
 	
 	border-bottom-color: @greyBorderColor;
 	background-color: darken(@white, 2);
@@ -2203,4 +2203,8 @@ i[class^="icon-"], i[class*=" icon-"] {
 	.status-error {
 		background-color: lighten(@red, 15);
 	}
+}
+
+table .number {
+	text-align: right;	
 }

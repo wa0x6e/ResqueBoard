@@ -66,5 +66,5 @@
 					echo '</li>';
 				} ?>
 			</ul>
-			<a class="brand" href="<?php echo URL_ROOT ?>"><em><?php echo APPLICATION_NAME ?></em>Analytics for Resque PHP</a>
+			<a class="brand" role="banner" title="Go to dashboard" href="<?php echo URL_ROOT ?>"><em><?php echo APPLICATION_NAME ?></em>Analytics for Resque PHP</a>
 		</div>

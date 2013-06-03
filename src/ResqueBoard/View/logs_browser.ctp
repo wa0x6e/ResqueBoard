@@ -121,7 +121,7 @@
 		<div class="sidebar">
 			<div class="bloc">
 			<h3>Search</h3>
-			<form id="log-browser-form">
+			<form id="log-browser-form" role="form">
 				<fieldset><legend>Verbosity</legend>
 				<select class="span2" name="event_level[]" multiple="" size="<?php echo count($logLevels)?>">
 					<?php

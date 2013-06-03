@@ -18,7 +18,7 @@
  * @license    MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 ?>
-		<footer class="container">
+		<footer class="container" role="contentinfo">
 			<p class="pull-right">
 				Current server time : <?php echo date('r'); ?>
 			</p>

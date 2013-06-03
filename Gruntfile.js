@@ -30,6 +30,10 @@ module.exports = function(grunt) {
                 files: ["tests/**/*.php", "src/ResqueBoard/Lib/**/*.php", "src/ResqueBoard/webroot/index.php"],
                 tasks: ["phpunit"]
             },
+            css: {
+                files: ["assets/css/less/main.less"],
+                tasks: ["less:main"]
+            },
             jsControllers: {
                 files: ["assets/js/controllers/*.js"],
                 tasks: ["uglify:controllers"]

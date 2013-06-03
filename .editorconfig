@@ -1,0 +1,17 @@
+root = true
+
+[**.js]
+end_of_line = lf
+indent_style = tab
+indent_size = 4
+insert_final_newline = true
+charset = utf-8
+trim_trailing_whitespace = true
+
+[**.php]
+end_of_line = lf
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+charset = utf-8
+trim_trailing_whitespace = true

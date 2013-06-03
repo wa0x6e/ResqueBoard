@@ -16,19 +16,31 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
         phpunit: {
-            classes: {
-                dir: "tests/"
+            withCoverage: {
+                dir: "tests/",
+                options: {
+                    colors: true,
+                    bootstrap: "tests/bootstrap.php",
+                    coverageHtml: "./build/coverage/php"
+                }
             },
-            options: {
-                colors: true,
-                bootstrap: "tests/bootstrap.php",
-                noConfiguration: true
+            main: {
+                dir: "tests/",
+                options: {
+                    colors: true,
+                    bootstrap: "tests/bootstrap.php",
+                    noConfiguration: true
+                }
             }
+        },
+        clean: {
+            phpCoverage: ["build/coverage/php"],
+            jsCoverage: ["build/coverage/js"]
         },
         watch: {
             php: {
                 files: ["tests/**/*.php", "src/ResqueBoard/Lib/**/*.php", "src/ResqueBoard/webroot/index.php"],
-                tasks: ["phpunit"]
+                tasks: ["phpunit:main"]
             },
             css: {
                 files: ["assets/css/less/main.less"],
@@ -105,7 +117,6 @@ module.exports = function(grunt) {
                 }
             },
             options: {
-                //report: "gzip",
                 event: ["added", "changed"],
                 compress: {
                     sequences: true,
@@ -160,14 +171,19 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-contrib-uglify");
     grunt.loadNpmTasks("grunt-contrib-concat");
     grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-bump');
+    grunt.loadNpmTasks('grunt-open');
 
-    grunt.registerTask("default", ["phpunit"]);
+    grunt.registerTask("default", ["phpunit:withCoverage"]);
 
-    grunt.registerTask("build-test", ["uglify", "less:main", "concat"]);
+    grunt.registerTask("build", ["uglify", "less:main", "concat", "coverage-php"]);
 
-    grunt.registerTask("build-patch", ["phpunit", "uglify", "less:main", "bump:patch", "concat"]);
-    grunt.registerTask("build", ["phpunit", "uglify", "less:main", "bump", "concat"]);
-    grunt.registerTask("build-major", ["phpunit", "uglify", "less:main", "bump:major", "concat"]);
+    // When ready to ship
+    grunt.registerTask("r-patch", ["phpunit:main", "uglify", "less:main", "bump:patch", "concat"]);
+    grunt.registerTask("r-minor", ["phpunit:main", "uglify", "less:main", "bump", "concat"]);
+    grunt.registerTask("r-major", ["phpunit:main", "uglify", "less:main", "bump:major", "concat"]);
+
+    grunt.registerTask("coverage-php", ["clean:phpCoverage", "phpunit:withCoverage"]);
 
 };

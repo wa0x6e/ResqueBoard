@@ -32,6 +32,7 @@
     "grunt-contrib-concat": "~0.3.0",
     "grunt-bump": "0.0.2",
     "grunt-contrib-less": "~0.5.2",
-    "grunt-devtools": "~0.1.0-7"
+    "grunt-devtools": "~0.1.0-7",
+    "grunt-contrib-clean": "~0.4.1"
   }
 }

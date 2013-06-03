@@ -35,9 +35,10 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $this->mock->expects($this->any())->method('sendSignal')->will($this->returnValue(true));
         $this->mock->ResqueStatus = $this->ResqueStatus = $this->getMock('\ResqueStatus\ResqueStatus', array(), array(new \stdClass()));
 
+        $this->hostname = function_exists('gethostname') ? gethostname() : php_uname('n');
 
-        $this->validWorkerId = 'hostname:9999999:queue';
-        $this->invalidWorkerId = 'hostname:_78:queue';
+        $this->validWorkerId = $this->hostname . ':9999999:queue';
+        $this->invalidWorkerId = $this->hostname . ':_78:queue';
 
         $this->workersList = array(
             '9999999' => array()
@@ -48,6 +49,12 @@ class ApiTest extends \PHPUnit_Framework_TestCase
 
         $this->sendSignalReflection = new \ReflectionMethod('ResqueBoard\Lib\Resque\Api', 'sendSignal');
         $this->sendSignalReflection->setAccessible(true);
+    }
+
+    public function testConstructor()
+    {
+        $shell = new \ResqueBoard\Lib\Resque\Api();
+        $this->assertInstanceOf('\ResqueStatus\ResqueStatus', $shell->ResqueStatus);
     }
 
     /**
@@ -91,9 +98,22 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testStopWorkerWithInvalidWorkerId()
     {
+        $this->ResqueStatus->expects($this->never())->method('getWorkers');
         $this->ResqueStatus->expects($this->never())->method('removeWorker');
         $this->mock->expects($this->never())->method('sendSignal');
         $this->mock->stop($this->invalidWorkerId);
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\Resque\Api::stop
+     * @expectedException   ResqueBoard\Lib\Resque\WorkerNotExistException
+     */
+    public function testStopWorkerWithInexistentWorker()
+    {
+        $this->ResqueStatus->expects($this->once())->method('getWorkers')->will($this->returnValue(array()));
+        $this->ResqueStatus->expects($this->never())->method('removeWorker');
+        $this->mock->expects($this->never())->method('sendSignal');
+        $this->mock->stop($this->validWorkerId);
     }
 
     /**
@@ -102,9 +122,34 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testPauseWorkerWithInvalidWorkerId()
     {
+        $this->ResqueStatus->expects($this->never())->method('getWorkers');
         $this->ResqueStatus->expects($this->never())->method('removeWorker');
         $this->mock->expects($this->never())->method('sendSignal');
         $this->mock->pause($this->invalidWorkerId);
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\Resque\Api::pause
+     * @expectedException   ResqueBoard\Lib\Resque\WorkerNotExistException
+     */
+    public function testPauseWorkerWithInexistentWorker()
+    {
+        $this->ResqueStatus->expects($this->once())->method('getWorkers')->will($this->returnValue(array()));
+        $this->ResqueStatus->expects($this->never())->method('getPausedWorker');
+        $this->mock->expects($this->never())->method('sendSignal');
+        $this->mock->pause($this->validWorkerId);
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\Resque\Api::pause
+     * @expectedException   ResqueBoard\Lib\Resque\WorkerAlreadyPausedException
+     */
+    public function testPauseWorkerWithAlreadyPausedWorker()
+    {
+        $this->ResqueStatus->expects($this->once())->method('getWorkers')->will($this->returnValue($this->workersList));
+        $this->ResqueStatus->expects($this->once())->method('getPausedWorker')->will($this->returnValue(array($this->validWorkerId)));
+        $this->mock->expects($this->never())->method('sendSignal');
+        $this->mock->pause($this->validWorkerId);
     }
 
     /**
@@ -120,13 +165,25 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $this->mock->resume($this->validWorkerId);
     }
 
+    /**
+     * @covers ResqueBoard\Lib\Resque\Api::resume
+     * @expectedException   ResqueBoard\Lib\Resque\WorkerNotExistException
+     */
+    public function testResumeWorkerWithInexistentWorker()
+    {
+        $this->ResqueStatus->expects($this->once())->method('getWorkers')->will($this->returnValue(array()));
+        $this->ResqueStatus->expects($this->never())->method('getPausedWorker');
+        $this->mock->expects($this->never())->method('sendSignal');
+        $this->mock->resume($this->validWorkerId);
+    }
+
 
     /**
      * @covers ResqueBoard\Lib\Resque\Api::getProcessId
      */
     public function testGetProcessId()
     {
-        $this->assertEquals('125', $this->getProcessIdReflection->invoke($this->mock, 'hostname:125:queue'));
+        $this->assertEquals('125', $this->getProcessIdReflection->invoke($this->mock, $this->hostname . ':125:queue'));
     }
 
     /**
@@ -135,7 +192,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetProcessIdWithInvalidWorkerIdThatHasANumericButNegativeProcessId()
     {
-        $this->getProcessIdReflection->invoke($this->mock, 'hostname:-125');
+        $this->getProcessIdReflection->invoke($this->mock, $this->hostname . ':-125');
     }
 
     /**
@@ -144,7 +201,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetProcessIdWithInvalidWorkerIdThatHasMoreTokensThanExpected()
     {
-        $this->getProcessIdReflection->invoke($this->mock, 'hostname:125:as:25');
+        $this->getProcessIdReflection->invoke($this->mock, $this->hostname . ':125:as:25');
     }
 
     /**
@@ -153,7 +210,16 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetProcessIdWithInvalidWorkerIdThatHasLessTokensThanExpected()
     {
-        $this->getProcessIdReflection->invoke($this->mock, 'hostname:125');
+        $this->getProcessIdReflection->invoke($this->mock, $this->hostname . ':125');
+    }
+
+    /**
+     * @covers ResqueBoard\Lib\Resque\Api::getProcessId
+     * @expectedException   ResqueBoard\Lib\Resque\NotLocalWorkerException
+     */
+    public function testGetProcessIdWithNonLocalWorker()
+    {
+        $this->getProcessIdReflection->invoke($this->mock, 'invalidhost:125:queue');
     }
 
     /**

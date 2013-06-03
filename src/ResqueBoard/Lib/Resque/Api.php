@@ -148,7 +148,8 @@ class Api
      *
      * @param string $worker Worker name
      *
-     * @throws ResqueBoard\Lib\Resque\InvalidWorkerNameException
+     * @throws ResqueBoard\Lib\Resque\InvalidWorkerNameException when the worker name is not formatted as host:pid:queue
+     * @throws ResqueBoard\Lib\Resque\NotLocalWorkerException when the worker is not running on the current machine
      * @return int Worker process ID
      */
     protected function getProcessId($worker)
@@ -156,6 +157,10 @@ class Api
         $tokens = explode(':', $worker);
         if (count($tokens) !== 3 || preg_match('/^\d+$/', $tokens[1]) === 0) {
             throw new InvalidWorkerNameException();
+        }
+
+        if ($tokens[0] !== (function_exists('gethostname') ? gethostname() : php_uname('n'))) {
+            throw new NotLocalWorkerException();
         }
         return $tokens[1];
     }

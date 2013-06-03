@@ -29,13 +29,10 @@
                 $class = array();
                 $selected = '';
 
-
-                if (((strpos($_SERVER['REQUEST_URI'], $nav['link']) !== false && $nav['link'] != '/' || $_SERVER['REQUEST_URI'] == '/' && $nav['link'] == '/'))) {
+                if (((strpos($_SERVER['REQUEST_URI'], $nav['link']) !== false && $nav['link'] != URL_ROOT || $_SERVER['REQUEST_URI'] == URL_ROOT && $nav['link'] == URL_ROOT))) {
                     $class['root'] = array('active');
                     $selected = ' aria-selected="true"';
                 };
-
-
 
                 echo '<li class="dropdown" role="presentation">'.
                 '<a href="';

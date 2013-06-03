@@ -262,11 +262,6 @@ h3{
 			.box-shadow(-5px 0 0 @colorCompPlusOne);
 		}
 		
-				
-		&.brand:hover, &.brand:focus {
-			background-color: darken(@baseColor, 2);
-		}
-
 		&:active {
 			background-color: darken(@baseColor, 15);
 		}
@@ -274,13 +269,14 @@ h3{
 		i[class^="icon-"], i[class*=" icon-"] {
 			font-weight: normal;
 			font-size: 2em;
+			display: block;
 		}
 		
 		i.caret {
 			font-size: 12px;
 			position: absolute;
 			top: 25%;
-			right: 5px;
+			right: 18px;
 			border: 0;
 			color: lighten(@baseColor, 8);
 		}
@@ -546,7 +542,10 @@ a.brand
 		font-style: normal;
 		display: block;
 		text-shadow: 0 -1px 0 rgba(0,0,0, 0.7);
-
+	}
+	
+	&:hover em, &:focus em, &:hover, &:focus {
+		color: @white;
 	}
 }
 
@@ -872,7 +871,7 @@ mark
 			padding: 0;
 			font-size: 11px;
 			border-left: 4px solid @colorShadeMinusTwo;
-			white-space: wrap;
+			white-space: pre-wrap;
 						
 			code {
 				padding: @insidePadding;
@@ -2192,7 +2191,6 @@ i[class^="icon-"], i[class*=" icon-"] {
 		margin-right: 3px;
 		border-radius: @size;
 		border: 4px solid darken(#33414c, 10);
-		transform: scale(1);
 		
 		&:hover {
 			border-color: darken(#33414c, 20);

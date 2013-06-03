@@ -265,6 +265,8 @@ angular.module("app").controller("lastestJobGraphController", [
 		lastTime: null
 	};
 
+	var modal = $("#job-details");
+
 	/**
 	 * Display a modal with jobs details for all
 	 * jobs between a `start` and an `end` date.
@@ -276,7 +278,7 @@ angular.module("app").controller("lastestJobGraphController", [
 	 */
 	$scope.viewJobs = function(startTime)
 	{
-		$("#job-details").modal("show");
+		modal.modal("show");
 		$scope.jobmodal.lastTime = startTime;
 		$scope.fillModal(startTime);
 	};
@@ -298,7 +300,7 @@ angular.module("app").controller("lastestJobGraphController", [
 		});
 	};
 
-	$("#job-details").on("hide", function() {
+	modal.on("hide", function() {
 		$scope.jobs = [];
 		$scope.jobmodal = {
 			_init: 0,

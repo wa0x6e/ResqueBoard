@@ -1,5 +1,8 @@
 ##Changelog
 
+###v2.0.0-beta-4 (2013-07-25)
+
+* Update code Slim 2.3
 
 ###v2.0.0-beta-3 (2013-05-29)
 

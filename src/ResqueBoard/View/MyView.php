@@ -46,8 +46,8 @@ class MyView extends \Slim\View
      */
     public function render($template)
     {
-        $this->setTemplate($template);
-        extract($this->data);
+        $templatePathname = $this->getTemplatePathname($template);
+        extract($this->data->all());
 
         ob_start();
         if (!isset($raw) || $raw === false) {
@@ -57,7 +57,7 @@ class MyView extends \Slim\View
                 require $this->templatesDirectory . DIRECTORY_SEPARATOR . $this->bodyPrepend;
             }
         }
-        require $this->templatePath;
+        require $templatePathname;
         if (!isset($raw) || $raw === false) {
             if (DEBUG) {
                 require $this->templatesDirectory . DIRECTORY_SEPARATOR . 'service_helper.ctp';

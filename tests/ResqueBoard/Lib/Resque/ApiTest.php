@@ -20,6 +20,10 @@
 
 namespace ResqueBoard\Test\Lib\Resque;
 
+# Include configuration files
+require_once(dirname(__FILE__) . '/../../../../src/ResqueBoard/Config/Bootstrap.php');
+require_once(dirname(__FILE__) . '/../../../../src/ResqueBoard/Config/Core.php');
+
 /**
  * ApiTest Class
  *
@@ -31,8 +35,6 @@ class ApiTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        require_once(dirname(__FILE__) . '/../../../../src/ResqueBoard/Config/Core.php');
-
         $this->mock = $this->getMock('ResqueBoard\Lib\Resque\Api', array('sendSignal'), array(), '', false);
         $this->mock->expects($this->any())->method('sendSignal')->will($this->returnValue(true));
         $this->mock->ResqueStatus = $this->ResqueStatus = $this->getMock('\ResqueStatus\ResqueStatus', array(), array(new \stdClass()));

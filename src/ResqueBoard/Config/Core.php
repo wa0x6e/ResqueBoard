@@ -83,7 +83,7 @@ define('DEBUG', false);
  *
  * @var  string
  */
-define('CACHE', dirname(__DIR__) . DIRECTORY_SEPARATOR . 'cache');
+define('CACHE', dirname(__DIR__) . DS . 'cache');
 
 /**
  * Default application name

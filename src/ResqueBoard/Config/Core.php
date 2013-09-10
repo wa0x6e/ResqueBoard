@@ -31,7 +31,7 @@
  */
 $settings = array(
     'cubePublic' => array(
-        'host' => $_SERVER['SERVER_NAME'],
+        'host' => (isset($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : 'test.domain',
         'port' => 1081
     ),
     'readOnly' => false,
@@ -83,7 +83,7 @@ define('DEBUG', false);
  *
  * @var  string
  */
-define('CACHE', dirname(__DIR__) . DS . 'cache');
+define('CACHE', dirname(__DIR__) . DIRECTORY_SEPARATOR . 'cache');
 
 /**
  * Default application name

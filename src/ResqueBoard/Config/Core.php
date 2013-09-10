@@ -34,7 +34,7 @@ $settings = array(
         'host' => $_SERVER['SERVER_NAME'],
         'port' => 1081
     ),
-    'readOnly' => true,
+    'readOnly' => false,
     'resqueConfig' => __DIR__ . DIRECTORY_SEPARATOR . './resque.ini',
     //'timezone' => 'America/Montreal'
 );
@@ -49,8 +49,9 @@ ResqueBoard\Lib\Service\Service::$settings = array(
     'Redis' => array(
         'host' => '127.0.0.1',
         'port' => 6379,
-        'database' => 0,
-        'prefix' => 'resque'
+        'database' => 3,
+        'password' => 'foobar',
+        'prefix' => ''
     ),
     'Mongo' => array(
         'host' => 'localhost',

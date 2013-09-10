@@ -31,10 +31,10 @@
  */
 $settings = array(
     'cubePublic' => array(
-        'host' => (isset($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : 'test.domain',
+        'host' => (isset($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : 'http://localhost:1081/',
         'port' => 1081
     ),
-    'readOnly' => false,
+    'readOnly' => true,
     'resqueConfig' => __DIR__ . DIRECTORY_SEPARATOR . './resque.ini',
     //'timezone' => 'America/Montreal'
 );
@@ -49,9 +49,9 @@ ResqueBoard\Lib\Service\Service::$settings = array(
     'Redis' => array(
         'host' => '127.0.0.1',
         'port' => 6379,
-        'database' => 3,
-        'password' => 'foobar',
-        'prefix' => ''
+        'database' => 0,
+        'password' => '',
+        'prefix' => 'resque'
     ),
     'Mongo' => array(
         'host' => 'localhost',

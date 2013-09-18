@@ -55,7 +55,7 @@ $logLevels = array(
 
 define('URL_ROOT', $_SERVER['SCRIPT_NAME'] === '/index.php' ? '/' : (pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME) . '/'));
 
-date_default_timezone_set(isset($settings['timezone']) ? $settings['timezone'] : date_default_timezone_get());
+date_default_timezone_set(isset($settings['timezone']) ? $settings['timezone'] : 'UTC');
 
 /**
  * List of events type

@@ -1,10 +1,42 @@
 <?php
 
+/**
+ * Fix timezone when using Monolog version <= 1.6.0
+ *
+ * If your timezone is not UTC, you need to fix all dates, as they are
+ * considered UTC time, even if it's not.
+ *
+ * This script will update all your dates to the correct timezone
+ * defined in Core.php
+ *
+ * ===========================
+ * WARNING
+ * Run this tool only once !!!
+ * ===========================
+ * This fix will send thousands of queries to your mongodb server
+ * Run it on low traffic period
+ *
+ * Usage:
+ * This script should be run in the shell, to avoid script timeout
+ *
+ * In the shell, navigate to the folder containing this file
+ *     cd path/to/tool
+ *
+ * [optional] Dry-run the update (will not change anything)
+ *     php -q timezonefix.php
+ *
+ * If you have a lot of jobs, a dry-run will give you an idea about how many
+ * time the update will take, and the number of data to update
+ *
+ * Run the update
+ *     php -q timezonefix.php apply
+ */
+
 namespace ResqueBoard\Lib;
 
 set_time_limit(0);
 
-include "../src/ResqueBoard/Config/Bootstrap.php";
+require "../src/ResqueBoard/Config/Bootstrap.php";
 
 use ResqueBoard\Lib\Service\Service;
 
@@ -27,7 +59,7 @@ $events = array('check', 'kill', 'done', 'fail', 'fork', 'found', 'got', 'kill',
 
 $start = microtime(true);
 
-foreach($events as $eventName) {
+foreach ($events as $eventName) {
 
     $collection = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], $eventName . '_events');
     $count = $collection->count();
@@ -39,7 +71,7 @@ foreach($events as $eventName) {
     $cursor = $collection->find(array(), array('t' => true));
 
     $i = 0;
-    foreach($cursor as $data) {
+    foreach ($cursor as $data) {
         $date = new \DateTime("@" . $data['t']->sec, new \DateTimeZone("UTC"));
         $usec = "" . $data['t']->usec;
         if (count($usec) < 6) {

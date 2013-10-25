@@ -36,7 +36,10 @@
 
 		<div class="ftr-bloc">
 			<h3>Future scheduled jobs activities</h3>
-			<div id="scheduled-jobs-graph"></div>
+			<div id="scheduled-jobs-graph">
+				<i class="fa fa-chevron-left graph-browse-previous" rel="prev"></i>
+        		<i class="fa fa-chevron-right graph-browse-next" rel="next"></i>
+			</div>
 		</div>
 
 		<div class="bloc" ng-cloak>

@@ -61,7 +61,7 @@
 					} elseif ($status !== false) {
 						echo 'status-error" data-content="Unable to connect to the ' . $name . ' server">';
 					} else {
-						echo 'status-unknown" data-content="<i class=\'icon-spinner icon-spin\'></i> Fetching the ' . $name . ' server status">';
+						echo 'status-unknown" data-content="<i class=\'fa fa-spinner fa-spin\'></i> Fetching the ' . $name . ' server status">';
 					}
 					echo '</li>';
 				} ?>

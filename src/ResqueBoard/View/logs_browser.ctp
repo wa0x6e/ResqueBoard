@@ -25,12 +25,12 @@
 
 			<?php
 				if ($logs === null) {
-					echo '<div class="knight-unit"><i class="icon-search icon"></i><h2>Log Browser</h2><p class="tagline">Use the form on the right side to<br/> search and browse logs</p></div>';
+					echo '<div class="knight-unit"><i class="fa fa-search icon"></i><h2>Log Browser</h2><p class="tagline">Use the form on the right side to<br/> search and browse logs</p></div>';
 
 
 				} elseif (empty($logs)) {
 
-					echo '<div class="knight-unit"><i class="icon-search icon"></i><h2>No results found</h2></div>';
+					echo '<div class="knight-unit"><i class="fa fa-search icon"></i><h2>No results found</h2></div>';
 
 				} else {
 
@@ -52,7 +52,7 @@
 					$workerId = str_replace(array('.', ':'), '', $log['worker']);
 
 					if ($pivotDate !== $log['date']->format('l F d Y')) {
-						echo '<li class="li-head"><i class="icon-calendar"></i> '.$log['date']->format('l F d<\s\u\p>S</\s\u\p>, Y').'</li>';
+						echo '<li class="li-head"><i class="fa fa-calendar"></i> '.$log['date']->format('l F d<\s\u\p>S</\s\u\p>, Y').'</li>';
 						$pivotDate = $log['date']->format('l F d Y');
 					}
 
@@ -71,7 +71,7 @@
 						} else {
 							echo 'Worker #' . $log['worker'];
 						}
-					?></div> <time title="<?php echo $log['date']->format('c') ?>" datetime="<?php echo $log['date']->format('c') ?>"><i class="icon-time"></i> <?php echo $log['date']->format('H:i:s') ?></time>
+					?></div> <time title="<?php echo $log['date']->format('c') ?>" datetime="<?php echo $log['date']->format('c') ?>"><i class="fa fa-time"></i> <?php echo $log['date']->format('H:i:s') ?></time>
 					</li>
 
 					<?php

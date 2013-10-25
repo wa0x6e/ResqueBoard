@@ -76,8 +76,8 @@
 					</form>
 					<?php } ?>
 					<div class="btn-group">
-						<button class="btn" data-event="expand-all tooltip" title="Expand all"><i class="icon-folder-open"></i></button>
-						<button class="btn" data-event="collapse-all tooltip" title="Collapse all"><i class="icon-folder-close"></i></button>
+						<button class="btn" data-event="expand-all tooltip" title="Expand all"><i class="fa fa-folder-open"></i></button>
+						<button class="btn" data-event="collapse-all tooltip" title="Collapse all"><i class="fa fa-folder"></i></button>
 					</div>
 				</div>
 			<?php if (isset($pagination)) {

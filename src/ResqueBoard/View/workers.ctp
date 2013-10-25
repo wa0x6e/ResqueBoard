@@ -23,8 +23,8 @@
 
 <div class="full-width" ng-controller="workerController">
 <div ng-cloak>
-    <div class="knight-unit" ng-show="length==0 && _init != 3"><i class="icon-cogs icon"></i><h2>No active workers</h2></div>
-    <div class="knight-unit error" ng-show="_init == 3"><i class="icon-warning-sign icon"></i><h2>{{_errorMessage}}</h2></div>
+    <div class="knight-unit" ng-show="length==0 && _init != 3"><i class="fa fa-cogs icon"></i><h2>No active workers</h2></div>
+    <div class="knight-unit error" ng-show="_init == 3"><i class="fa fa-warning-sign icon"></i><h2>{{_errorMessage}}</h2></div>
 	<div class="ftr-bloc" ng-hide="length==0">
 		<h2>Active workers <span class="badge badge-info">{{length}}</span></h2>
 
@@ -42,27 +42,27 @@
             <td>
                 <div class="btn-group pull-right">
                     <a class="btn btn-small dropdown-toggle btn-discret" data-toggle="dropdown" href="#">
-                        <i class="icon-cog"></i>
+                        <i class="fa fa-cog"></i>
                     </a>
                     <ul class="dropdown-menu">
                         <li>
 	                        <a href="#" ng-show="worker.active" title="Pause worker" ng-click="pause(worker.id, $event)">
-		                        <i class="icon-pause"></i> Pause worker
+		                        <i class="fa fa-pause"></i> Pause worker
 		                    </a>
 	                	</li>
 	                	<li ng-hide="worker.active">
 	                        <a href="#" title="Resume worker" ng-click="resume(worker.id, $event)">
-		                        <i class="icon-play"></i> Resume worker
+		                        <i class="fa fa-play"></i> Resume worker
 		                    </a>
 	                	</li>
 	                    <li>
                             <a href="#" title="Stop worker" ng-click="stop(worker.id, $event)">
-                            <i class="icon-off"></i> Stop worker</a>
+                            <i class="fa fa-stop"></i> Stop worker</a>
                         </li>
                     </ul>
                 </div>
             <h4>{{worker.host}}:{{worker.process}}</h4>
-            <small><strong><i class="icon-list-alt"></i> Queues : </strong>
+            <small><strong><i class="fa fa-list-alt"></i> Queues : </strong>
 				<span class="queue-name" ng-repeat="queue in worker.queues">{{queue}}</span>
             </small></td>
             <td class="stats-number inner-wrap"><div class="padd-fixer">

@@ -11,11 +11,11 @@
         <div class="accordion-heading" data-toggle="collapse" data-target="#_{{job.job_id}}">
             <div class="accordion-toggle">
                 <span class="job-status-icon">
-                    <icon-job status="job.status"></icon-job>
+                    <fa fa-job status="job.status"></fa fa-job>
                 </span>
 
                 <span ng-show="job.worker" class="label label-info pull-right">{{job.worker}}</span>
-                <time ng-show="job.time" title="{{job.time}}" datetime="{{job.time}}"><i class="icon-time"></i> {{job.time|date:"HH:mm:ss"}}</time>
+                <time ng-show="job.time" title="{{job.time}}" datetime="{{job.time}}"><i class="fa fa-time"></i> {{job.time|date:"HH:mm:ss"}}</time>
 
                 <h4>{{job.class}}</h4>
 

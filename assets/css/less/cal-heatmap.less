@@ -1,32 +1,11 @@
 /* Cal-HeatMap CSS */
 
-.graph-browse-previous, .graph-browse-next
-{
-	padding: 5px;
-	background-image: linear-gradient(to bottom, rgb(255, 255, 255), rgb(230, 230, 230));
-	border: 1px solid #999;
-	border-radius: 3px;
-	line-height: 12px;
-	font-size: 12px;
-	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
-	text-decoration: none;
-}
-
-.graph-browse-previous:hover, .graph-browse-next:hover {
-	text-decoration: none;
-	
-}
-
-.graph-browse-previous
-{
-	margin-right: 5px;
+.cal-heatmap-container {
+	display: block;
 }
 
 .graph
 {
-	clear: both;
-	display: block;
-	margin-top: 10px;
 	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
 }
 
@@ -36,20 +15,29 @@
 	font-size: 10px
 }
 
-.graph-rect
-{
-	fill: #ededed;
+.graph, .graph-legend rect {
 	shape-rendering: crispedges
 }
 
-.graph-rect:hover
+.graph-rect
+{
+	fill: #ededed
+}
+
+.graph-subdomain-group rect:hover
 {
 	stroke: #000;
 	stroke-width: 1px
 }
 
+.subdomain-text {
+	font-size: 8px;
+	fill: #999;
+	pointer-events: none
+}
+
 .hover_cursor:hover {
-	cursor: pointer;
+	cursor: pointer
 }
 
 .qi {
@@ -92,4 +80,63 @@
 {
 	background-color: #3b6427;
 	fill: #3b6427
+}
+
+rect.highlight
+{
+	stroke:#444;
+	stroke-width:1
+}
+
+text.highlight
+{
+	fill: #444
+}
+
+rect.now
+{
+	stroke: red
+}
+
+text.now
+{
+	fill: red;
+	font-weight: 800
+}
+
+.domain-background {
+	fill: none;
+	shape-rendering: crispedges
+}
+
+.ch-tooltip {
+	padding: 10px;
+	background: #222;
+	color: #bbb;
+	font-size: 12px;
+	line-height: 1.4;
+	width: 140px;
+	position: absolute;
+	z-index: 99999;
+	text-align: center;
+	border-radius: 2px;
+	box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
+	display: none;
+	box-sizing: border-box;
+}
+
+.ch-tooltip::after{
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-color: transparent;
+	border-style: solid;
+	content: "";
+	padding: 0;
+	display: "block";
+	bottom: -6px;
+	left: 50%;
+	margin-left: -6px;
+    border-width: 6px 6px 0;
+    border-top-color: #222;
 }

@@ -74,31 +74,31 @@ define('CUBE_URL', $settings['cubePublic']['host'] . ':' . $settings['cubePublic
 
 $settings['nav'] = array(
     'index' => array(
-        'icon' => 'icon-home',
+        'icon' => 'fa fa-home',
         'name' => 'Home',
         'title' => 'Dashboard',
         'link' => URL_ROOT
         ),
     'workers' => array(
-        'icon' => 'icon-cogs',
+        'icon' => 'fa fa-cogs',
         'name' => 'Workers',
         'title' => 'Workers',
         'link' => 'workers'
     ),
     'logs' => array(
-        'icon' => 'icon-file',
+        'icon' => 'fa fa-file',
         'name' => 'Logs',
         'title' => 'Logs',
         'link' => 'logs',
         'submenu' => array(
             'tail' => array(
-                'icon' => 'icon-eye-open',
+                'icon' => 'fa fa-eye',
                 'name' => 'Latest logs',
                 'title' => 'Logs',
                 'link' => 'logs'
             ),
             'browser' => array(
-                'icon' => 'icon-eye-open',
+                'icon' => 'fa fa-eye',
                 'name' => 'Logs browser',
                 'title' => 'Logs browser',
                 'link' => 'logs/browse'
@@ -106,51 +106,51 @@ $settings['nav'] = array(
         )
     ),
     'jobs' => array(
-        'icon' => 'icon-briefcase',
+        'icon' => 'fa fa-briefcase',
         'name' => 'Jobs',
         'title' => 'Jobs Dashboard',
         'link' => 'jobs',
         'submenu' => array(
             'dashboard' => array(
-                'icon' => 'icon-dashboard',
+                'icon' => 'fa fa-dashboard',
                 'name' => 'Jobs Dashboard',
                 'title' => 'Jobs',
                 'link' => 'jobs'
             ),
             '',
             'view_processed' => array(
-                'icon' => 'icon-briefcase',
+                'icon' => 'fa fa-briefcase',
                 'name' => 'Processed jobs',
                 'title' => 'Processed jobs',
                 'link' => 'jobs/view'
             ),
             'view_pending' => array(
-                'icon' => 'icon-briefcase',
+                'icon' => 'fa fa-briefcase',
                 'name' => 'Pending jobs',
                 'title' => 'Pending jobs',
                 'link' => 'jobs/pending'
             ),
             'view_scheduled' => array(
-                'icon' => 'icon-briefcase',
+                'icon' => 'fa fa-briefcase',
                 'name' => 'Scheduled jobs',
                 'title' => 'Scheduled jobs',
                 'link' => 'jobs/scheduled'
             ),
             '',
             'class_distribution' => array(
-                'icon' => 'icon-tasks',
+                'icon' => 'fa fa-tasks',
                 'name' => 'Class distribution',
                 'title' => 'Class distribution',
                 'link' => 'jobs/distribution/class'
             ),
             'load_distribution' => array(
-                'icon' => 'icon-table',
+                'icon' => 'fa fa-table',
                 'name' => 'Load distribution',
                 'title' => 'Load distribution',
                 'link' => 'jobs/distribution/load'
             ),
             'load_overview' => array(
-                'icon' => 'icon-bar-chart',
+                'icon' => 'fa fa-bar-chart-o',
                 'name' => 'Load overview',
                 'title' => 'Load overview',
                 'link' => 'jobs/overview/hour'

@@ -53,7 +53,7 @@ function generateOptionsList($range, $start)
 			}
 			echo '</select></label></div>';
 
-			echo '<button class="btn btn-success padded" data-range="'.$range.'"><i class="icon-chevron-right"></i></button>';
+			echo '<button class="btn btn-success padded" data-range="'.$range.'"><i class="fa fa-chevron-right"></i></button>';
 
 			echo '<li>';
 
@@ -82,7 +82,7 @@ function generateOptionsList($range, $start)
 			echo '<div class="span1"><label>Year';
 			echo '<input name="range-year" class="span1" type="text" value="'.$start->format('Y').'" /></label></div>';
 
-			echo '<button class="btn btn-success padded" data-range="'.$range.'"><i class="icon-chevron-right"></i></button>';
+			echo '<button class="btn btn-success padded" data-range="'.$range.'"><i class="fa fa-chevron-right"></i></button>';
 
 			break;
 
@@ -100,7 +100,7 @@ function generateOptionsList($range, $start)
 
 			echo '</select></label></div>';
 
-			echo '<button class="btn btn-success padded" data-range="'.$range.'"><i class="icon-chevron-right"></i></button>';
+			echo '<button class="btn btn-success padded" data-range="'.$range.'"><i class="fa fa-chevron-right"></i></button>';
 
 			break;
 
@@ -118,7 +118,7 @@ function generateOptionsList($range, $start)
 			echo '<div class="span1"><label>Year';
 			echo '<input name="range-year" class="span1" type="text" value="'.$start->format('Y').'" /></label></div>';
 
-			echo '<button class="btn btn-success padded" data-range="'.$range.'"><i class="icon-chevron-right"></i></button>';
+			echo '<button class="btn btn-success padded" data-range="'.$range.'"><i class="fa fa-chevron-right"></i></button>';
 
 			break;
 	}
@@ -198,8 +198,8 @@ $headers = array(
 
 
 		    					echo '<li class="divider"></li><li class="btn-links">';
-		    					echo '<a href="jobs/overview/' . $range . '/' . ResqueBoard\Lib\DateHelper::{'getStart' . $range}($uriDate, '+1')->format('c') . '" class="btn pull-right">Next '.$range.' <i class="icon-chevron-right"></i></a>';
-								echo '<a href="jobs/overview/' . $range . '/' . ResqueBoard\Lib\DateHelper::{'getStart' . $range}($uriDate, '-1')->format('c') . '" class="btn pull-left"><i class="icon-chevron-left"></i> Previous '.$range.'</a>';
+		    					echo '<a href="jobs/overview/' . $range . '/' . ResqueBoard\Lib\DateHelper::{'getStart' . $range}($uriDate, '+1')->format('c') . '" class="btn pull-right">Next '.$range.' <i class="fa fa-chevron-right"></i></a>';
+								echo '<a href="jobs/overview/' . $range . '/' . ResqueBoard\Lib\DateHelper::{'getStart' . $range}($uriDate, '-1')->format('c') . '" class="btn pull-left"><i class="fa fa-chevron-left"></i> Previous '.$range.'</a>';
 		    					echo '</li>';
 
 		    				echo '</li>';
@@ -214,9 +214,9 @@ $headers = array(
 
 		    <div class="domain-nav pull-right">
 		    	<?php
-		    		echo '<a href="jobs/overview/' . $currentRange . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart' . $currentRange}($uriDate, '-1')->format('c')) . '" data-event="tooltip" rel="prev" title="Previous '.$currentRange.'"><i class="icon-chevron-left"></i></a>';
+		    		echo '<a href="jobs/overview/' . $currentRange . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart' . $currentRange}($uriDate, '-1')->format('c')) . '" data-event="tooltip" rel="prev" title="Previous '.$currentRange.'"><i class="fa fa-chevron-left"></i></a>';
 
-		    		echo '<a href="jobs/overview/' . $currentRange . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart' . $currentRange}($uriDate, '+1')->format('c')) . '" data-event="tooltip" rel="next"title="Next '.$currentRange.'"><i class="icon-chevron-right"></i></a>';
+		    		echo '<a href="jobs/overview/' . $currentRange . '/' . urlencode(ResqueBoard\Lib\DateHelper::{'getStart' . $currentRange}($uriDate, '+1')->format('c')) . '" data-event="tooltip" rel="next"title="Next '.$currentRange.'"><i class="fa fa-chevron-right"></i></a>';
 
 		    	?>
 		    </div>
@@ -237,24 +237,24 @@ $headers = array(
 				<li><div>
 
 					<a class="active" href="#" data-type="processed" data-expression="sum(got)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>">
-						<i class="pull-right icon-check"></i>
+						<i class="pull-right fa fa-check"></i>
 						<strong><?php echo number_format($jobsStats->total) ?></strong>Processed Jobs</a>
 
 
 				</div></li>
 				<li><div>
 
-					<a href="#" data-type="fail" data-expression="sum(fail)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><i class="pull-right icon-check-empty"></i>
+					<a href="#" data-type="fail" data-expression="sum(fail)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><i class="pull-right fa fa-check-empty"></i>
 						<strong><?php echo $jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED] ?> %</strong> <?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_FAILED]) ?> failed Jobs</a>
 				</div></li>
 				<li><div>
 					<a href="#" data-type="scheduled" data-expression="sum(movescheduled)" data-axis="left" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>">
-						<i class="pull-right icon-check-empty"></i>
+						<i class="pull-right fa fa-check-empty"></i>
 						<strong><?php echo number_format($jobsStats->perc[ResqueBoard\Lib\ResqueStat::JOB_STATUS_SCHEDULED]) ?> %</strong><?php echo number_format($jobsStats->count[ResqueBoard\Lib\ResqueStat::JOB_STATUS_SCHEDULED]) ?> Scheduled Jobs</a>
 				</div></li>
 				<li><div>
 
-					<a href="#" data-type="total-process-time" data-expression="sum(done(time))" data-axis="right" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><i class="pull-right icon-check-empty"></i>
+					<a href="#" data-type="total-process-time" data-expression="sum(done(time))" data-axis="right" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>"><i class="pull-right fa fa-check-empty"></i>
 						<strong><?php echo ResqueBoard\Lib\DateHelper::humanize($totalProcessTime); ?></strong> Total processing time</a></div></li>
 
 				<li><div class="static"><!--<a href="" data-type="average-process-time" data-expression="avg(done(time))" data-axis="right" data-start-date="<?php echo $ranges[$currentRange]['start']->format('c'); ?>" data-end-date="<?php echo $ranges[$currentRange]['end']->format('c'); ?>" data-step="<?php echo $ranges[$currentRange]['step']; ?>">--><strong><?php

@@ -9,18 +9,18 @@ angular.module("app").controller("lastestJobHeatmapController", [
 	$scope.predicate = "time";
 
 	var cal = new CalHeatMap();
+	var range = 6;
 	cal.init({
-		id : "latest-jobs-heatmap",
+		itemSelector : "#latest-jobs-heatmap",
 		scale : [10,20,30,40],
 		itemName : ["job", "jobs"],
-		range: 6,
-		cellsize: 10,
-		browsing: true,
-		browsingOptions: {
-			nextLabel : "<i class=\"icon-chevron-right\"></i>",
-			previousLabel : "<i class=\"icon-chevron-left\"></i>"
-		},
+		range: range,
+		start: new Date().setHours(new Date().getHours() - (range - 1)),
+		cellSize: 10,
+		nextSelector: ".latest-jobs-graph .graph-browse-next",
+		previousSelector: ".latest-jobs-graph .graph-browse-previous",
 		data: "api/jobs/stats/{{t:start}}/{{t:end}}",
+		tooltip: true,
 		onClick : function(start) {
 			$scope.loading = true;
 
@@ -40,9 +40,6 @@ angular.module("app").controller("lastestJobHeatmapController", [
 				}).
 				error(function() {
 			});
-		},
-		onComplete: function() {
-			$(".latest-jobs-graph a").tooltip({container: "body"});
 		}
 	});
 

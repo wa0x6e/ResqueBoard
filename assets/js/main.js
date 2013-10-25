@@ -127,7 +127,7 @@ require({
 	paths: {
 		jquery: "libs/jquery-2.0.0.min",
 		d3: "libs/d3",
-		calheatmap: "libs/cal-heatmap",
+		calheatmap: "libs/cal-heatmap.min",
 		highlightjs: "libs/highlightjs-7.3.min",
 		moment:  "libs/moment-2.0.0.min",
 		cookie: "libs/jquery.cookie-1.1.min",

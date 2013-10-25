@@ -14,18 +14,22 @@ angular.module("app").controller("scheduledJobController", [
 	};
 
 	var cal = new CalHeatMap();
+	var start = new Date();
+	var range = 8;
+	var dataString = "api/scheduled-jobs/stats/{{t:start}}/{{t:end}}";
+
 	cal.init({
-		id : "scheduled-jobs-graph",
-		scale : [1,4,8,12],
+		itemSelector : "#scheduled-jobs-graph",
+		legend : [1,4,8,12],
 		itemName : ["job", "jobs"],
-		range: 8,
-		cellsize: 10,
-		browsing: true,
-		browsingOptions: {
-			nextLabel : "<i class=\"icon-chevron-right\"></i>",
-			previousLabel : "<i class=\"icon-chevron-left\"></i>"
-		},
-		data: "api/scheduled-jobs/stats/{{t:start}}/{{t:end}}",
+		range: range,
+		start: start,
+		cellSize: 10,
+		animationDuration: 200,
+		tooltip: true,
+		nextSelector: "#scheduled-jobs-graph .graph-browse-next",
+		previousSelector: "#scheduled-jobs-graph .graph-browse-previous",
+		data: dataString,
 		onClick : function(start) {
 			$scope.loading = true;
 			var formatDate = d3.time.format("%H:%M, %A %B %e %Y");
@@ -44,11 +48,10 @@ angular.module("app").controller("scheduledJobController", [
 				}).
 				error(function() {
 			});
-		},
-		onComplete: function() {
-			$("#scheduled-jobs-graph a").tooltip({container: "body"});
 		}
 	});
+
+	start = cal.options.start;
 
 	$scope.clear = function() {
 		$scope.date = false;
@@ -65,6 +68,12 @@ angular.module("app").controller("scheduledJobController", [
 			}).
 			error(function() {
 		});
+
+		cal.update(dataString);
+
+		if ((new Date() - start) > 1000 * 60 * 60 * range) {
+			cal.next();
+		}
 
 		$timeout(updateStats, refreshRate);
 	};

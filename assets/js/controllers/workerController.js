@@ -94,8 +94,6 @@ angular.module("app").controller("workerController", [
 
 	workersStartListener.onmessage(function(message) {
 		var datas = JSON.parse(message.data);
-		console.log("Starting worker " + datas.data.worker);
-		console.log(datas);
 
 		var w = datas.data.worker.split(":");
 		var workerId = w[0] + ":" + w[1];
@@ -130,7 +128,6 @@ angular.module("app").controller("workerController", [
 
 	workersStopListener.onmessage(function(message) {
 		var datas = JSON.parse(message.data);
-		console.log("Stopping worker " + datas.data.worker);
 		delete $scope.workers[datas.data.worker];
 		$scope.length--;
 
@@ -144,7 +141,6 @@ angular.module("app").controller("workerController", [
 		$scope.workers[datas.data.worker].active = false;
 		$scope.workers[datas.data.worker].status = "paused";
 		$scope.workers[datas.data.worker].working = false;
-		console.log("Pausing worker " + datas.data.worker);
 	});
 
 	workersResumeListener.onmessage(function(message) {
@@ -152,7 +148,6 @@ angular.module("app").controller("workerController", [
 		$scope.workers[datas.data.worker].status = null;
 		$scope.workers[datas.data.worker].active = true;
 		$scope.workers[datas.data.worker].working = false;
-		console.log("Resuming worker " + datas.data.worker);
 	});
 
 
@@ -172,8 +167,6 @@ angular.module("app").controller("workerController", [
 					$scope.workers[index].status = "paused";
 				}
 		});
-
-		console.log("Sending PAUSE command to worker " + $scope.workers[index].id);
 	};
 
 	$scope.resume = function(index) {
@@ -191,7 +184,6 @@ angular.module("app").controller("workerController", [
 					$scope.workers[index].status = null;
 				}
 		});
-		console.log("Sending RESUME command to worker " + $scope.workers[index].id);
 	};
 
 	$scope.stop = function(index) {
@@ -206,7 +198,6 @@ angular.module("app").controller("workerController", [
 					$scope.cleanupWorker(index);
 				}
 		});
-		console.log("Sending STOP command to worker " + $scope.workers[index].id);
 	};
 
 	$scope.cleanupWorker = function(index) {

@@ -199,7 +199,23 @@ class ResqueStat
 
         $queuesCollection = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'got_events');
 
-        if (in_array('totaljobs', $fields) || empty($queues)) {
+        if (empty($queues)) {
+            $queues = $this->getAllQueues();
+        }
+
+        $r = array();
+        foreach ($queues as $name) {
+            $r[$name] = array(
+                'name' => $name,
+                'stats' => array(
+                    'totaljobs' => 0,
+                    'pendingjobs' => 0,
+                    'workerscount' => 0
+                )
+            );
+        }
+
+        if (in_array('totaljobs', $fields)) {
             $lastRefresh = Service::Mongo()
                 ->selectCollection(Service::$settings['Mongo']['database'], 'map_reduce_stats')
                 ->findOne(array('_id' => 'queue_stats'), array("date", "stats"));
@@ -231,28 +247,20 @@ class ResqueStat
                 );
 
             // Format results for the API
-            $r = array();
             foreach ($results as $name => $count) {
-                $r[$name] = array(
-                    'name' => $name,
-                    'stats' => array(
-                        'totaljobs' => $count,
-                        'pendingjobs' => 0,
-                        'workerscount' => 0
-                    )
-                );
-            }
-        } else {
-            $r = array();
-            foreach ($queues as $name) {
-                $r[$name] = array(
-                    'name' => $name,
-                    'stats' => array(
-                        'totaljobs' => 0,
-                        'pendingjobs' => 0,
-                        'workerscount' => 0
-                    )
-                );
+                if (!isset($r[$name])) {
+                    $r[$name] = array(
+                        'name' => $name,
+                        'stats' => array(
+                            'totaljobs' => $count,
+                            'pendingjobs' => 0,
+                            'workerscount' => 0
+                        )
+                    );
+                } else {
+                    $r[$name]['stats']['totaljobs'] = $count;
+                }
+
             }
         }
 

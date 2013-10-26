@@ -11,7 +11,7 @@
         </thead>
         <tbody>
             <tr ng-repeat="queue in queues | orderBy:predicate:reverse" ng-class="{inactive: queue.stats.workerscount == 0, warning: queue.stats.workerscount == 0 && queue.stats.pendingjobs > 0}">
-                <td class="name"><i class="fa fa-warning-sign" ng-show="queue.stats.workerscount == 0 && queue.stats.pendingjobs > 0" tooltip-placement="left" tooltip-html-unsafe="This queue has <b>{{queue.stats.pendingjobs}} pending jobs</b>,<br/> but is not monitored by a worker"></i> {{queue.name}} </td>
+                <td class="name"><i class="fa fa-exclamation-triangle" ng-show="queue.stats.workerscount == 0 && queue.stats.pendingjobs > 0" tooltip-placement="left" tooltip-html-unsafe="This queue has <b>{{queue.stats.pendingjobs}} pending jobs</b>,<br/> but is not monitored by a worker"></i> {{queue.name}} </td>
                 <td>
                     <a href="jobs/pending?queue={{queue.name|urlencode}}">{{queue.stats.pendingjobs|number}}</a>
                 </td>

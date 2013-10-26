@@ -51,7 +51,7 @@ angular.module("app").controller("scheduledJobController", [
 		}
 	});
 
-	start = cal.options.start;
+	start = new Date(cal.getDomain(start, 1)[0]);
 
 	$scope.clear = function() {
 		$scope.date = false;
@@ -73,6 +73,8 @@ angular.module("app").controller("scheduledJobController", [
 
 		if ((new Date() - start) > 1000 * 60 * 60 * range) {
 			cal.next();
+			start.setHours(start.getHours() + 1);
+			start = cal.getDomain(start, 1)[0];
 		}
 
 		$timeout(updateStats, refreshRate);

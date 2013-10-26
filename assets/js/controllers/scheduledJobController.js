@@ -1,5 +1,5 @@
 angular.module("app").controller("scheduledJobController", [
-	"$scope", "$timeout", "$http", function($scope, $timeout, $http) {
+	"$scope", "$http", "$timeout", function($scope, $http, $timeout) {
 
 	"use strict";
 
@@ -30,6 +30,7 @@ angular.module("app").controller("scheduledJobController", [
 		nextSelector: "#scheduled-jobs-graph .graph-browse-next",
 		previousSelector: "#scheduled-jobs-graph .graph-browse-previous",
 		data: dataString,
+		loadOnInit: false,
 		onClick : function(start) {
 			$scope.loading = true;
 			var formatDate = d3.time.format("%H:%M, %A %B %e %Y");
@@ -44,6 +45,7 @@ angular.module("app").controller("scheduledJobController", [
 						}
 						$scope.jobs = data;
 					}
+
 					$scope.loading = false;
 				}).
 				error(function() {

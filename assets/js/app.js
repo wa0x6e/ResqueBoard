@@ -3,7 +3,7 @@ angular.module("app", ["ngResource", "ui.bootstrap"]);
 // Init syntax highlighter
 hljs.initHighlightingOnLoad();
 
-$("[data-event~=tooltip]").tooltip({html: true, container: "body"});
+$("body").tooltip({html: true, container: "body", selector: "[data-event~=tooltip]"});
 $("[data-event~=popover]").popover({html: true});
 $("[data-event~=collapse-all]").on("click", function(e){ e.preventDefault(); $(".collapse.in").collapse("hide"); });
 $("[data-event~=expand-all]").on("click", function(e){ e.preventDefault(); $(".collapse").not(".in").collapse("show"); });

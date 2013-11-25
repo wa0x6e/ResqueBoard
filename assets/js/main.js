@@ -113,6 +113,9 @@ require({
 		"cubism": {
 			deps: ["d3"]
 		},
+        "libs/angular" : {
+          deps : ["jquery"]  
+        },
 		"ui.bootstrap": {
 			deps: ["libs/angular"]
 		},

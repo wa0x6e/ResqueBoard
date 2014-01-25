@@ -539,7 +539,7 @@ class ResqueStat
         array_walk(
             $jobs,
             function (&$j) {
-                $j['status'] = self::JOB_STATUS_WAITING;
+                $j['status'] = \ResqueBoard\Lib\ResqueStat::JOB_STATUS_WAITING;
             }
         );
         return $jobs;

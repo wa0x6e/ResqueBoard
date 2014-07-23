@@ -517,10 +517,13 @@ class ResqueStat
         }
 
 
+        $pendingJobs = [];
         foreach ($queues as $queue => $jobs) {
             for ($i = count($jobs)-1; $i >= 0; $i--) {
                 $jobs[$i] = json_decode($jobs[$i], true);
-                $jobs[$i] = array(
+                $pendingJobs[] = array_merge(
+                    $jobs[$i]
+                    ,array(
                     'd' => array(
                         'args' => array(
                             'queue' => $queue,
@@ -531,11 +534,11 @@ class ResqueStat
                                 )
                             )
                         )
-                    );
+                    ));
             }
         }
-
-        $jobs = $this->formatJobs($jobs);
+        
+        $jobs = $this->formatJobs($pendingJobs);
         array_walk(
             $jobs,
             function (&$j) {

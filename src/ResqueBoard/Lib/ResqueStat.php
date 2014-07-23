@@ -86,8 +86,6 @@ class ResqueStat
             return false;
         }
 		
-        array_values($stats);
-        
         foreach ($stats as $key => $value) {
             $stats[$key] = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], $validType[$key] . '_events')->count();
         }
@@ -908,7 +906,7 @@ class ResqueStat
 
 
 
-        $jobsCursor = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'done_events')->find(array('d.job_id' => array('$in' => $jobIds)));
+        $jobsCursor = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'done_events')->find(array('d.job_id' => array('$in' => array_values($jobIds))));
         foreach ($jobsCursor as $successJob) {
             $jobs[$successJob['d']['job_id']]['status'] = self::JOB_STATUS_COMPLETE;
             $jobs[$successJob['d']['job_id']]['took'] = $successJob['d']['time'];
@@ -917,7 +915,7 @@ class ResqueStat
 
         if (!empty($jobIds)) {
 
-            $jobsCursor = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'fail_events')->find(array('d.job_id' => array('$in' => $jobIds)));
+            $jobsCursor = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'fail_events')->find(array('d.job_id' => array('$in' => array_values($jobIds))));
             $pipelineCommands = array();
             foreach ($jobsCursor as $failedJob) {
                 $jobs[$failedJob['d']['job_id']]['status'] = self::JOB_STATUS_FAILED;
@@ -937,7 +935,7 @@ class ResqueStat
         }
 
         if (!empty($jobIds)) {
-            $jobsCursor = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'process_events')->find(array('d.job_id' => array('$in' => $jobIds)));
+            $jobsCursor = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], 'process_events')->find(array('d.job_id' => array('$in' => array_values($jobIds))));
             foreach ($jobsCursor as $processJob) {
                 $jobs[$processJob['d']['job_id']]['status'] = self::JOB_STATUS_RUNNING;
                 unset($jobIds[array_search($processJob['d']['job_id'], $jobIds)]);

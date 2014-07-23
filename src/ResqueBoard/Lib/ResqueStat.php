@@ -85,7 +85,7 @@ class ResqueStat
         } else {
             return false;
         }
-		
+
         foreach ($stats as $key => $value) {
             $stats[$key] = Service::Mongo()->selectCollection(Service::$settings['Mongo']['database'], $validType[$key] . '_events')->count();
         }

@@ -1,4 +1,4 @@
-#ResqueBoard [![Build Status](https://travis-ci.org/kamisama/ResqueBoard.png?branch=dev)](https://travis-ci.org/kamisama/ResqueBoard) [![Coverage Status](https://coveralls.io/repos/kamisama/ResqueBoard/badge.png)](https://coveralls.io/r/kamisama/ResqueBoard)
+#ResqueBoard [![Build Status](https://travis-ci.org/kamisama/ResqueBoard.png?branch=dev)](https://travis-ci.org/kamisama/ResqueBoard) [![Coverage Status](https://coveralls.io/repos/kamisama/ResqueBoard/badge.png)](https://coveralls.io/r/kamisama/ResqueBoard) [![Dependency Status](https://www.versioneye.com/user/projects/53cfdcf74b95470152000003/badge.svg?style=flat)](https://www.versioneye.com/user/projects/53cfdcf74b95470152000003) [![Dependency Status](https://www.versioneye.com/user/projects/53cfdda84b954729e6000017/badge.svg?style=flat)](https://www.versioneye.com/user/projects/53cfdda84b954729e6000017)
 
 ResqueBoard is an analytics software for PHP Resque. Monitor your workers health and job activities in realtime.
 

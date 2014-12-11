@@ -517,7 +517,7 @@ class ResqueStat
         }
 
 
-        $pendingJobs = [];
+        $pendingJobs = array();
         foreach ($queues as $queue => $jobs) {
             for ($i = count($jobs)-1; $i >= 0; $i--) {
                 $jobs[$i] = json_decode($jobs[$i], true);

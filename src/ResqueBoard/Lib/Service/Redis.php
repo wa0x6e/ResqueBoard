@@ -44,6 +44,11 @@ class Redis extends AbstractService
                     throw new \Exception('Unable to authenticate with redis!');
                 }
             }
+            if (isset($settings['database']) && !empty($settings['database'])) {
+                if ($redis->select($settings['database']) === false) {
+                    throw new \Exception('Unable to Redis database select');
+                }
+            }
         } catch (\Exception $e) {
             throw new \Exception('Unable to connect to Redis server');
         }
